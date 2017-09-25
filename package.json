@@ -1,0 +1,63 @@
+{
+    "name": "gitstash",
+    "displayName": "Git Stash",
+    "description": "Git stash powers",
+    "version": "0.1.0",
+    "publisher": "arturock",
+    "license": "MIT",
+    "icon": "resources/logo.png",
+    "galleryBanner": {
+        "color": "#444444",
+        "theme": "dark"
+    },
+    "engines": {
+        "vscode": "^1.13.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "keywords": [
+        "git",
+        "stash",
+        "git stash",
+        "diff",
+        "stash diff"
+    ],
+    "homepage": "https://github.com/arturock/vscode-gitstash/blob/master/README.md",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/arturock/vscode-gitstash.git"
+    },
+    "bugs": {
+        "url": "https://github.com/arturock/vscode-gitstash/issues"
+    },
+    "main": "./out/src/extension",
+    "activationEvents": [
+        "*"
+    ],
+    "contributes": {
+        "views": {
+            "explorer": [
+                {
+                    "id": "gitstash.explorer",
+                    "name": "Git Stash",
+                    "when": "isGitRepository"
+                }
+            ]
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "tsc -p ./",
+        "compile": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install"
+    },
+    "dependencies": {
+        "tmp": "0.0.33"
+    },
+    "devDependencies": {
+        "@types/mocha": "^2.2.32",
+        "@types/node": "*",
+        "typescript": "^2.1.4",
+        "vscode": "^1.0.0"
+    }
+}
