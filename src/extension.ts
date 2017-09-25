@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as tmp from 'tmp';
 import * as vscode from 'vscode';
-import GitStashTreeDataProvider from './GitStashTreeDataProvider'
+import GitStashTreeDataProvider from './GitStashTreeDataProvider';
 
 export function activate(context: vscode.ExtensionContext) {
     const gitStashTreeDataProvider = new GitStashTreeDataProvider();

@@ -2,7 +2,7 @@
 
 import { workspace } from 'vscode';
 import { spawn } from 'child_process';
-import tmp from 'tmp';
+import * as temp from 'tmp';
 
 interface StashEntry {
     index: number;
@@ -50,7 +50,7 @@ export default class Git {
 
         const stashList = (await this.exec(params)).trim();
 
-        let list = [];
+        const list = [];
 
         if (stashList.length > 0) {
             stashList.split(/\r?\n/g).forEach((description, index) => {
@@ -81,7 +81,7 @@ export default class Git {
 
         const stashedFiles = (await this.exec(params)).trim();
 
-        let list = [];
+        const list = [];
 
         stashedFiles.split(/\r?\n/g).forEach((file, index) => {
             list.push({
@@ -101,16 +101,16 @@ export default class Git {
     public async getStashFileContents(index: number, file: string): Promise<string[]> {
         const paramsBase = [
             'show',
-            `stash@{${index}}^1:${file}`,
+            `stash@{${index}}^1:${file}`
         ];
         const paramsModified = [
             'show',
-            `stash@{${index}}:${file}`,
+            `stash@{${index}}:${file}`
         ];
 
         return [
             (await this.exec(paramsBase)).trim(),
-            (await this.exec(paramsModified)).trim(),
+            (await this.exec(paramsModified)).trim()
         ];
     }
 
@@ -125,10 +125,10 @@ export default class Git {
             cwd = await this.getGitRoot();
         }
 
-        let content: string = '';
-        let cmd = spawn('git', args, { cwd });
+        let content = '';
+        const cmd = spawn('git', args, { cwd });
 
-        let out = cmd.stdout;
+        const out = cmd.stdout;
         out.setEncoding('utf8');
 
         return new Promise<string>((resolve, reject) => {

@@ -57,7 +57,9 @@
     "devDependencies": {
         "@types/mocha": "^2.2.32",
         "@types/node": "*",
-        "typescript": "^2.1.4",
-        "vscode": "^1.0.0"
+        "@types/tmp": "0.0.33",
+        "tslint": "5.7.0",
+        "typescript": "2.5.2",
+        "vscode": "1.1.5"
     }
 }

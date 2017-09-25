@@ -7,7 +7,7 @@ import {
     TreeItem,
     TreeItemCollapsibleState,
     Uri
-    } from 'vscode';
+} from 'vscode';
 import * as path from 'path';
 import Model from './Model';
 import StashNode from './StashNode';
@@ -89,7 +89,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
                 title: 'Show stash diff',
                 tooltip: 'Show stash diff',
                 command: 'gitstash.show',
-                arguments: [this.model, node],
+                arguments: [this.model, node]
             },
             iconPath: {
                 light: this.getIcon('light', 'file.png'),

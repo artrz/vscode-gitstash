@@ -24,7 +24,7 @@ export default class Model {
      */
     public get roots(): Thenable<StashNode[]> {
         return this.git.getStashList().then((rawList) => {
-            let list = [];
+            const list = [];
 
             rawList.forEach((stashListItem) => {
                 list.push(new StashNode({
@@ -46,7 +46,7 @@ export default class Model {
      */
     public getChildren(node: StashNode): Thenable<StashNode[]> {
         return this.git.getStashFiles(node.index).then((rawList) => {
-            let list = [];
+            const list = [];
 
             rawList.forEach((stashFile) => {
                 list.push(new StashNode({
