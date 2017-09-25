@@ -42,10 +42,12 @@ export default class Git {
      * Gets the stash entries list.
      */
     public async getStashList(): Promise<StashEntry[]> {
+        const validFormats = ['default', 'iso', 'local', 'raw', 'relative', 'rfc', 'short'];
+        const dateFormat = workspace.getConfiguration('gitstash').dateFormat;
         const params = [
             'stash',
             'list',
-            '--date=iso'
+            '--date=' + (validFormats.indexOf(dateFormat) > -1 ? dateFormat : 'default')
         ];
 
         const stashList = (await this.exec(params)).trim();

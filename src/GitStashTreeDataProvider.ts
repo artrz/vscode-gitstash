@@ -6,7 +6,8 @@ import {
     TreeDataProvider,
     TreeItem,
     TreeItemCollapsibleState,
-    Uri
+    Uri,
+    workspace
 } from 'vscode';
 import * as path from 'path';
 import Model from './Model';
@@ -18,6 +19,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     private model: Model;
     private rawStash: string;
     private loadTimeout;
+    private config;
 
     /**
      * Gets the tree children, (root) stash entries, or entry files.
@@ -29,6 +31,8 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
             this.getModel().raw.then((rawStash) => {
                 this.rawStash = rawStash;
             });
+
+            this.loadConfig();
 
             return this.getModel().roots;
         }
@@ -50,19 +54,27 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     /**
      * Reloads the git stash tree view.
      *
-     * @param event
      * @param type
+     * @param event
      */
-    public reload(event: Uri, type: string): void {
-        clearTimeout(this.loadTimeout);
-        this.loadTimeout = setTimeout((event, type) => {
-            this.getModel().raw.then((rawStash) => {
-                if (this.rawStash !== rawStash) {
-                    this.rawStash = rawStash;
-                    this._onDidChangeTreeData.fire();
-                }
-            });
-        }, 1000, event, type);
+    public reload(type: string, event?: Uri): void {
+        if (this.loadTimeout) {
+            clearTimeout(this.loadTimeout);
+        }
+
+        this.loadTimeout = setTimeout((type, event) => {
+            if (type === 's') {
+                this._onDidChangeTreeData.fire();
+            }
+            else {
+                this.getModel().raw.then((rawStash) => {
+                    if (this.rawStash !== rawStash) {
+                        this.rawStash = rawStash;
+                        this._onDidChangeTreeData.fire();
+                    }
+                });
+            }
+        }, 1000, type, event);
     }
 
     /**
@@ -80,9 +92,19 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
      * @param node The node to be used as base
      */
     private getFileItem(node: StashNode): TreeItem {
+        const index = node.index;
+        const filename = path.basename(node.name);
+        const filepath = path.dirname(node.name);
+
         return {
-            label: path.basename(node.name),
-            // tooltip: node.name,
+            label: this.config.fileFormat
+                .replace('${index}', index)
+                .replace('${filename}', filename)
+                .replace('${filepath}', filepath),
+            // tooltip: this.config.fileFormat
+            //     .replace('${index}', index)
+            //     .replace('${filename}', filename)
+            //     .replace('${filepath}', filepath),
             contextValue: 'diffFile',
             collapsibleState: void 0,
             command: {
@@ -104,14 +126,24 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
      * @param node The node to be used as base
      */
     private getEntryItem(node: StashNode): TreeItem {
+        const index = node.index;
+        const date = node.date;
         const description = node.name.substring(node.name.indexOf(':') + 2);
         const branch = node.name.indexOf('WIP on ') === 0
             ? node.name.substring(7, node.name.indexOf(':'))
             : node.name.substring(3, node.name.indexOf(':'));
 
         return {
-            label: `[${branch}] ${description}`,
-            // tooltip: node.date,
+            label: this.config.entryFormat
+                .replace('${index}', index)
+                .replace('${branch}', branch)
+                .replace('${description}', description)
+                .replace('${date}', date),
+            // tooltip: this.config.entryFormat
+            //     .replace('${index}', index)
+            //     .replace('{$branch}', branch)
+            //     .replace('{$description}', description)
+            //     .replace('{$date}', date),
             contextValue: 'diffEntry',
             collapsibleState: TreeItemCollapsibleState.Collapsed,
             command: void 0,
@@ -130,5 +162,12 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
      */
     private getIcon(scheme: string, filename: string): string {
         return path.join(__filename, '..', '..', '..', 'resources', scheme, filename);
+    }
+
+    /**
+     * Loads the plugin config.
+     */
+    private loadConfig() {
+        this.config = workspace.getConfiguration('gitstash');
     }
 }

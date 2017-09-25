@@ -5,8 +5,8 @@ import * as path from 'path';
 interface Node {
     name: string;
     index: number;
-    parent: Node|null;
-    date: string|null;
+    parent?: Node;
+    date?: string;
 }
 
 export default class StashNode {

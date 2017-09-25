@@ -2,7 +2,7 @@
     "name": "gitstash",
     "displayName": "Git Stash",
     "description": "Git stash powers",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "publisher": "arturock",
     "license": "MIT",
     "icon": "resources/logo.png",
@@ -36,12 +36,47 @@
         "*"
     ],
     "contributes": {
+        "configuration": {
+            "type": "object",
+            "title": "Git Stash configuration",
+            "properties": {
+                "gitstash.explorer.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enables or disables the stash tree"
+                },
+                "gitstash.entryFormat": {
+                    "type": "string",
+                    "default": "[${branch}] ${description}",
+                    "description": "Specifies the format for each stash entry\nAvailable tokens:\n${branch} - the branch where the stash was created\n${description} - the custom or default description for the stash entry\n${date} - the stash creation date\n${index} - the stash index"
+                },
+                "gitstash.fileFormat": {
+                    "type": "string",
+                    "default": "${filename}",
+                    "description": "Specifies the format for each stashed file\nAvailable tokens:\n${filename} - the filename\n${filepath} - the file path\n${index} - the file index"
+                },
+                "gitstash.dateFormat": {
+                    "type": "string",
+                    "default": "default",
+                    "enum": [
+                        "default",
+                        "iso",
+                        "local",
+                        "raw",
+                        "relative",
+                        "rfc",
+                        "short"
+                    ],
+                    "description": "Specifies the date format for each stash entry\nAvailable formats:\ndefault\niso\nlocal\nraw\nrelative\nrfc\nshort"
+                }
+            }
+        },
         "views": {
             "explorer": [
                 {
                     "id": "gitstash.explorer",
                     "name": "Git Stash",
-                    "when": "isGitRepository"
+                    "when": "isGitRepository && config.gitstash.explorer.enabled"
                 }
             ]
         }
