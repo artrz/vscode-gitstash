@@ -54,8 +54,8 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     /**
      * Reloads the git stash tree view.
      *
-     * @param type
-     * @param event
+     * @param type the event type
+     * @param event The event file URI
      */
     public reload(type: string, event?: Uri): void {
         if (this.loadTimeout) {
@@ -75,6 +75,22 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
                 });
             }
         }, 1000, type, event);
+    }
+
+    /**
+     * Gets the diff document title.
+     *
+     * @param node the file node to be shown
+     */
+    public getDiffTitle(node: StashNode): string {
+        return this.config.diffTitleFormat
+            .replace('${fileIndex}', node.index)
+            .replace('${filename}', path.basename(node.name))
+            .replace('${filepath}', path.dirname(node.name))
+            .replace('${date}', node.date)
+            .replace('${stashIndex}', node.parent.index)
+            .replace('${description}', this.getEntryDescription(node.parent))
+            .replace('${branch}', this.getEntryBranch(node.parent));
     }
 
     /**
@@ -128,10 +144,8 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     private getEntryItem(node: StashNode): TreeItem {
         const index = node.index;
         const date = node.date;
-        const description = node.name.substring(node.name.indexOf(':') + 2);
-        const branch = node.name.indexOf('WIP on ') === 0
-            ? node.name.substring(7, node.name.indexOf(':'))
-            : node.name.substring(3, node.name.indexOf(':'));
+        const description = this.getEntryDescription(node);
+        const branch = this.getEntryBranch(node);
 
         return {
             label: this.config.entryFormat
@@ -169,5 +183,25 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
      */
     private loadConfig() {
         this.config = workspace.getConfiguration('gitstash');
+    }
+
+    /**
+     * Gets the node entry description.
+     *
+     * @param node the source node
+     */
+    private getEntryDescription(node: StashNode) {
+        return node.name.substring(node.name.indexOf(':') + 2);
+    }
+
+    /**
+     * Gets the node entry branch.
+     *
+     * @param node the source node
+     */
+    private getEntryBranch(node: StashNode) {
+        return node.name.indexOf('WIP on ') === 0
+            ? node.name.substring(7, node.name.indexOf(':'))
+            : node.name.substring(3, node.name.indexOf(':'));
     }
 }

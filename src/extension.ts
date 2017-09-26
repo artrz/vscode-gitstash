@@ -21,13 +21,13 @@ export function activate(context: vscode.ExtensionContext) {
                 'vscode.diff',
                 vscode.Uri.file(baseFile.name),
                 vscode.Uri.file(modifiedFile.name),
-                `stash@{${node.parent.index}}:${path.basename(node.name)}`,
+                gitStashTreeDataProvider.getDiffTitle(node),
                 { preview: true }
             );
         });
     });
 
-    const watcher = vscode.workspace.createFileSystemWatcher('**', false, false, false);
+    const watcher = vscode.workspace.createFileSystemWatcher('**/refs/stash', false, false, false);
 
     const createWatcher = watcher.onDidCreate((event) => {
         gitStashTreeDataProvider.reload('c', event);

@@ -17,7 +17,8 @@ Clicking on a file will display a diff view with the changes on that file, bring
 |-----|------------
 | `gitstash.explorer.enabled` | Enables or disables the stash explorer tree.
 | `gitstash.entryFormat`      | Specifies the format for each stash entry. Available tokens: `${branch}` - the branch where the stash was created, `${description}` - the custom or default description for the stash entry, `${date}` - the stash creation date, `${index}` the stash index
-| `gitstash.fileFormat`       | Specifies the format for each stashed file. Available tokens: `${filename}` - the filename, `${filepath}` - the file path, `${index}` the file index
+| `gitstash.fileFormat`       | Specifies the format for each stashed file. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${index}` the file index
+| `gitstash.diffTitleFormat`  | Specifies the format for the diff document title. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${fileIndex}` - the file index, `${date}` - the entry date, `${description}` - the entry description, `${branch}` - the entry branch, `${stashIndex}` - the entry index
 | `gitstash.dateFormat`       | Specifies the date format for each stash entry. Available formats: `default`, `iso`, `local`, `raw`, `relative`, `rfc`, `short`
 
 

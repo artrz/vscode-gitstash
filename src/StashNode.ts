@@ -30,8 +30,8 @@ export default class StashNode {
     /**
      * Gets the node parent index.
      */
-    public get parent(): Node|null {
-        return this.entry.parent;
+    public get parent(): StashNode|null {
+        return this.entry.parent as StashNode;
     }
 
     /**

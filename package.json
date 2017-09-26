@@ -2,7 +2,7 @@
     "name": "gitstash",
     "displayName": "Git Stash",
     "description": "Git stash powers",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "publisher": "arturock",
     "license": "MIT",
     "icon": "resources/logo.png",
@@ -53,7 +53,12 @@
                 "gitstash.fileFormat": {
                     "type": "string",
                     "default": "${filename}",
-                    "description": "Specifies the format for each stashed file\nAvailable tokens:\n${filename} - the filename\n${filepath} - the file path\n${index} - the file index"
+                    "description": "Specifies the format for each stashed file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${index} - the file index"
+                },
+                "gitstash.diffTitleFormat": {
+                    "type": "string",
+                    "default": "#${stashIndex}: ${branch} - ${filename}",
+                    "description": "Specifies the format for the diff document title\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${fileIndex} - the file index\n${date} - the entry date\n${description} - the entry description\n${branch} - the entry branch\n${stashIndex} - the entry index"
                 },
                 "gitstash.dateFormat": {
                     "type": "string",
