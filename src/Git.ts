@@ -111,8 +111,8 @@ export default class Git {
         ];
 
         return [
-            (await this.exec(paramsBase)).trim(),
-            (await this.exec(paramsModified)).trim()
+            (await this.exec(paramsBase)),
+            (await this.exec(paramsModified))
         ];
     }
 

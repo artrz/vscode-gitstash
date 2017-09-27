@@ -2,7 +2,7 @@
     "name": "gitstash",
     "displayName": "Git Stash",
     "description": "Git stash powers",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "publisher": "arturock",
     "license": "MIT",
     "icon": "resources/logo.png",
