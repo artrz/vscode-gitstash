@@ -95,7 +95,7 @@
                 "asyncArrow": "always"
             }
         ],
-        // "strict-boolean-expressions": true,
+        "strict-boolean-expressions": true,
         // "strict-type-predicates": true,
         "trailing-comma": [
             true,

@@ -1,57 +1,29 @@
 'use strict';
 
 import './init';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as tmp from 'tmp';
-import * as vscode from 'vscode';
+import { commands, ExtensionContext, window, workspace } from 'vscode';
+import { Commands } from './Commands';
+
 import GitStashTreeDataProvider from './GitStashTreeDataProvider';
 
-export function activate(context: vscode.ExtensionContext) {
-    const gitStashTreeDataProvider = new GitStashTreeDataProvider();
+export function activate(context: ExtensionContext) {
+    const channel = window.createOutputChannel('GitStash');
+    const treeProvider = new GitStashTreeDataProvider();
+    const stashCommands = new Commands(channel, treeProvider);
+    const watcher = workspace.createFileSystemWatcher('**/refs/stash', false, false, false);
 
-    vscode.window.registerTreeDataProvider('gitstash.explorer', gitStashTreeDataProvider);
+    context.subscriptions.push(
+        window.registerTreeDataProvider('gitstash.explorer', treeProvider),
 
-    const stashCommand = vscode.commands.registerCommand('gitstash.show', (model, node) => {
-        model.getStashedFile(node).then(result => {
-            const baseFile = getFile(node.name, result.base);
-            const modifiedFile = getFile(node.name, result.modified);
+        commands.registerCommand('gitstash.show', stashCommands.gitstashShow),
+        commands.registerCommand('gitstash.apply', stashCommands.gitstashApply),
+        commands.registerCommand('gitstash.drop', stashCommands.gitstashDrop),
+        commands.registerCommand('gitstash.clear', stashCommands.gitstashClear),
 
-            vscode.commands.executeCommand<void>(
-                'vscode.diff',
-                vscode.Uri.file(baseFile.name),
-                vscode.Uri.file(modifiedFile.name),
-                gitStashTreeDataProvider.getDiffTitle(node),
-                { preview: true }
-            );
-        });
-    });
+        watcher.onDidCreate((event) => treeProvider.reload('c', event)),
+        watcher.onDidChange((event) => treeProvider.reload('u', event)),
+        watcher.onDidDelete((event) => treeProvider.reload('d', event)),
 
-    const watcher = vscode.workspace.createFileSystemWatcher('**/refs/stash', false, false, false);
-
-    const createWatcher = watcher.onDidCreate((event) => {
-        gitStashTreeDataProvider.reload('c', event);
-    });
-    const updateWatcher = watcher.onDidChange((event) => {
-        gitStashTreeDataProvider.reload('u', event);
-    });
-    const deleteWatcher = watcher.onDidDelete((event) => {
-        gitStashTreeDataProvider.reload('d', event);
-    });
-    const settingsWatcher = vscode.workspace.onDidChangeConfiguration((event) => {
-        gitStashTreeDataProvider.reload('s');
-    });
-
-    context.subscriptions.push(stashCommand);
-    context.subscriptions.push(createWatcher);
-    context.subscriptions.push(updateWatcher);
-    context.subscriptions.push(deleteWatcher);
-    context.subscriptions.push(settingsWatcher);
-}
-
-function getFile(filename: string, content: string): any {
-    const file = tmp.fileSync({ postfix: path.extname(filename) });
-    fs.writeFileSync(file.name, content);
-
-    return file;
+        workspace.onDidChangeConfiguration(() => treeProvider.reload('s'))
+    );
 }

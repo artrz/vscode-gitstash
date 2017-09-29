@@ -1,8 +1,8 @@
 {
     "name": "gitstash",
     "displayName": "Git Stash",
-    "description": "Git stash powers",
-    "version": "0.3.1",
+    "description": "Explorer | Diff | Commands",
+    "version": "0.4.0",
     "publisher": "arturock",
     "license": "MIT",
     "icon": "resources/logo.png",
@@ -36,6 +36,23 @@
         "*"
     ],
     "contributes": {
+        "commands": [
+            {
+                "command": "gitstash.apply",
+                "title": "Stash Apply...",
+                "category": "GitStash"
+            },
+            {
+                "command": "gitstash.drop",
+                "title": "Stash Drop...",
+                "category": "GitStash"
+            },
+            {
+                "command": "gitstash.clear",
+                "title": "Stash Clear",
+                "category": "GitStash"
+            }
+        ],
         "configuration": {
             "type": "object",
             "title": "Git Stash configuration",
@@ -47,7 +64,7 @@
                 },
                 "gitstash.entryFormat": {
                     "type": "string",
-                    "default": "[${branch}] ${description}",
+                    "default": "[${index}: ${branch}] ${description}",
                     "description": "Specifies the format for each stash entry\nAvailable tokens:\n${branch} - the branch where the stash was created\n${description} - the custom or default description for the stash entry\n${date} - the stash creation date\n${index} - the stash index"
                 },
                 "gitstash.fileFormat": {
@@ -57,7 +74,7 @@
                 },
                 "gitstash.diffTitleFormat": {
                     "type": "string",
-                    "default": "#${stashIndex}: ${branch} - ${filename}",
+                    "default": "${branch} - ${filename}",
                     "description": "Specifies the format for the diff document title\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${fileIndex} - the file index\n${date} - the entry date\n${description} - the entry description\n${branch} - the entry branch\n${stashIndex} - the entry index"
                 },
                 "gitstash.dateFormat": {

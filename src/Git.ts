@@ -20,6 +20,39 @@ export default class Git {
     private gitRootPath: string;
 
     /**
+     * Executes a git command.
+     *
+     * @param args the string array with the argument list
+     * @param cwd  the optionally string with the current working directory
+     */
+    public async exec(args: string[], cwd?: string): Promise<string> {
+        if (!cwd) {
+            cwd = await this.getGitRoot();
+        }
+
+        let content = '';
+        let error = '';
+
+        const cmd = spawn('git', args, { cwd });
+
+        const out = cmd.stdout;
+        out.setEncoding('utf8');
+
+        const err = cmd.stderr;
+        err.setEncoding('utf8');
+
+        return new Promise<string>((resolve, reject) => {
+            out.on('data', (chunk: string) => content += chunk);
+            err.on('data', (chunk: string) => error += chunk);
+            out.on('error', (err) => reject(err));
+            err.on('error', (err) => reject(err));
+            cmd.on('close', () => {
+                error.length > 0 ? reject(error) : resolve(content);
+            });
+        });
+    }
+
+    /**
      * Indicates if there's a current git repository.
      */
     public async isGitRepository(): Promise<boolean> {
@@ -70,7 +103,7 @@ export default class Git {
     /**
      * Gets the stashed files of a stash entry.
      *
-     * @param index The stash entry index
+     * @param index the int with the index of the stash entry
      */
     public async getStashFiles(index: number): Promise<StashFile[]> {
         const params = [
@@ -98,7 +131,7 @@ export default class Git {
     /**
      * Gets the file contents of both, the base (original) and the modified data.
      *
-     * @param index
+     * @param index the int with the index of the stashed file
      */
     public async getStashFileContents(index: number, file: string): Promise<string[]> {
         const paramsBase = [
@@ -114,30 +147,6 @@ export default class Git {
             (await this.exec(paramsBase)),
             (await this.exec(paramsModified))
         ];
-    }
-
-    /**
-     * Executes a git command.
-     *
-     * @param args The argument list
-     * @param cwd  The current working directory
-     */
-    private async exec(args: string[], cwd?: string): Promise<string> {
-        if (!cwd) {
-            cwd = await this.getGitRoot();
-        }
-
-        let content = '';
-        const cmd = spawn('git', args, { cwd });
-
-        const out = cmd.stdout;
-        out.setEncoding('utf8');
-
-        return new Promise<string>((resolve, reject) => {
-            out.on('data', (data) => content += data);
-            out.on('end', () => resolve(content));
-            out.on('error', (err) => reject(err));
-        });
     }
 
     /**

@@ -62,7 +62,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
             clearTimeout(this.loadTimeout);
         }
 
-        this.loadTimeout = setTimeout((type, event) => {
+        this.loadTimeout = setTimeout((type: string, event?: Uri) => {
             if (type === 's') {
                 this._onDidChangeTreeData.fire();
             }
@@ -74,7 +74,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
                     }
                 });
             }
-        }, 1000, type, event);
+        }, 750, type, event);
     }
 
     /**
