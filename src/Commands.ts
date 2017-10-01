@@ -22,17 +22,99 @@ export class Commands {
      * Shows a stashed file diff document.
      */
     public gitstashShow = (model, node) => {
-        model.getStashedFile(node).then(result => {
-            const baseFile = this.getFile(node.name, result.base);
-            const modifiedFile = this.getFile(node.name, result.modified);
+        if (node.index !== null) {
+            model.getStashedFile(node).then(files => {
+                const baseFile = this.getFile(node.name, files.base);
+                const modifiedFile = this.getFile(node.name, files.modified);
 
-            vscode.commands.executeCommand<void>(
-                'vscode.diff',
-                vscode.Uri.file(baseFile.name),
-                vscode.Uri.file(modifiedFile.name),
-                this.treeProvider.getDiffTitle(node),
-                { preview: true }
-            );
+                vscode.commands.executeCommand<void>(
+                    'vscode.diff',
+                    vscode.Uri.file(baseFile.name),
+                    vscode.Uri.file(modifiedFile.name),
+                    this.treeProvider.getDiffTitle(node),
+                    { preview: true }
+                );
+            });
+        } else {
+            model.getUntrackedFile(node).then(content => {
+                const file = this.getFile(node.name, content);
+
+                vscode.commands.executeCommand<void>(
+                    'vscode.open',
+                    vscode.Uri.file(file.name)
+                );
+            });
+        }
+    }
+
+    /**
+     * Generates a stash.
+     */
+    public gitstashStash = () => {
+        vscode.window
+            .showQuickPick([
+                {
+                    label: 'Stash only',
+                    description: 'Crate a simple stash',
+                    param: null
+                },
+                {
+                    label: 'Keep index',
+                    description: 'Stash but keep all changes added to the index intact',
+                    param: '--keep-index'
+                },
+                {
+                    label: 'Include untracked',
+                    description: 'Stash also untracked files',
+                    param: '--include-untracked'
+                },
+                {
+                    label: 'All',
+                    description: 'Stash also untracked and ignored files',
+                    param: '--all'
+                }
+            ])
+            .then((option) => {
+                if (option) {
+                    vscode.window
+                        .showInputBox({
+                            placeHolder: 'Stash message',
+                            prompt: 'Optionally provide a stash message'
+                        })
+                        .then((stashMessage) => {
+                            if (typeof stashMessage === 'string') {
+                                const params = ['stash', 'save'];
+
+                                if (typeof option.param === 'string') {
+                                    params.push(option.param);
+                                }
+
+                                if (stashMessage.length > 0) {
+                                    params.push(stashMessage);
+                                }
+
+                                this.exec(params, 'Stash created');
+                            }
+                        });
+                }
+            });
+    }
+
+    /**
+     * Pops a stash entry.
+     */
+    public gitstashPopReindex = () => {
+        this.showStashPick(
+            { placeHolder: 'Pick a stash to pop and reindex' },
+            (stash) => {
+                const params = [
+                    'stash',
+                    'pop',
+                    '--index',
+                    `stash@{${stash.index}}`
+                ];
+
+                this.exec(params, 'Stash popped');
         });
     }
 
@@ -40,45 +122,86 @@ export class Commands {
      * Applies a stash entry.
      */
     public gitstashApply = () => {
-        this.git.getStashList().then((list) => {
-            vscode.window
-                .showQuickPick(this.makeStashOptionsList(list), {
-                    placeHolder: 'Pick a stash to apply'
-                })
-                .then((stash) => {
-                    if (stash) {
-                        const params = [
-                            'stash',
-                            'apply',
-                            `stash@{${stash.index}}`
-                        ];
+        this.showStashPick(
+            { placeHolder: 'Pick a stash to apply' },
+            (stash) => {
+                vscode.window
+                    .showQuickPick([
+                        {
+                            label: 'Apply only',
+                            description: 'Perform a simple apply',
+                            param: null
+                        },
+                        {
+                            label: 'Apply and reindex',
+                            description: 'Apply and reinstate the files added to index',
+                            param: '--index'
+                        }
+                    ])
+                    .then((option) => {
+                        if (option) {
+                            const params = ['stash', 'apply'];
 
-                        this.exec(params, 'Stash applied');
-                    }
-                });
+                            if (option.param !== null) {
+                                params.push(option.param);
+                            }
+
+                            params.push(`stash@{${stash.index}}`);
+
+                            this.exec(params, 'Stash applied');
+                        }
+                    });
         });
+    }
+
+    /**
+     * Branches a stash entry.
+     */
+    public gitstashBranch = () => {
+        this.showStashPick(
+            { placeHolder: 'Pick a stash to branch' },
+            (stash) => {
+                vscode.window
+                    .showInputBox({ placeHolder: 'Branch name' })
+                    .then((branchName) => {
+                        if (typeof branchName === 'string' && branchName.length > 0) {
+                            const params = [
+                                'stash',
+                                'branch',
+                                branchName,
+                                `stash@{${stash.index}}`
+                            ];
+
+                            this.exec(params, 'Stash branched');
+                        }
+                    });
+            }
+        );
     }
 
     /**
      * Drops a stash entry.
      */
     public gitstashDrop = () => {
-        this.git.getStashList().then((list) => {
-            vscode.window
-                .showQuickPick(this.makeStashOptionsList(list), {
-                    placeHolder: 'Pick a stash to drop'
-                })
-                .then((stash) => {
-                    if (stash) {
-                        const params = [
-                            'stash',
-                            'drop',
-                            `stash@{${stash.index}}`
-                        ];
+        this.showStashPick(
+            { placeHolder: 'Pick a stash to drop' },
+            (stash) => {
+                vscode.window
+                    .showWarningMessage<vscode.MessageItem>(
+                    'Are you sure?',
+                    { title: 'Proceed' }
+                    )
+                    .then((option) => {
+                        if (option) {
+                            const params = [
+                                'stash',
+                                'drop',
+                                `stash@{${stash.index}}`
+                            ];
 
-                        this.exec(params, 'Stash dropped');
-                    }
-                });
+                            this.exec(params, 'Stash dropped');
+                        }
+                    });
         });
     }
 
@@ -98,6 +221,20 @@ export class Commands {
                     this.exec(params, 'Stash list cleared');
                 }
             });
+    }
+
+    /**
+     * Show a quick pick with the branches list and executes a callback on it.
+     *
+     * @param params   the object containing the params
+     * @param callback the callback to execute
+     */
+    private showStashPick(params, callback) {
+        this.git.getStashList().then((list) => {
+            vscode.window
+                .showQuickPick(this.makeStashOptionsList(list), params)
+                .then((stash) => callback(stash));
+        });
     }
 
     /**

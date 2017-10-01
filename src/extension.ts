@@ -16,7 +16,10 @@ export function activate(context: ExtensionContext) {
         window.registerTreeDataProvider('gitstash.explorer', treeProvider),
 
         commands.registerCommand('gitstash.show', stashCommands.gitstashShow),
+        commands.registerCommand('gitstash.stash', stashCommands.gitstashStash),
+        commands.registerCommand('gitstash.popReindex', stashCommands.gitstashPopReindex),
         commands.registerCommand('gitstash.apply', stashCommands.gitstashApply),
+        commands.registerCommand('gitstash.branch', stashCommands.gitstashBranch),
         commands.registerCommand('gitstash.drop', stashCommands.gitstashDrop),
         commands.registerCommand('gitstash.clear', stashCommands.gitstashClear),
 

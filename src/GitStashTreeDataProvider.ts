@@ -111,6 +111,9 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
         const index = node.index;
         const filename = path.basename(node.name);
         const filepath = path.dirname(node.name);
+        const icon = node.index !== null
+            ? 'file.png'
+            : 'untracked.png';
 
         return {
             label: this.config.fileFormat
@@ -130,8 +133,8 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
                 arguments: [this.model, node]
             },
             iconPath: {
-                light: this.getIcon('light', 'file.png'),
-                dark: this.getIcon('dark', 'file.png')
+                light: this.getIcon('light', icon),
+                dark: this.getIcon('dark', icon)
             }
         };
     }

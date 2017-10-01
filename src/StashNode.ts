@@ -4,7 +4,7 @@ import * as path from 'path';
 
 interface Node {
     name: string;
-    index: number;
+    index?: number;
     parent?: Node;
     date?: string;
 }
@@ -46,5 +46,12 @@ export default class StashNode {
      */
     public get isFile(): boolean {
         return this.entry.parent !== null;
+    }
+
+    /**
+     * Indicates if the node represents a stashed tracked file or not.
+     */
+    public get isTracked(): boolean {
+        return this.entry.index !== null;
     }
 }

@@ -30,7 +30,7 @@ export default class Git {
             cwd = await this.getGitRoot();
         }
 
-        let content = '';
+        let result = '';
         let error = '';
 
         const cmd = spawn('git', args, { cwd });
@@ -42,12 +42,12 @@ export default class Git {
         err.setEncoding('utf8');
 
         return new Promise<string>((resolve, reject) => {
-            out.on('data', (chunk: string) => content += chunk);
+            out.on('data', (chunk: string) => result += chunk);
             err.on('data', (chunk: string) => error += chunk);
             out.on('error', (err) => reject(err));
             err.on('error', (err) => reject(err));
             cmd.on('close', () => {
-                error.length > 0 ? reject(error) : resolve(content);
+                result.length > 0 ? resolve(result + error) : reject(error);
             });
         });
     }
@@ -88,16 +88,28 @@ export default class Git {
         const list = [];
 
         if (stashList.length > 0) {
-            stashList.split(/\r?\n/g).forEach((description, index) => {
+            stashList.split(/\r?\n/g).forEach((entry, index) => {
                 list.push({
                     index: index,
-                    description: description.substring(description.indexOf('}:') + 2).trim(),
-                    date: description.substring(description.indexOf('{') + 1, description.indexOf('}'))
+                    description: entry.substring(entry.indexOf('}:') + 2).trim(),
+                    date: entry.substring(entry.indexOf('{') + 1, entry.indexOf('}'))
                 });
             });
         }
 
         return list;
+    }
+
+    /**
+     * Gets the files of a stash entry.
+     *
+     * @param index the int with the index of the stash entry
+     */
+    public async getStashedFiles(index: number): Promise<any> {
+        return {
+            modified: await this.getStashFiles(index),
+            untracked: await this.getStashUntracked(index)
+        };
     }
 
     /**
@@ -129,9 +141,39 @@ export default class Git {
     }
 
     /**
+     * Gets the untracked files of a stash entry.
+     *
+     * @param index the int with the index of the stash entry
+     */
+    public async getStashUntracked(index: number): Promise<StashFile[]> {
+        const params = [
+            'ls-tree',
+            '-r',
+            `stash@{${index}}^3`,
+            '--name-only'
+        ];
+
+        const list = [];
+
+        try {
+            const untrackedFiles = (await this.exec(params)).trim();
+
+            untrackedFiles.split(/\r?\n/g).forEach((file, index) => {
+                list.push({
+                    index: index,
+                    file: file
+                });
+            });
+        } catch (e) { }
+
+        return list;
+    }
+
+    /**
      * Gets the file contents of both, the base (original) and the modified data.
      *
      * @param index the int with the index of the stashed file
+     * @param file  the string with the stashed file name
      */
     public async getStashFileContents(index: number, file: string): Promise<string[]> {
         const paramsBase = [
@@ -144,9 +186,24 @@ export default class Git {
         ];
 
         return [
-            (await this.exec(paramsBase)),
-            (await this.exec(paramsModified))
+            await this.exec(paramsBase),
+            await this.exec(paramsModified)
         ];
+    }
+
+    /**
+     * Gets the file contents of an untracked file.
+     *
+     * @param index the int with the index of the stashed file
+     * @param file  the string with the stashed file name
+     */
+    public async untrackedFileContents(index: number, file: string): Promise<string> {
+        const params = [
+            'show',
+            `stash@{${index}}^3:${file}`
+        ];
+
+        return await this.exec(params);
     }
 
     /**

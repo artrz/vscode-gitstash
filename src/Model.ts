@@ -42,37 +42,59 @@ export default class Model {
     /**
      * Gets the stashed files of a stash entry.
      *
-     * @param node The parent entry
+     * @param node the parent entry
      */
     public getChildren(node: StashNode): Thenable<StashNode[]> {
-        return this.git.getStashFiles(node.index).then((rawList) => {
-            const list = [];
+        return this.git.getStashedFiles(node.index).then((rawList) => {
+                const list = [];
 
-            rawList.forEach((stashFile) => {
-                list.push(new StashNode({
-                    name: stashFile.file,
-                    index: stashFile.index,
-                    parent: node,
-                    date: node.date
-                }));
-            });
+                rawList.modified.forEach((stashFile) => {
+                    list.push(new StashNode({
+                        name: stashFile.file,
+                        index: stashFile.index,
+                        parent: node,
+                        date: node.date
+                    }));
+                });
 
-            return list;
+                rawList.untracked.forEach((stashFile) => {
+                    list.push(new StashNode({
+                        name: stashFile.file,
+                        index: null,
+                        parent: node,
+                        date: node.date
+                    }));
+                });
+
+                return list;
         });
     }
 
     /**
      * Gets the file contents of both, the base (original) and the modified data.
      *
-     * @param node The stashed file node
+     * @param node the stashed file node
      */
     public getStashedFile(node: StashNode): Thenable<any> {
-        return node.isFile
+        return node.isFile && node.isTracked
             ? this.git.getStashFileContents(node.parent.index, node.name).then((rawContent) => {
                 return {
                     base: rawContent[0],
                     modified: rawContent[1]
                 };
+            })
+            : null;
+    }
+
+    /**
+     * Gets the file contents of the untracked file.
+     *
+     * @param node the stashed node file
+     */
+    public getUntrackedFile(node: StashNode): Thenable<string> {
+        return node.isFile && !node.isTracked
+            ? this.git.untrackedFileContents(node.parent.index, node.name).then((rawContent) => {
+                return rawContent;
             })
             : null;
     }
