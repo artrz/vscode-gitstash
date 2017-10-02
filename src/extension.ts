@@ -15,9 +15,11 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(
         window.registerTreeDataProvider('gitstash.explorer', treeProvider),
 
+        commands.registerCommand('gitstash.explorer.toggle', stashCommands.gitstashExplorerToggle),
+        commands.registerCommand('gitstash.explorer.refresh', stashCommands.gitstashExplorerRefresh),
         commands.registerCommand('gitstash.show', stashCommands.gitstashShow),
         commands.registerCommand('gitstash.stash', stashCommands.gitstashStash),
-        commands.registerCommand('gitstash.popReindex', stashCommands.gitstashPopReindex),
+        commands.registerCommand('gitstash.pop', stashCommands.gitstashPop),
         commands.registerCommand('gitstash.apply', stashCommands.gitstashApply),
         commands.registerCommand('gitstash.branch', stashCommands.gitstashBranch),
         commands.registerCommand('gitstash.drop', stashCommands.gitstashDrop),
@@ -27,6 +29,11 @@ export function activate(context: ExtensionContext) {
         watcher.onDidChange((event) => treeProvider.reload('u', event)),
         watcher.onDidDelete((event) => treeProvider.reload('d', event)),
 
-        workspace.onDidChangeConfiguration(() => treeProvider.reload('s'))
+        workspace.onDidChangeConfiguration(() => {
+            treeProvider.reload('s');
+            stashCommands.loadConfig();
+        })
     );
+
+    stashCommands.gitstashExplorerToggle();
 }

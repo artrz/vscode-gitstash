@@ -11,11 +11,36 @@ export class Commands {
     private git: Git;
     private channel: vscode.OutputChannel;
     private treeProvider: GitStashTreeDataProvider;
+    private showExplorer;
+    private config;
 
     constructor(channel: vscode.OutputChannel, treeProvider: GitStashTreeDataProvider) {
         this.git = new Git();
         this.treeProvider = treeProvider;
         this.channel = channel;
+        this.loadConfig();
+    }
+
+    /**
+     * Toggles the explorer tree.
+     */
+    public gitstashExplorerToggle = () => {
+        this.showExplorer = typeof this.showExplorer === 'undefined'
+            ? this.config.explorer.enabled
+            : !this.showExplorer;
+
+        vscode.commands.executeCommand(
+            'setContext',
+            'gitstash.explorer.enabled',
+            this.showExplorer
+        );
+    }
+
+    /**
+     * Reloads the explorer tree.
+     */
+    public gitstashExplorerRefresh = () => {
+        this.treeProvider.reload('f');
     }
 
     /**
@@ -75,7 +100,7 @@ export class Commands {
                 }
             ])
             .then((option) => {
-                if (option) {
+                if (typeof option !== 'undefined') {
                     vscode.window
                         .showInputBox({
                             placeHolder: 'Stash message',
@@ -103,18 +128,36 @@ export class Commands {
     /**
      * Pops a stash entry.
      */
-    public gitstashPopReindex = () => {
+    public gitstashPop = () => {
         this.showStashPick(
-            { placeHolder: 'Pick a stash to pop and reindex' },
+            { placeHolder: 'Pick a stash to pop' },
             (stash) => {
-                const params = [
-                    'stash',
-                    'pop',
-                    '--index',
-                    `stash@{${stash.index}}`
-                ];
+                vscode.window
+                    .showQuickPick([
+                        {
+                            label: 'Pop only',
+                            description: 'Perform a simple pop',
+                            param: null
+                        },
+                        {
+                            label: 'Pop and reindex',
+                            description: 'Pop and reinstate the files added to index',
+                            param: '--index'
+                        }
+                    ])
+                    .then((option) => {
+                        if (typeof option !== 'undefined') {
+                            const params = ['stash', 'pop'];
 
-                this.exec(params, 'Stash popped');
+                            if (option.param !== null) {
+                                params.push(option.param);
+                            }
+
+                            params.push(`stash@{${stash.index}}`);
+
+                            this.exec(params, 'Stash popped');
+                        }
+                    });
         });
     }
 
@@ -139,7 +182,7 @@ export class Commands {
                         }
                     ])
                     .then((option) => {
-                        if (option) {
+                        if (typeof option !== 'undefined') {
                             const params = ['stash', 'apply'];
 
                             if (option.param !== null) {
@@ -188,11 +231,12 @@ export class Commands {
             (stash) => {
                 vscode.window
                     .showWarningMessage<vscode.MessageItem>(
-                    'Are you sure?',
+                    `This will clear all changes on #${stash.index}. Are you sure?`,
+                    { modal: true },
                     { title: 'Proceed' }
                     )
                     .then((option) => {
-                        if (option) {
+                        if (typeof option !== 'undefined') {
                             const params = [
                                 'stash',
                                 'drop',
@@ -212,15 +256,19 @@ export class Commands {
         vscode.window
             .showWarningMessage<vscode.MessageItem>(
                 'This will remove all the stash entries. Are you sure?',
+                { modal: true },
                 { title: 'Proceed' }
             )
-            .then((option) => {
-                if (option) {
-                    const params = ['stash', 'clear'];
+            .then(
+                (option) => {
+                    if (typeof option !== 'undefined') {
+                        const params = ['stash', 'clear'];
 
-                    this.exec(params, 'Stash list cleared');
-                }
-            });
+                        this.exec(params, 'Stash list cleared');
+                    }
+                },
+                (e) => console.log('failure', e)
+            );
     }
 
     /**
@@ -231,9 +279,18 @@ export class Commands {
      */
     private showStashPick(params, callback) {
         this.git.getStashList().then((list) => {
-            vscode.window
-                .showQuickPick(this.makeStashOptionsList(list), params)
-                .then((stash) => callback(stash));
+            if (list.length > 0) {
+                vscode.window
+                    .showQuickPick(this.makeStashOptionsList(list), params)
+                    .then((stash) => {
+                        if (typeof stash !== 'undefined') {
+                            callback(stash);
+                        }
+                    });
+            }
+            else {
+                vscode.window.showInformationMessage('There are no stashed changes.');
+            }
         });
     }
 
@@ -284,25 +341,28 @@ export class Commands {
      * @param description the optional string alert description
      */
     private showDetails(type: string, message: string, description?: string) {
-        if (type === 'e') {
-            vscode.window.showErrorMessage(description || message.trim(), {
-                title: 'Show log'
-            }).then((value) => {
-                if (value) {
-                    this.channel.show(true);
-                    this.channel.appendLine(message);
-                }
-            });
+        message = message.trim();
+
+        const resume = description || message;
+        const button = message.length > 0
+            ? { title: 'Show log' }
+            : {};
+
+        if (this.config.log.autoclear) {
+            this.channel.clear();
+        }
+
+        if (message.length > 0) {
+            this.channel.appendLine(`${message}\n`);
+        }
+
+        if (type === 's') {
+            vscode.window.showInformationMessage(resume, button)
+                .then((value) => this.channel.show(true));
         }
         else {
-            vscode.window.showInformationMessage(description || message.trim(), {
-                title: 'Show log'
-            }).then((value) => {
-                if (value) {
-                    this.channel.show(true);
-                    this.channel.appendLine(message);
-                }
-            });
+            vscode.window.showErrorMessage(resume, button)
+                .then((value) => this.channel.show(true));
         }
     }
 
@@ -317,5 +377,12 @@ export class Commands {
         fs.writeFileSync(file.name, content);
 
         return file;
+    }
+
+    /**
+     * Loads the plugin config.
+     */
+    public loadConfig() {
+        this.config = vscode.workspace.getConfiguration('gitstash');
     }
 }

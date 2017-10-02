@@ -63,7 +63,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
         }
 
         this.loadTimeout = setTimeout((type: string, event?: Uri) => {
-            if (type === 's') {
+            if (['s', 'f'].indexOf(type) !== -1) {
                 this._onDidChangeTreeData.fire();
             }
             else {
@@ -74,7 +74,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
                     }
                 });
             }
-        }, 750, type, event);
+        }, type === 'f' ? 250 : 750, type, event);
     }
 
     /**
@@ -94,23 +94,14 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     }
 
     /**
-     * Return the model to be used in this provider.
-     */
-    private getModel(): Model {
-        return !this.model
-            ? this.model = new Model()
-            : this.model;
-    }
-
-    /**
      * Generates a stashed file tree item.
      *
      * @param node The node to be used as base
      */
     private getFileItem(node: StashNode): TreeItem {
         const index = node.index;
-        const filename = path.basename(node.name);
-        const filepath = path.dirname(node.name);
+        const fileName = path.basename(node.name);
+        const filePath = path.dirname(node.name);
         const icon = node.index !== null
             ? 'file.png'
             : 'untracked.png';
@@ -118,12 +109,8 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
         return {
             label: this.config.fileFormat
                 .replace('${index}', index)
-                .replace('${filename}', filename)
-                .replace('${filepath}', filepath),
-            // tooltip: this.config.fileFormat
-            //     .replace('${index}', index)
-            //     .replace('${filename}', filename)
-            //     .replace('${filepath}', filepath),
+                .replace('${filename}', fileName)
+                .replace('${filepath}', filePath),
             contextValue: 'diffFile',
             collapsibleState: void 0,
             command: {
@@ -156,11 +143,6 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
                 .replace('${branch}', branch)
                 .replace('${description}', description)
                 .replace('${date}', date),
-            // tooltip: this.config.entryFormat
-            //     .replace('${index}', index)
-            //     .replace('{$branch}', branch)
-            //     .replace('{$description}', description)
-            //     .replace('{$date}', date),
             contextValue: 'diffEntry',
             collapsibleState: TreeItemCollapsibleState.Collapsed,
             command: void 0,
@@ -169,23 +151,6 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
                 dark: this.getIcon('dark', 'chest.png')
             }
         };
-    }
-
-    /**
-     * Builds an icon path.
-     *
-     * @param scheme   The dark/light scheme
-     * @param filename The filename of the icon
-     */
-    private getIcon(scheme: string, filename: string): string {
-        return path.join(__filename, '..', '..', '..', 'resources', scheme, filename);
-    }
-
-    /**
-     * Loads the plugin config.
-     */
-    private loadConfig() {
-        this.config = workspace.getConfiguration('gitstash');
     }
 
     /**
@@ -206,5 +171,29 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
         return node.name.indexOf('WIP on ') === 0
             ? node.name.substring(7, node.name.indexOf(':'))
             : node.name.substring(3, node.name.indexOf(':'));
+    }
+
+    /**
+     * Builds an icon path.
+     *
+     * @param scheme   The dark/light scheme
+     * @param filename The filename of the icon
+     */
+    private getIcon(scheme: string, filename: string): string {
+        return path.join(__filename, '..', '..', '..', 'resources', scheme, filename);
+    }
+
+    /**
+     * Return the model to be used in this provider.
+     */
+    private getModel(): Model {
+        return !this.model ? this.model = new Model() : this.model;
+    }
+
+    /**
+     * Loads the plugin config.
+     */
+    private loadConfig() {
+        this.config = workspace.getConfiguration('gitstash');
     }
 }

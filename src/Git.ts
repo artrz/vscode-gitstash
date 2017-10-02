@@ -44,10 +44,12 @@ export default class Git {
         return new Promise<string>((resolve, reject) => {
             out.on('data', (chunk: string) => result += chunk);
             err.on('data', (chunk: string) => error += chunk);
-            out.on('error', (err) => reject(err));
-            err.on('error', (err) => reject(err));
+            out.on('error', (err: Error) => error = err.message);
+            err.on('error', (err: Error) => error = err.message);
             cmd.on('close', () => {
-                result.length > 0 ? resolve(result + error) : reject(error);
+                error.trim().length === 0
+                    ? resolve(result + error)
+                    : reject(error);
             });
         });
     }
