@@ -1,6 +1,6 @@
 'use strict';
 
-import { StashEntry, StashFile } from './StashGit';
+import { StashEntry } from './StashGit';
 import StashNode, { NodeType } from './StashNode';
 
 export default class {
@@ -24,11 +24,11 @@ export default class {
      *
      *@param entry The stash entry to use as base.
      */
-    public fileToNode(file: StashFile, parentNode: StashNode, type: NodeType): StashNode {
+    public fileToNode(file: string, parentNode: StashNode, type: NodeType): StashNode {
         return new StashNode({
             type: type,
-            name: file.file,
-            index: file.index,
+            name: file,
+            index: null,
             parent: parentNode,
             date: parentNode.date
         });

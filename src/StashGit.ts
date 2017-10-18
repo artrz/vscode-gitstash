@@ -10,21 +10,16 @@ export interface StashEntry {
     date: string;
 }
 
-export interface StashFile {
-    index: number;
-    file: string;
-}
-
 export interface StashedFileContents {
     base: string;
     modified: string;
 }
 
 export interface StashedFiles {
-    untracked: StashFile[];
-    indexedUntracked: StashFile[];
-    modified: StashFile[];
-    deleted: StashFile[];
+    untracked: string[];
+    indexedUntracked: string[];
+    modified: string[];
+    deleted: string[];
 }
 
 export default class StashGit extends Git {
@@ -96,13 +91,6 @@ export default class StashGit extends Git {
      * @param index the int with the index of the stash entry
      */
     public async getStashedFiles(index: number): Promise<StashedFiles> {
-        const params = [
-            'diff',
-            '--numstat',
-            `stash@{${index}}^1`,
-            `stash@{${index}}`
-        ];
-
         const entryFiles = {
             untracked: await this.getStashUntracked(index),
             indexedUntracked: [],
@@ -110,32 +98,44 @@ export default class StashGit extends Git {
             deleted: []
         };
 
-        const stashedFiles = (await this.exec(params)).trim();
+        const params = [
+            'stash',
+            'show',
+            '--numstat',
+            '--summary',
+            `stash@{${index}}`
+        ];
 
-        stashedFiles.split(/\r?\n/g).forEach((file, index) => {
-            const fileStats = file.match(/\s*(\d+)\s+(\d+)\s+(.+)/);
+        const stashData = (await this.exec(params)).trim();
 
-            if (parseInt(fileStats[1], 10) === 0) {
-                entryFiles.deleted.push({
-                    file: fileStats[3],
-                    index: index
-                });
+        stashData.split(/\r?\n/g).forEach((line: string) => {
+            const fileSummary = line.match(/\s*(.+)\s+(.+)\s+(.+)\s+(.+)/);
+            if (fileSummary !== null) {
+                const stat = fileSummary[1].toLowerCase();
+                const file = fileSummary[4];
+                if (stat === 'create') {
+                    entryFiles.indexedUntracked.push(file);
+                }
+                else if (stat === 'delete') {
+                    entryFiles.deleted.push(file);
+                }
             }
-            else if (parseInt(fileStats[2], 10) === 0) {
-                entryFiles.indexedUntracked.push({
-                    file: fileStats[3],
-                    index: index
-                });
-            }
-            else {
-                entryFiles.modified.push({
-                    file: fileStats[3],
-                    index: index
-                });
-            }
+
         });
 
-        console.log(entryFiles);
+        stashData.split(/\r?\n/g).forEach((line: string) => {
+            const fileStats = line.match(/\s*(\d+)\s+(\d+)\s+(.+)/);
+            if (fileStats !== null) {
+                const file = fileStats[3];
+                if (entryFiles.indexedUntracked.indexOf(file) !== -1) {
+                    return;
+                }
+                if (entryFiles.deleted.indexOf(file) !== -1) {
+                    return;
+                }
+                entryFiles.modified.push(file);
+            }
+        });
 
         return entryFiles;
     }
@@ -145,7 +145,7 @@ export default class StashGit extends Git {
      *
      * @param index the int with the index of the stash entry
      */
-    public async getStashUntracked(index: number): Promise<StashFile[]> {
+    public async getStashUntracked(index: number): Promise<string[]> {
         const params = [
             'ls-tree',
             '-r',
@@ -159,11 +159,8 @@ export default class StashGit extends Git {
             const untrackedFiles = (await this.exec(params)).trim();
 
             if (untrackedFiles.length > 0) {
-                untrackedFiles.split(/\r?\n/g).forEach((file, index) => {
-                    list.push({
-                        index: index,
-                        file: file
-                    });
+                untrackedFiles.split(/\r?\n/g).forEach((file: string) => {
+                    list.push(file);
                 });
             }
         } catch (e) { }
@@ -174,7 +171,7 @@ export default class StashGit extends Git {
     /**
      * Gets the file contents of both, the base (original) and the modified data.
      *
-     * @param index the int with the index of the stashed file
+     * @param index the int with the index of the parent stash
      * @param file  the string with the stashed file name
      */
     public async getStashFileContents(index: number, file: string): Promise<StashedFileContents> {
@@ -197,7 +194,7 @@ export default class StashGit extends Git {
     /**
      * Gets the file contents of an untracked file.
      *
-     * @param index the int with the index of the stashed file
+     * @param index the int with the index of the parent stash
      * @param file  the string with the stashed file name
      */
     public async untrackedFileContents(index: number, file: string): Promise<string> {
@@ -212,7 +209,7 @@ export default class StashGit extends Git {
     /**
      * Gets the file contents of an indexed untracked file.
      *
-     * @param index the int with the index of the stashed file
+     * @param index the int with the index of the parent stash
      * @param file  the string with the stashed file name
      */
     public async indexedUntrackedFileContents(index: number, file: string): Promise<string> {

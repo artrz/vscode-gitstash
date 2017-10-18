@@ -1,6 +1,6 @@
 'use strict';
 
-import StashGit, { StashedFileContents, StashedFiles, StashEntry, StashFile } from './StashGit';
+import StashGit, { StashedFileContents, StashedFiles, StashEntry } from './StashGit';
 import StashNode, { NodeType } from './StashNode';
 import StashNodeFactory from './StashNodeFactory';
 
@@ -47,19 +47,19 @@ export default class Model {
 
             const list = [];
 
-            stashedFiles.modified.forEach((stashFile: StashFile) => {
+            stashedFiles.modified.forEach((stashFile: string) => {
                 list.push(this.stashNodeFactory.fileToNode(stashFile, node, NodeType.Modified));
             });
 
-            stashedFiles.untracked.forEach((stashFile: StashFile) => {
+            stashedFiles.untracked.forEach((stashFile: string) => {
                 list.push(this.stashNodeFactory.fileToNode(stashFile, node, NodeType.Untracked));
             });
 
-            stashedFiles.indexedUntracked.forEach((stashFile: StashFile) => {
+            stashedFiles.indexedUntracked.forEach((stashFile: string) => {
                 list.push(this.stashNodeFactory.fileToNode(stashFile, node, NodeType.IndexedUntracked));
             });
 
-            stashedFiles.deleted.forEach((stashFile: StashFile) => {
+            stashedFiles.deleted.forEach((stashFile: string) => {
                 list.push(this.stashNodeFactory.fileToNode(stashFile, node, NodeType.Deleted));
             });
 

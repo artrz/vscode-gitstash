@@ -12,6 +12,15 @@ Clicking on a file will display a diff view with the changes on that file, bring
 
 ![GitStash preview](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/screencast.gif)
 
+### Icons
+
+| Light themes                                                                                                                       | Dark themes                                                                                                                       | Type
+|------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|-----
+| ![Modified file](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/light/modified.png)                   | ![Modified file](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/dark/modified.png)                   | Modified file
+| ![Untracked file](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/light/untracked.png)                 | ![Untracked file](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/dark/untracked.png)                 | Untracked file
+| ![Indexed untracked file](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/light/indexed-untracked.png) | ![Indexed untracked file](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/dark/indexed-untracked.png) | Indexed untracked file
+| ![Deleted file](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/light/deleted.png)                     | ![Deleted file](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/dark/deleted.png)                     | Deleted file
+
 * The tree view will be only shown on git tracked projects.
 
 
@@ -36,8 +45,8 @@ Clicking on a file will display a diff view with the changes on that file, bring
 | `gitstash.explorer.enabled` | `true`                                               | Enables or disables the stash explorer tree on startup.
 | `gitstash.explorer.buttons` | `true`                                               | Shows or hides the explorer buttons.
 | `gitstash.entryFormat`      | `#${stashEntry.index}:   ${description} (${branch})` | Specifies the format for each stash entry. Available tokens: `${branch}` - the branch where the stash was created, `${description}` - the custom or default description for the stash entry, `${date}` - the stash creation date, `${index}` the stash index
-| `gitstash.fileFormat`       | `${filename} (${filepath})`                          | Specifies the format for each stashed file. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${index}` the file index
-| `gitstash.diffTitleFormat`  | `#${index}: ${filename} (${branch})`                 | Specifies the format for the diff document title. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${fileIndex}` - the file index, `${date}` - the entry date, `${description}` - the entry description, `${branch}` - the entry branch, `${stashIndex}` - the entry index
+| `gitstash.fileFormat`       | `${filename} (${filepath})`                          | Specifies the format for each stashed file. Available tokens: `${filename}` - the file name, `${filepath}` - the file path
+| `gitstash.diffTitleFormat`  | `#${stashIndex}: ${filename} (${branch})`            | Specifies the format for the diff document title. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${date}` - the entry date, `${description}` - the entry description, `${branch}` - the entry branch, `${stashIndex}` - the entry index
 | `gitstash.dateFormat`       | `default`                                            | Specifies the date format for each stash entry. Available formats: `default`, `iso`, `local`, `raw`, `relative`, `rfc`, `short`
 | `gitstash.log.autoclear`    | `false`                                              | Clears the log window before showing the action result.
 
@@ -45,6 +54,6 @@ Clicking on a file will display a diff view with the changes on that file, bring
 ## Tips
 
 - Contrary to the git stash command included in VS Code, with `Stash... - Stash only` you can generate a stash even though all your changes are already added to index.
- - Use `Stash... - Keep index` if you want to make two or more commits out of the changes in the work tree and you want to isolate features to test each change before committing.
- - With `Git Stash` + `Stash Apply...` you can make a backup in case you want to make some cleanup for incomplete features before making a commit.
+- Use `Stash... - Keep index` if you want to make two or more commits out of the changes in the work tree and you want to isolate features to test each change before committing.
+- With `Git Stash` + `Stash Apply...` you can make a backup in case you want to make some cleanup for incomplete features before making a commit.
 - You may want to control when to see the stash explorer, to do so add a key binding to execute `gitstash.explorer.toggle` and configure the extension to not to show the stash explorer tree when starting the editor with `gitstash.explorer.enabled`.

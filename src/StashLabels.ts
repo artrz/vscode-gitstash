@@ -31,7 +31,6 @@ export default class {
      */
     public getFileName(node: StashNode): string {
         return this.config.settings.fileFormat
-            .replace('${index}', node.index)
             .replace('${filename}', path.basename(node.name))
             .replace('${filepath}', `${path.dirname(node.name)}${path.sep}`);
     }
@@ -43,7 +42,6 @@ export default class {
      */
     public getDiffTitle(node: StashNode): string {
         return this.config.settings.diffTitleFormat
-            .replace('${fileIndex}', node.index)
             .replace('${filename}', path.basename(node.name))
             .replace('${filepath}', `${path.dirname(node.name)}${path.sep}`)
             .replace('${date}', node.date)
