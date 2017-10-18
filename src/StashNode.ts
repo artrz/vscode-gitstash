@@ -3,14 +3,30 @@
 import * as path from 'path';
 
 interface Node {
+    type: NodeType;
     name: string;
     index?: number;
-    parent?: Node;
+    parent?: StashNode;
     date?: string;
+}
+
+export enum NodeType {
+    'Entry' = 'e',
+    'Untracked' = 'u',
+    'IndexedUntracked' = 'i',
+    'Modified' = 'm',
+    'Deleted' = 'd'
 }
 
 export default class StashNode {
     constructor(private entry: Node) {
+    }
+
+    /**
+     * Gets the node type.
+     */
+    public get type(): NodeType {
+        return this.entry.type;
     }
 
     /**
@@ -46,12 +62,5 @@ export default class StashNode {
      */
     public get isFile(): boolean {
         return this.entry.parent !== null;
-    }
-
-    /**
-     * Indicates if the node represents a stashed tracked file or not.
-     */
-    public get isTracked(): boolean {
-        return this.entry.index !== null;
     }
 }
