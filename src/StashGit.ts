@@ -203,7 +203,7 @@ export default class StashGit extends Git {
             `stash@{${index}}^3:${file}`
         ];
 
-        return await this.exec(params);
+        return await this.exec(params, null, 'binary');
     }
 
     /**
@@ -218,6 +218,21 @@ export default class StashGit extends Git {
             `stash@{${index}}:${file}`
         ];
 
-        return await this.exec(params);
+        return await this.exec(params, null, 'binary');
+    }
+
+    /**
+     * Gets the file contents of a deleted file.
+     *
+     * @param index the int with the index of the parent stash
+     * @param file  the string with the stashed file name
+     */
+    public async deletedFileContents(index: number, file: string): Promise<string> {
+        const params = [
+            'show',
+            `stash@{${index}}^1:${file}`
+        ];
+
+        return await this.exec(params, null, 'binary');
     }
 }

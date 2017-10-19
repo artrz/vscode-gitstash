@@ -106,4 +106,17 @@ export default class Model {
             })
             : null;
     }
+
+    /**
+     * Gets the file contents of the deleted file.
+     *
+     * @param node the stashed node file
+     */
+    public getDeletedFile(node: StashNode): Thenable<string|null> {
+        return node.isFile && node.type === NodeType.Deleted
+            ? this.git.deletedFileContents(node.parent.index, node.name).then((rawContent) => {
+                return rawContent;
+            })
+            : null;
+    }
 }

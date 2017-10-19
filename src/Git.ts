@@ -9,10 +9,11 @@ export default class Git {
     /**
      * Executes a git command.
      *
-     * @param args the string array with the argument list
-     * @param cwd  the optionally string with the current working directory
+     * @param args     the string array with the argument list
+     * @param cwd      the optionally string with the current working directory
+     * @param encoding the string with the optional encoding to replace utf8
      */
-    public async exec(args: string[], cwd?: string): Promise<string> {
+    public async exec(args: string[], cwd?: string, encoding?: string): Promise<string> {
         if (!cwd) {
             cwd = await this.getGitRoot();
         }
@@ -23,7 +24,7 @@ export default class Git {
         const cmd = spawn('git', args, { cwd });
 
         const out = cmd.stdout;
-        out.setEncoding('utf8');
+        out.setEncoding(encoding || 'utf8');
 
         const err = cmd.stderr;
         err.setEncoding('utf8');

@@ -46,50 +46,58 @@ export class Commands {
                     modifiedFile.removeCallback();
                 };
 
-                vscode.commands
-                    .executeCommand<void>(
-                        'vscode.diff',
-                        vscode.Uri.file(baseFile.name),
-                        vscode.Uri.file(modifiedFile.name),
-                        this.stashLabels.getDiffTitle(node),
-                        { preview: true }
-                    )
-                    .then(
-                        _ => cleanup(),
-                        _ => cleanup()
-                    );
+                vscode.commands.executeCommand<void>(
+                    'vscode.diff',
+                    vscode.Uri.file(baseFile.name),
+                    vscode.Uri.file(modifiedFile.name),
+                    this.stashLabels.getDiffTitle(node),
+                    { preview: true }
+                );
             });
         }
 
         else if (node.type === NodeType.Untracked) {
             model.getUntrackedFile(node).then(content => {
-                const file = this.createTmpFile(node.name, content);
+                const file = this.createTmpFile(node.name, content, 'binary');
+                const none = this.createTmpFile(node.name, null, 'binary');
 
-                vscode.commands
-                    .executeCommand<void>(
-                        'vscode.open',
-                        vscode.Uri.file(file.name)
-                    )
-                    .then(
-                        () => file.removeCallback(),
-                        () => file.removeCallback()
-                    );
+                vscode.commands.executeCommand<void>(
+                    'vscode.diff',
+                    vscode.Uri.file(none.name),
+                    vscode.Uri.file(file.name),
+                    this.stashLabels.getDiffTitle(node),
+                    { preview: true }
+                );
             });
         }
 
         else if (node.type === NodeType.IndexedUntracked) {
             model.getIndexedUntrackedFile(node).then(content => {
-                const file = this.createTmpFile(node.name, content);
+                const file = this.createTmpFile(node.name, content, 'binary');
+                const none = this.createTmpFile(node.name, null, 'binary');
 
-                vscode.commands
-                    .executeCommand<void>(
-                        'vscode.open',
-                        vscode.Uri.file(file.name)
-                    )
-                    .then(
-                        () => file.removeCallback(),
-                        () => file.removeCallback()
-                    );
+                vscode.commands.executeCommand<void>(
+                    'vscode.diff',
+                    vscode.Uri.file(none.name),
+                    vscode.Uri.file(file.name),
+                    this.stashLabels.getDiffTitle(node),
+                    { preview: true }
+                );
+            });
+        }
+
+        else if (node.type === NodeType.Deleted) {
+            model.getDeletedFile(node).then(content => {
+                const file = this.createTmpFile(node.name, content, 'binary');
+                const none = this.createTmpFile(node.name, null, 'binary');
+
+                vscode.commands.executeCommand<void>(
+                    'vscode.diff',
+                    vscode.Uri.file(file.name),
+                    vscode.Uri.file(none.name),
+                    this.stashLabels.getDiffTitle(node),
+                    { preview: true }
+                );
             });
         }
     }
@@ -404,14 +412,17 @@ export class Commands {
      *
      * @param filename the string with the filename
      * @param content  the string with the content
+     * @param encoding the string with the optional encoding to replace utf8
      */
-    private createTmpFile(filename: string, content: string): tmp.SynchrounousResult {
+    private createTmpFile(filename: string, content?: string, encoding?: string): tmp.SynchrounousResult {
         const file = tmp.fileSync({
             prefix: 'vscode-gitstash-',
             postfix: path.extname(filename)
         });
 
-        fs.writeFileSync(file.name, content);
+        if (content !== null) {
+            fs.writeFileSync(file.name, content, encoding || 'utf8');
+        }
 
         return file;
     }
