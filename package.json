@@ -2,7 +2,7 @@
     "name": "gitstash",
     "displayName": "Git Stash",
     "description": "Explorer | Diff | Commands",
-    "version": "0.6.0",
+    "version": "0.7.0",
     "publisher": "arturock",
     "license": "MIT",
     "icon": "resources/logo.png",
