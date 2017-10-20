@@ -1,25 +1,57 @@
 'use strict';
 
 import {
+    commands,
     Event,
     EventEmitter,
     TreeDataProvider,
     TreeItem,
     TreeItemCollapsibleState,
-    Uri,
-    workspace
+    Uri
 } from 'vscode';
 import * as path from 'path';
+import Config from './Config';
 import Model from './Model';
-import StashNode from './StashNode';
+import StashLabels from './StashLabels';
+import StashNode, { NodeType } from './StashNode';
 
 export default class GitStashTreeDataProvider implements TreeDataProvider<StashNode> {
     private _onDidChangeTreeData: EventEmitter<any> = new EventEmitter<any>();
     readonly onDidChangeTreeData: Event<any> = this._onDidChangeTreeData.event;
+
+    private config: Config;
+    private stashLabels: StashLabels;
     private model: Model;
     private rawStash: string;
     private loadTimeout;
-    private config;
+    private showExplorer;
+
+    constructor(config: Config, stashLabels: StashLabels) {
+        this.config = config;
+        this.stashLabels = stashLabels;
+    }
+
+    /**
+     * Reloads the explorer tree.
+     */
+    public refresh = () => {
+        this.reload('f');
+    }
+
+    /**
+     * Toggles the explorer tree.
+     */
+    public toggle = () => {
+        this.showExplorer = typeof this.showExplorer === 'undefined'
+            ? this.config.settings.explorer.enabled
+            : !this.showExplorer;
+
+        commands.executeCommand(
+            'setContext',
+            'gitstash.explorer.enabled',
+            this.showExplorer
+        );
+    }
 
     /**
      * Gets the tree children, (root) stash entries, or entry files.
@@ -31,8 +63,6 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
             this.getModel().raw.then((rawStash) => {
                 this.rawStash = rawStash;
             });
-
-            this.loadConfig();
 
             return this.getModel().roots;
         }
@@ -78,71 +108,13 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     }
 
     /**
-     * Gets the diff document title.
-     *
-     * @param node the file node to be shown
-     */
-    public getDiffTitle(node: StashNode): string {
-        return this.config.diffTitleFormat
-            .replace('${fileIndex}', node.index)
-            .replace('${filename}', path.basename(node.name))
-            .replace('${filepath}', path.dirname(node.name))
-            .replace('${date}', node.date)
-            .replace('${stashIndex}', node.parent.index)
-            .replace('${description}', this.getEntryDescription(node.parent))
-            .replace('${branch}', this.getEntryBranch(node.parent));
-    }
-
-    /**
-     * Generates a stashed file tree item.
-     *
-     * @param node The node to be used as base
-     */
-    private getFileItem(node: StashNode): TreeItem {
-        const index = node.index;
-        const fileName = path.basename(node.name);
-        const filePath = path.dirname(node.name);
-        const icon = node.index !== null
-            ? 'file.png'
-            : 'untracked.png';
-
-        return {
-            label: this.config.fileFormat
-                .replace('${index}', index)
-                .replace('${filename}', fileName)
-                .replace('${filepath}', filePath),
-            contextValue: 'diffFile',
-            collapsibleState: void 0,
-            command: {
-                title: 'Show stash diff',
-                tooltip: 'Show stash diff',
-                command: 'gitstash.show',
-                arguments: [this.model, node]
-            },
-            iconPath: {
-                light: this.getIcon('light', icon),
-                dark: this.getIcon('dark', icon)
-            }
-        };
-    }
-
-    /**
      * Generates an stash tree item.
      *
      * @param node The node to be used as base
      */
     private getEntryItem(node: StashNode): TreeItem {
-        const index = node.index;
-        const date = node.date;
-        const description = this.getEntryDescription(node);
-        const branch = this.getEntryBranch(node);
-
         return {
-            label: this.config.entryFormat
-                .replace('${index}', index)
-                .replace('${branch}', branch)
-                .replace('${description}', description)
-                .replace('${date}', date),
+            label: this.stashLabels.getEntryName(node),
             contextValue: 'diffEntry',
             collapsibleState: TreeItemCollapsibleState.Collapsed,
             command: void 0,
@@ -154,23 +126,26 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     }
 
     /**
-     * Gets the node entry description.
+     * Generates a stashed file tree item.
      *
-     * @param node the source node
+     * @param node The node to be used as base
      */
-    private getEntryDescription(node: StashNode) {
-        return node.name.substring(node.name.indexOf(':') + 2);
-    }
-
-    /**
-     * Gets the node entry branch.
-     *
-     * @param node the source node
-     */
-    private getEntryBranch(node: StashNode) {
-        return node.name.indexOf('WIP on ') === 0
-            ? node.name.substring(7, node.name.indexOf(':'))
-            : node.name.substring(3, node.name.indexOf(':'));
+    private getFileItem(node: StashNode): TreeItem {
+        return {
+            label: this.stashLabels.getFileName(node),
+            contextValue: 'diffFile',
+            collapsibleState: void 0,
+            command: {
+                title: 'Show stash diff',
+                tooltip: 'Show stash diff',
+                command: 'gitstash.show',
+                arguments: [this.model, node]
+            },
+            iconPath: {
+                light: this.getFileIcon('light', node.type),
+                dark: this.getFileIcon('dark', node.type)
+            }
+        };
     }
 
     /**
@@ -184,16 +159,25 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     }
 
     /**
-     * Return the model to be used in this provider.
+     * Builds a file icon path.
+     *
+     * @param scheme   The dark/light scheme
+     * @param filename The filename of the icon
      */
-    private getModel(): Model {
-        return !this.model ? this.model = new Model() : this.model;
+    private getFileIcon(scheme: string, type: NodeType): string {
+        switch (type) {
+            case NodeType.Modified: return this.getIcon(scheme, 'modified.png');
+            case NodeType.Untracked: return this.getIcon(scheme, 'untracked.png');
+            case NodeType.IndexedUntracked: return this.getIcon(scheme, 'indexed-untracked.png');
+            case NodeType.Deleted: return this.getIcon(scheme, 'deleted.png');
+            default: return this.getIcon(scheme, 'file.png');
+        }
     }
 
     /**
-     * Loads the plugin config.
+     * Returns the model to be used in this provider.
      */
-    private loadConfig() {
-        this.config = workspace.getConfiguration('gitstash');
+    private getModel(): Model {
+        return !this.model ? this.model = new Model() : this.model;
     }
 }

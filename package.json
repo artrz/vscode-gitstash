@@ -52,17 +52,17 @@
                 },
                 "gitstash.entryFormat": {
                     "type": "string",
-                    "default": "[${branch}] ${description}",
+                    "default": "#${index}:   ${description} (${branch})",
                     "description": "Specifies the format for each stash entry\nAvailable tokens:\n${branch} - the branch where the stash was created\n${description} - the custom or default description for the stash entry\n${date} - the stash creation date\n${index} - the stash index"
                 },
                 "gitstash.fileFormat": {
                     "type": "string",
-                    "default": "${filename}",
+                    "default": "${filename} (${filepath})",
                     "description": "Specifies the format for each stashed file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${index} - the file index"
                 },
                 "gitstash.diffTitleFormat": {
                     "type": "string",
-                    "default": "${branch} - ${filename}",
+                    "default": "#${stashIndex}: ${filename} (${filepath})",
                     "description": "Specifies the format for the diff document title\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${fileIndex} - the file index\n${date} - the entry date\n${description} - the entry description\n${branch} - the entry branch\n${stashIndex} - the entry index"
                 },
                 "gitstash.dateFormat": {
@@ -202,11 +202,11 @@
         "tmp": "0.0.33"
     },
     "devDependencies": {
-        "@types/mocha": "^2.2.32",
+        "@types/mocha": "^2.2.43",
         "@types/node": "*",
         "@types/tmp": "0.0.33",
         "tslint": "5.7.0",
-        "typescript": "2.5.2",
-        "vscode": "1.1.5"
+        "typescript": "2.5.3",
+        "vscode": "1.1.6"
     }
 }
