@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [[0.7.0] 2017-10-19](https://github.com/arturock/vscode-gitstash/tree/v0.7.0)
+  - Updates
+    - Better file support
+    - More specific icons
+    - Stash list entries on commands are now formatted
+  - Fixes
+    - Explorer showing non stash files in some cases
+    - Not showing contents of indexed untracked files
+
 ## [[0.6.0] 2017-10-01](https://github.com/arturock/vscode-gitstash/tree/v0.6.0)
 - Explorer Tree
   - Add buttons
@@ -13,7 +22,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Commands
   - Reload tree
   - show / hide explorer
-Commands are now shown only when on a git repository
+
+Commands are now listed only when on a git repository
 
 ## [[0.5.0] 2017-10-01](https://github.com/arturock/vscode-gitstash/tree/v0.5.0)
  - Add missing commands
@@ -45,3 +55,5 @@ Commands are now shown only when on a git repository
 
 ## [[0.1.0] 2017-09-24](https://github.com/arturock/vscode-gitstash/tree/v0.1.0)
 - Initial release
+  - Display an explorer tree with the stash entries and their files
+  - Click on stashed file displays a diff view with the changes
