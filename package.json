@@ -62,7 +62,7 @@
                 },
                 "gitstash.diffTitleFormat": {
                     "type": "string",
-                    "default": "#${stashIndex}: ${filename} (${branch})",
+                    "default": "#${stashIndex}: ${filename} (${filepath})",
                     "description": "Specifies the format for the diff document title\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${fileIndex} - the file index\n${date} - the entry date\n${description} - the entry description\n${branch} - the entry branch\n${stashIndex} - the entry index"
                 },
                 "gitstash.dateFormat": {

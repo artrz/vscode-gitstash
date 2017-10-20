@@ -39,65 +39,37 @@ export class Commands {
     public gitstashShow = (model: Model, node: StashNode) => {
         if (node.type === NodeType.Modified) {
             model.getStashedFile(node).then(files => {
-                const baseFile = this.createTmpFile(node.name, files.base);
-                const modifiedFile = this.createTmpFile(node.name, files.modified);
-                const cleanup = () => {
-                    baseFile.removeCallback();
-                    modifiedFile.removeCallback();
-                };
+                const originalFile = this.createTmpFile(node.name, files.base, 'binary');
+                const modifiedFile = this.createTmpFile(node.name, files.modified, 'binary');
 
-                vscode.commands.executeCommand<void>(
-                    'vscode.diff',
-                    vscode.Uri.file(baseFile.name),
-                    vscode.Uri.file(modifiedFile.name),
-                    this.stashLabels.getDiffTitle(node),
-                    { preview: true }
-                );
+                this.showDiff(node, originalFile, modifiedFile);
             });
         }
 
         else if (node.type === NodeType.Untracked) {
             model.getUntrackedFile(node).then(content => {
-                const file = this.createTmpFile(node.name, content, 'binary');
-                const none = this.createTmpFile(node.name, null, 'binary');
+                const originalFile = this.createTmpFile(node.name, null, 'binary');
+                const modifiedFile = this.createTmpFile(node.name, content, 'binary');
 
-                vscode.commands.executeCommand<void>(
-                    'vscode.diff',
-                    vscode.Uri.file(none.name),
-                    vscode.Uri.file(file.name),
-                    this.stashLabels.getDiffTitle(node),
-                    { preview: true }
-                );
+                this.showDiff(node, originalFile, modifiedFile);
             });
         }
 
         else if (node.type === NodeType.IndexedUntracked) {
             model.getIndexedUntrackedFile(node).then(content => {
-                const file = this.createTmpFile(node.name, content, 'binary');
-                const none = this.createTmpFile(node.name, null, 'binary');
+                const originalFile = this.createTmpFile(node.name, null, 'binary');
+                const modifiedFile = this.createTmpFile(node.name, content, 'binary');
 
-                vscode.commands.executeCommand<void>(
-                    'vscode.diff',
-                    vscode.Uri.file(none.name),
-                    vscode.Uri.file(file.name),
-                    this.stashLabels.getDiffTitle(node),
-                    { preview: true }
-                );
+                this.showDiff(node, originalFile, modifiedFile);
             });
         }
 
         else if (node.type === NodeType.Deleted) {
             model.getDeletedFile(node).then(content => {
-                const file = this.createTmpFile(node.name, content, 'binary');
-                const none = this.createTmpFile(node.name, null, 'binary');
+                const originalFile = this.createTmpFile(node.name, content, 'binary');
+                const modifiedFile = this.createTmpFile(node.name, null, 'binary');
 
-                vscode.commands.executeCommand<void>(
-                    'vscode.diff',
-                    vscode.Uri.file(file.name),
-                    vscode.Uri.file(none.name),
-                    this.stashLabels.getDiffTitle(node),
-                    { preview: true }
-                );
+                this.showDiff(node, originalFile, modifiedFile);
             });
         }
     }
@@ -307,6 +279,23 @@ export class Commands {
                 },
                 (e) => console.log('failure', e)
             );
+    }
+
+    /**
+     * Shows the diff view with the specified files.
+     *
+     * @param node         the stash node that's being displayed
+     * @param originalFile the contents of the file prior the modification
+     * @param modifiedFile the contents of the file after the modification
+     */
+    private showDiff(node: StashNode, originalFile: tmp.SynchrounousResult, modifiedFile: tmp.SynchrounousResult) {
+        vscode.commands.executeCommand<void>(
+            'vscode.diff',
+            vscode.Uri.file(originalFile.name),
+            vscode.Uri.file(modifiedFile.name),
+            this.stashLabels.getDiffTitle(node),
+            { preview: true }
+        );
     }
 
     /**
