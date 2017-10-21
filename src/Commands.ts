@@ -388,11 +388,19 @@ export class Commands {
 
         if (type === 's') {
             vscode.window.showInformationMessage(resume, button)
-                .then((value) => this.channel.show(true));
+                .then((value) => {
+                    if (typeof value !== 'undefined') {
+                        this.channel.show(true);
+                    }
+                });
         }
         else {
             vscode.window.showErrorMessage(resume, button)
-                .then((value) => this.channel.show(true));
+                .then((value) => {
+                    if (typeof value !== 'undefined') {
+                        this.channel.show(true);
+                    }
+                });
         }
     }
 
