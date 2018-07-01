@@ -38,7 +38,7 @@ export class Commands {
      */
     public gitstashShow = (model: Model, node: StashNode) => {
         if (node.type === NodeType.Modified) {
-            model.getStashedFile(node).then(files => {
+            model.getStashedFile(node).then((files) => {
                 const originalFile = this.createTmpFile(node.name, files.base, 'binary');
                 const modifiedFile = this.createTmpFile(node.name, files.modified, 'binary');
 
@@ -47,7 +47,7 @@ export class Commands {
         }
 
         else if (node.type === NodeType.Untracked) {
-            model.getUntrackedFile(node).then(content => {
+            model.getUntrackedFile(node).then((content) => {
                 const originalFile = this.createTmpFile(node.name, null, 'binary');
                 const modifiedFile = this.createTmpFile(node.name, content, 'binary');
 
@@ -56,7 +56,7 @@ export class Commands {
         }
 
         else if (node.type === NodeType.IndexedUntracked) {
-            model.getIndexedUntrackedFile(node).then(content => {
+            model.getIndexedUntrackedFile(node).then((content) => {
                 const originalFile = this.createTmpFile(node.name, null, 'binary');
                 const modifiedFile = this.createTmpFile(node.name, content, 'binary');
 
@@ -65,7 +65,7 @@ export class Commands {
         }
 
         else if (node.type === NodeType.Deleted) {
-            model.getDeletedFile(node).then(content => {
+            model.getDeletedFile(node).then((content) => {
                 const originalFile = this.createTmpFile(node.name, content, 'binary');
                 const modifiedFile = this.createTmpFile(node.name, null, 'binary');
 
@@ -374,9 +374,9 @@ export class Commands {
         message = message.trim();
 
         const resume = description || message;
-        const button = message.length > 0
-            ? { title: 'Show log' }
-            : {};
+        const action = message.length > 0
+            ? ['Show log']
+            : [];
 
         if (this.config.settings.log.autoclear) {
             this.channel.clear();
@@ -387,7 +387,7 @@ export class Commands {
         }
 
         if (type === 's') {
-            vscode.window.showInformationMessage(resume, button)
+            vscode.window.showInformationMessage(resume, ...action)
                 .then((value) => {
                     if (typeof value !== 'undefined') {
                         this.channel.show(true);
@@ -395,7 +395,7 @@ export class Commands {
                 });
         }
         else {
-            vscode.window.showErrorMessage(resume, button)
+            vscode.window.showErrorMessage(resume, ...action)
                 .then((value) => {
                     if (typeof value !== 'undefined') {
                         this.channel.show(true);

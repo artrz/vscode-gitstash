@@ -5,10 +5,9 @@
             true,
             "array"
         ],
-        // "arrow-parens": [
-        //     true,
-        //     "ban-single-arg-parens"
-        // ],
+        "arrow-parens": [
+            true
+        ],
         "arrow-return-shorthand": true,
         "class-name": true,
         "comment-format": [
@@ -21,7 +20,8 @@
         ],
         "indent": [
             true,
-            "spaces"
+            "spaces",
+            4
         ],
         "interface-over-type-literal": true,
         "new-parens": true,
@@ -30,9 +30,8 @@
             true,
             1
         ],
-        // "no-default-export": true,
+        "no-duplicate-variable": true,
         "no-eval": true,
-        "no-for-in-array": true,
         "no-inferrable-types": [
             true,
             "ignore-params",
@@ -44,8 +43,6 @@
         "no-string-throw": true,
         "no-trailing-whitespace": true,
         "no-unnecessary-callback-wrapper": true,
-        "no-unnecessary-qualifier": true,
-        "no-unsafe-any": true,
         "no-unsafe-finally": true,
         "no-unused-expression": false,
         "no-var-keyword": true,
@@ -94,8 +91,6 @@
                 "asyncArrow": "always"
             }
         ],
-        "strict-boolean-expressions": true,
-        "strict-type-predicates": true,
         "trailing-comma": [
             true,
             {
@@ -117,7 +112,6 @@
                 "variable-declaration": "nospace"
             }
         ],
-        "typeof-compare": true,
         "use-isnan": true,
         "variable-name": [
             true,
@@ -135,5 +129,6 @@
             "check-separator",
             "check-type"
         ]
-    }
+    },
+    "defaultSeverity": "warning"
 }
