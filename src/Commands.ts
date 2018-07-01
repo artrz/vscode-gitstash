@@ -374,8 +374,8 @@ export class Commands {
         message = message.trim();
 
         const resume = description || message;
-        const action = message.length > 0
-            ? ['Show log']
+        const actions = message.length > 0
+            ? [{ title: 'Show log'}]
             : [];
 
         if (this.config.settings.log.autoclear) {
@@ -387,7 +387,7 @@ export class Commands {
         }
 
         if (type === 's') {
-            vscode.window.showInformationMessage(resume, ...action)
+            vscode.window.showInformationMessage(resume, ...actions)
                 .then((value) => {
                     if (typeof value !== 'undefined') {
                         this.channel.show(true);
@@ -395,7 +395,7 @@ export class Commands {
                 });
         }
         else {
-            vscode.window.showErrorMessage(resume, ...action)
+            vscode.window.showErrorMessage(resume, ...actions)
                 .then((value) => {
                     if (typeof value !== 'undefined') {
                         this.channel.show(true);
