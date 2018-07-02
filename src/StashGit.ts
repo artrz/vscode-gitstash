@@ -1,6 +1,5 @@
 'use strict';
 
-import { spawn } from 'child_process';
 import { workspace } from 'vscode';
 import Git from './Git';
 
@@ -120,7 +119,6 @@ export default class StashGit extends Git {
                     entryFiles.deleted.push(file);
                 }
             }
-
         });
 
         stashData.split(/\r?\n/g).forEach((line: string) => {

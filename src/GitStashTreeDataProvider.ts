@@ -35,7 +35,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
      * Reloads the explorer tree.
      */
     public refresh = () => {
-        this.reload('f');
+        this.reload('force');
     }
 
     /**
@@ -67,7 +67,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
             return this.getModel().roots;
         }
 
-        return this.getModel().getChildren(node);
+        return this.getModel().getFiles(node);
     }
 
     /**
@@ -93,7 +93,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
         }
 
         this.loadTimeout = setTimeout((type: string, event?: Uri) => {
-            if (['s', 'f'].indexOf(type) !== -1) {
+            if (['settings', 'force'].indexOf(type) !== -1) {
                 this._onDidChangeTreeData.fire();
             }
             else {
@@ -104,7 +104,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
                     }
                 });
             }
-        }, type === 'f' ? 250 : 750, type, event);
+        }, type === 'force' ? 250 : 750, type, event);
     }
 
     /**

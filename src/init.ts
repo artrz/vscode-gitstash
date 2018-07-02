@@ -3,6 +3,6 @@
 import { commands } from 'vscode';
 import Git from './Git';
 
-(new Git()).isGitRepository().then(() => {
-    commands.executeCommand('setContext', 'isGitRepository', true);
+(new Git()).hasGitRepository().then(() => {
+    commands.executeCommand('setContext', 'hasGitRepository', true);
 });

@@ -1,7 +1,5 @@
 'use strict';
 
-import * as path from 'path';
-
 interface Node {
     type: NodeType;
     name: string;
@@ -46,14 +44,14 @@ export default class StashNode {
     /**
      * Gets the node parent index.
      */
-    public get parent(): StashNode|null {
+    public get parent(): StashNode | null {
         return this.entry.parent as StashNode;
     }
 
     /**
      * Gets the node generation date.
      */
-    public get date(): string|null {
+    public get date(): string | null {
         return this.entry.date;
     }
 

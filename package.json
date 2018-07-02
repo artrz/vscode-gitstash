@@ -135,35 +135,35 @@
         "commandPalette": [
             {
                 "command": "gitstash.explorer.toggle",
-                "when": "isGitRepository"
+                "when": "hasGitRepository"
             },
             {
                 "command": "gitstash.stash",
-                "when": "isGitRepository"
+                "when": "hasGitRepository"
             },
             {
                 "command": "gitstash.pop",
-                "when": "isGitRepository"
+                "when": "hasGitRepository"
             },
             {
                 "command": "gitstash.apply",
-                "when": "isGitRepository"
+                "when": "hasGitRepository"
             },
             {
                 "command": "gitstash.branch",
-                "when": "isGitRepository"
+                "when": "hasGitRepository"
             },
             {
                 "command": "gitstash.drop",
-                "when": "isGitRepository"
+                "when": "hasGitRepository"
             },
             {
                 "command": "gitstash.clear",
-                "when": "isGitRepository"
+                "when": "hasGitRepository"
             },
             {
                 "command": "gitstash.explorer.refresh",
-                "when": "isGitRepository && gitstash.explorer.enabled"
+                "when": "hasGitRepository && gitstash.explorer.enabled"
             }
         ],
         "views": {
@@ -171,7 +171,7 @@
                 {
                     "id": "gitstash.explorer",
                     "name": "Git Stash",
-                    "when": "isGitRepository && gitstash.explorer.enabled"
+                    "when": "hasGitRepository && gitstash.explorer.enabled"
                 }
             ]
         },

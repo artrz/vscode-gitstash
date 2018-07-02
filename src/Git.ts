@@ -45,7 +45,7 @@ export default class Git {
     /**
      * Indicates if there's a current git repository.
      */
-    public async isGitRepository(): Promise<boolean> {
+    public async hasGitRepository(): Promise<boolean> {
         return (await this.getGitRoot()).length > 0;
     }
 

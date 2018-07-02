@@ -5,11 +5,11 @@ import StashNode, { NodeType } from './StashNode';
 import StashNodeFactory from './StashNodeFactory';
 
 export default class Model {
-    private git: StashGit;
+    private stashGit: StashGit;
     private stashNodeFactory: StashNodeFactory;
 
     constructor() {
-        this.git = new StashGit();
+        this.stashGit = new StashGit();
         this.stashNodeFactory = new StashNodeFactory();
     }
 
@@ -17,16 +17,16 @@ export default class Model {
      * Gets the raw git stash command data.
      */
     public get raw(): Thenable<string> {
-        return this.git.getRawStash().then((rawData) => {
+        return this.stashGit.getRawStash().then((rawData) => {
             return rawData;
         });
     }
 
     /**
-     * Gets the stash entries list.
+     * Gets the roots list.
      */
     public get roots(): Thenable<StashNode[]> {
-        return this.git.getStashList().then((rawList: StashEntry[]) => {
+        return this.stashGit.getStashList().then((rawList: StashEntry[]) => {
             const list = [];
 
             rawList.forEach((stashListItem: StashEntry) => {
@@ -42,8 +42,8 @@ export default class Model {
      *
      * @param node the parent entry
      */
-    public getChildren(node: StashNode): Thenable<StashNode[]> {
-        return this.git.getStashedFiles(node.index).then((stashedFiles: StashedFiles) => {
+    public getFiles(node: StashNode): Thenable<StashNode[]> {
+        return this.stashGit.getStashedFiles(node.index).then((stashedFiles: StashedFiles) => {
 
             const list = [];
 
@@ -72,9 +72,9 @@ export default class Model {
      *
      * @param node the stashed file node
      */
-    public getStashedFile(node: StashNode): Thenable<StashedFileContents|null> {
+    public getStashedFile(node: StashNode): Thenable<StashedFileContents | null> {
         return node.isFile && node.type === NodeType.Modified
-            ? this.git.getStashFileContents(node.parent.index, node.name)
+            ? this.stashGit.getStashFileContents(node.parent.index, node.name)
                 .then((rawContent: StashedFileContents) => {
                     return rawContent;
                 })
@@ -86,9 +86,9 @@ export default class Model {
      *
      * @param node the stashed node file
      */
-    public getUntrackedFile(node: StashNode): Thenable<string|null> {
+    public getUntrackedFile(node: StashNode): Thenable<string | null> {
         return node.isFile && node.type === NodeType.Untracked
-            ? this.git.untrackedFileContents(node.parent.index, node.name).then((rawContent) => {
+            ? this.stashGit.untrackedFileContents(node.parent.index, node.name).then((rawContent) => {
                 return rawContent;
             })
             : null;
@@ -99,9 +99,9 @@ export default class Model {
      *
      * @param node the stashed node file
      */
-    public getIndexedUntrackedFile(node: StashNode): Thenable<string|null> {
+    public getIndexedUntrackedFile(node: StashNode): Thenable<string | null> {
         return node.isFile && node.type === NodeType.IndexedUntracked
-            ? this.git.indexedUntrackedFileContents(node.parent.index, node.name).then((rawContent) => {
+            ? this.stashGit.indexedUntrackedFileContents(node.parent.index, node.name).then((rawContent) => {
                 return rawContent;
             })
             : null;
@@ -112,9 +112,9 @@ export default class Model {
      *
      * @param node the stashed node file
      */
-    public getDeletedFile(node: StashNode): Thenable<string|null> {
+    public getDeletedFile(node: StashNode): Thenable<string | null> {
         return node.isFile && node.type === NodeType.Deleted
-            ? this.git.deletedFileContents(node.parent.index, node.name).then((rawContent) => {
+            ? this.stashGit.deletedFileContents(node.parent.index, node.name).then((rawContent) => {
                 return rawContent;
             })
             : null;

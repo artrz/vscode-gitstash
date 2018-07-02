@@ -33,13 +33,13 @@ export function activate(context: ExtensionContext) {
         commands.registerCommand('gitstash.drop', stashCommands.gitstashDrop),
         commands.registerCommand('gitstash.clear', stashCommands.gitstashClear),
 
-        watcher.onDidCreate((event) => treeProvider.reload('c', event)),
-        watcher.onDidChange((event) => treeProvider.reload('u', event)),
-        watcher.onDidDelete((event) => treeProvider.reload('d', event)),
+        watcher.onDidCreate((event) => treeProvider.reload('create', event)),
+        watcher.onDidChange((event) => treeProvider.reload('update', event)),
+        watcher.onDidDelete((event) => treeProvider.reload('delete', event)),
 
         workspace.onDidChangeConfiguration(() => {
             config.reload();
-            treeProvider.reload('s');
+            treeProvider.reload('settings');
         })
     );
 

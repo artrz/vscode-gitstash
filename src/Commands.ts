@@ -5,8 +5,8 @@ import * as path from 'path';
 import * as tmp from 'tmp';
 import * as vscode from 'vscode';
 import Config from './Config';
-import StashGit, { StashEntry } from './StashGit';
 import Model from './Model';
+import StashGit, { StashEntry } from './StashGit';
 import StashLabels from './StashLabels';
 import StashNode, { NodeType } from './StashNode';
 import StashNodeFactory from './StashNodeFactory';
@@ -19,7 +19,7 @@ export class Commands {
     private config: Config;
     private stashLabels: StashLabels;
     private channel: vscode.OutputChannel;
-    private git: StashGit;
+    private stashGit: StashGit;
     private stashNodeFactory: StashNodeFactory;
 
     constructor(config: Config, stashLabels: StashLabels, channel: vscode.OutputChannel) {
@@ -27,7 +27,7 @@ export class Commands {
         this.stashLabels = stashLabels;
         this.channel = channel;
 
-        this.git = new StashGit();
+        this.stashGit = new StashGit();
         this.stashNodeFactory = new StashNodeFactory();
 
         tmp.setGracefulCleanup();
@@ -78,7 +78,7 @@ export class Commands {
      * Generates a stash.
      */
     public gitstashStash = () => {
-        this.git.isStashable().then((isStashable) => {
+        this.stashGit.isStashable().then((isStashable) => {
             if (!isStashable) {
                 return vscode.window.showInformationMessage('There are no changes to stash.');
             }
@@ -277,7 +277,7 @@ export class Commands {
                         this.exec(params, 'Stash list cleared');
                     }
                 },
-                (e) => console.log('failure', e)
+                (e) => console.error('failure', e)
             );
     }
 
@@ -305,7 +305,7 @@ export class Commands {
      * @param callback the callback to execute
      */
     private showStashPick(params, callback) {
-        this.git.getStashList().then((list) => {
+        this.stashGit.getStashList().then((list) => {
             if (list.length > 0) {
                 vscode.window
                     .showQuickPick<QuickPickStashNodeItem>(this.makeStashOptionsList(list), params)
@@ -348,7 +348,7 @@ export class Commands {
      * @param successMessage the string message to show on success
      */
     private exec(params: string[], successMessage: string): void {
-        this.git.exec(params)
+        this.stashGit.exec(params)
             .then(
                 (result) => {
                     this.showDetails('s', result, successMessage);
@@ -375,7 +375,7 @@ export class Commands {
 
         const resume = description || message;
         const actions = message.length > 0
-            ? [{ title: 'Show log'}]
+            ? [{ title: 'Show log' }]
             : [];
 
         if (this.config.settings.log.autoclear) {
