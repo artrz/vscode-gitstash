@@ -9,42 +9,6 @@ export default class Git {
     /**
      * Executes a git command.
      *
-     * @param args     the string array with the argument list
-     * @param cwd      the optionally string with the current working directory
-     * @param encoding the string with the optional encoding to replace utf8
-     */
-    public async exec(args: string[], cwd?: string, encoding?: string): Promise<string> {
-        if (!cwd) {
-            cwd = await this.getGitRoot();
-        }
-
-        let result = '';
-        let error = '';
-
-        const cmd = spawn('git', args, { cwd });
-
-        const out = cmd.stdout;
-        out.setEncoding(encoding || 'utf8');
-
-        const err = cmd.stderr;
-        err.setEncoding('utf8');
-
-        return new Promise<string>((resolve, reject) => {
-            out.on('data', (chunk: string) => result += chunk);
-            err.on('data', (chunk: string) => error += chunk);
-            out.on('error', (err: Error) => error = err.message);
-            err.on('error', (err: Error) => error = err.message);
-            cmd.on('close', () => {
-                error.trim().length === 0
-                    ? resolve(result + error)
-                    : reject(error);
-            });
-        });
-    }
-
-    /**
-     * Executes a git command.
-     *
      * @param args the string array with the argument list
      * @param cwd  the optionally string with the current working directory
      */
@@ -53,14 +17,14 @@ export default class Git {
             cwd = await this.getGitRoot();
         }
 
-        const resultData = [];
+        const response = [];
         const errors = [];
 
         const cmd = spawn('git', args, { cwd });
         cmd.stderr.setEncoding('utf8');
 
         return new Promise<Buffer | string>((resolve, reject) => {
-            cmd.stdout.on('data', (chunk: Buffer) => resultData.push(chunk));
+            cmd.stdout.on('data', (chunk: Buffer) => response.push(chunk));
             cmd.stdout.on('error', (err: Error) => errors.push(err.message));
 
             cmd.stderr.on('data', (chunk: string) => errors.push(chunk));
@@ -68,10 +32,25 @@ export default class Git {
 
             cmd.on('close', () => {
                 errors.length === 0
-                    ? resolve(resultData.length ? Buffer.concat(resultData) : new Buffer(0))
+                    ? resolve(response.length ? Buffer.concat(response) : new Buffer(0))
                     : reject(errors.join(' '));
             });
         });
+    }
+
+    /**
+     * Executes a git command.
+     *
+     * @param args     the string array with the argument list
+     * @param cwd      the optionally string with the current working directory
+     * @param encoding the string with the optional encoding to replace utf8
+     */
+    public async exec(args: string[], cwd?: string, encoding?: string): Promise<string> {
+        return this
+            .call(args, cwd)
+            .then((data: Buffer | string) => {
+                return data instanceof Buffer ? data.toString(encoding || 'utf8') : data;
+            });
     }
 
     /**

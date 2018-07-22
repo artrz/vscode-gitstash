@@ -298,15 +298,15 @@ export class Commands {
         this.stashGit.exec(params)
             .then(
                 (result) => {
-                    this.showDetails('s', result, successMessage);
+                    this.showDetails('success', result, successMessage);
                 },
                 (error) => {
                     const excerpt = error.substring(error.indexOf(':') + 1).trim();
-                    this.showDetails('e', error, excerpt);
+                    this.showDetails('error', error, excerpt);
                 }
             )
             .catch((error) => {
-                this.showDetails('e', error);
+                this.showDetails('error', error);
             });
     }
 
@@ -333,7 +333,7 @@ export class Commands {
             this.channel.appendLine(`${message}\n`);
         }
 
-        if (type === 's') {
+        if (type === 'success') {
             vscode.window.showInformationMessage(resume, ...actions)
                 .then((value) => {
                     if (typeof value !== 'undefined') {

@@ -26,7 +26,7 @@ export default class StashGit extends Git {
      * Indicates if there's something able to be stashed.
      */
     public async isStashable(): Promise<boolean> {
-        const paramsModifiednDeleted = [
+        const paramsModifiedAndDeleted = [
             'diff',
             '--name-only'
         ];
@@ -37,7 +37,7 @@ export default class StashGit extends Git {
             '--exclude-standard'
         ];
 
-        const modifiedFiles = (await this.exec(paramsModifiednDeleted)).trim().length > 0;
+        const modifiedFiles = (await this.exec(paramsModifiedAndDeleted)).trim().length > 0;
         const untrackedFiles = (await this.exec(paramsUntracked)).trim().length > 0;
 
         return modifiedFiles || untrackedFiles;
