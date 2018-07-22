@@ -23,8 +23,8 @@ export class DiffDisplayer {
     public display(model: Model, node: StashNode) {
         if (node.type === NodeType.Modified) {
             model.getStashedFile(node).then((files) => {
-                const originalFile = this.createTmpFile(node.name, files.base, 'binary');
-                const modifiedFile = this.createTmpFile(node.name, files.modified, 'binary');
+                const originalFile = this.createTmpFile(node.name, files.base);
+                const modifiedFile = this.createTmpFile(node.name, files.modified);
 
                 this.showDiff(node, originalFile, modifiedFile);
             });
@@ -32,8 +32,8 @@ export class DiffDisplayer {
 
         else if (node.type === NodeType.Untracked) {
             model.getUntrackedFile(node).then((content) => {
-                const originalFile = this.createTmpFile(node.name, null, 'binary');
-                const modifiedFile = this.createTmpFile(node.name, content, 'binary');
+                const originalFile = this.createTmpFile(node.name);
+                const modifiedFile = this.createTmpFile(node.name, content);
 
                 this.showDiff(node, originalFile, modifiedFile);
             });
@@ -41,8 +41,8 @@ export class DiffDisplayer {
 
         else if (node.type === NodeType.IndexedUntracked) {
             model.getIndexedUntrackedFile(node).then((content) => {
-                const originalFile = this.createTmpFile(node.name, null, 'binary');
-                const modifiedFile = this.createTmpFile(node.name, content, 'binary');
+                const originalFile = this.createTmpFile(node.name);
+                const modifiedFile = this.createTmpFile(node.name, content);
 
                 this.showDiff(node, originalFile, modifiedFile);
             });
@@ -50,8 +50,8 @@ export class DiffDisplayer {
 
         else if (node.type === NodeType.Deleted) {
             model.getDeletedFile(node).then((content) => {
-                const originalFile = this.createTmpFile(node.name, content, 'binary');
-                const modifiedFile = this.createTmpFile(node.name, null, 'binary');
+                const originalFile = this.createTmpFile(node.name, content);
+                const modifiedFile = this.createTmpFile(node.name);
 
                 this.showDiff(node, originalFile, modifiedFile);
             });
@@ -79,17 +79,16 @@ export class DiffDisplayer {
      * Generates a file with content.
      *
      * @param filename the string with the filename
-     * @param content  the string with the content
-     * @param encoding the string with the optional encoding to replace utf8
+     * @param content  the buffer with the content
      */
-    private createTmpFile(filename: string, content?: string, encoding?: string): tmp.SynchrounousResult {
+    private createTmpFile(filename: string, content?: Buffer | string): tmp.SynchrounousResult {
         const file = tmp.fileSync({
             prefix: 'vscode-gitstash-',
             postfix: path.extname(filename)
         });
 
-        if (content !== null) {
-            fs.writeFileSync(file.name, content, encoding || 'utf8');
+        if (content) {
+            fs.writeFileSync(file.name, content);
         }
 
         return file;

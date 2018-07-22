@@ -43,6 +43,38 @@ export default class Git {
     }
 
     /**
+     * Executes a git command.
+     *
+     * @param args the string array with the argument list
+     * @param cwd  the optionally string with the current working directory
+     */
+    public async call(args: string[], cwd?: string): Promise<Buffer | string> {
+        if (!cwd) {
+            cwd = await this.getGitRoot();
+        }
+
+        const resultData = [];
+        const errors = [];
+
+        const cmd = spawn('git', args, { cwd });
+        cmd.stderr.setEncoding('utf8');
+
+        return new Promise<Buffer | string>((resolve, reject) => {
+            cmd.stdout.on('data', (chunk: Buffer) => resultData.push(chunk));
+            cmd.stdout.on('error', (err: Error) => errors.push(err.message));
+
+            cmd.stderr.on('data', (chunk: string) => errors.push(chunk));
+            cmd.stderr.on('error', (err: Error) => errors.push(err.message));
+
+            cmd.on('close', () => {
+                errors.length === 0
+                    ? resolve(resultData.length ? Buffer.concat(resultData) : new Buffer(0))
+                    : reject(errors.join(' '));
+            });
+        });
+    }
+
+    /**
      * Indicates if there's a current git repository.
      */
     public async hasGitRepository(): Promise<boolean> {

@@ -86,7 +86,7 @@ export default class Model {
      *
      * @param node the stashed node file
      */
-    public getUntrackedFile(node: StashNode): Thenable<string | null> {
+    public getUntrackedFile(node: StashNode): Thenable<Buffer | string> {
         return node.isFile && node.type === NodeType.Untracked
             ? this.stashGit.untrackedFileContents(node.parent.index, node.name).then((rawContent) => {
                 return rawContent;
@@ -99,7 +99,7 @@ export default class Model {
      *
      * @param node the stashed node file
      */
-    public getIndexedUntrackedFile(node: StashNode): Thenable<string | null> {
+    public getIndexedUntrackedFile(node: StashNode): Thenable<Buffer | string> {
         return node.isFile && node.type === NodeType.IndexedUntracked
             ? this.stashGit.indexedUntrackedFileContents(node.parent.index, node.name).then((rawContent) => {
                 return rawContent;
@@ -112,7 +112,7 @@ export default class Model {
      *
      * @param node the stashed node file
      */
-    public getDeletedFile(node: StashNode): Thenable<string | null> {
+    public getDeletedFile(node: StashNode): Thenable<Buffer | string> {
         return node.isFile && node.type === NodeType.Deleted
             ? this.stashGit.deletedFileContents(node.parent.index, node.name).then((rawContent) => {
                 return rawContent;
