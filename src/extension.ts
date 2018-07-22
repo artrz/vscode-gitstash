@@ -7,6 +7,7 @@ import Config from './Config';
 import StashLabels from './StashLabels';
 
 import GitStashTreeDataProvider from './GitStashTreeDataProvider';
+import { EmptyDocumentContentProvider } from './EmptyDocumentContentProvider';
 
 export function activate(context: ExtensionContext) {
     const config = new Config();
@@ -15,12 +16,15 @@ export function activate(context: ExtensionContext) {
 
     const stashLabels = new StashLabels(config);
     const treeProvider = new GitStashTreeDataProvider(config, stashLabels);
+    const emptyDocumentProvider = new EmptyDocumentContentProvider();
+
     const stashCommands = new Commands(config, stashLabels, channel);
 
     const watcher = workspace.createFileSystemWatcher('**/refs/stash', false, false, false);
 
     context.subscriptions.push(
         window.registerTreeDataProvider('gitstash.explorer', treeProvider),
+        workspace.registerTextDocumentContentProvider('empty-stash', emptyDocumentProvider),
 
         commands.registerCommand('gitstash.explorer.toggle', treeProvider.toggle),
         commands.registerCommand('gitstash.explorer.refresh', treeProvider.refresh),
