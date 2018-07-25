@@ -10,8 +10,8 @@ export interface StashEntry {
 }
 
 export interface StashedFileContents {
-    base: string;
-    modified: string;
+    base: Buffer | string;
+    modified: Buffer | string;
 }
 
 export interface StashedFiles {
@@ -26,7 +26,7 @@ export default class StashGit extends Git {
      * Indicates if there's something able to be stashed.
      */
     public async isStashable(): Promise<boolean> {
-        const paramsModifiednDeleted = [
+        const paramsModifiedAndDeleted = [
             'diff',
             '--name-only'
         ];
@@ -37,7 +37,7 @@ export default class StashGit extends Git {
             '--exclude-standard'
         ];
 
-        const modifiedFiles = (await this.exec(paramsModifiednDeleted)).trim().length > 0;
+        const modifiedFiles = (await this.exec(paramsModifiedAndDeleted)).trim().length > 0;
         const untrackedFiles = (await this.exec(paramsUntracked)).trim().length > 0;
 
         return modifiedFiles || untrackedFiles;
@@ -122,9 +122,9 @@ export default class StashGit extends Git {
         });
 
         stashData.split(/\r?\n/g).forEach((line: string) => {
-            const fileStats = line.match(/\s*(\d+)\s+(\d+)\s+(.+)/);
+            const fileStats = line.match(/(\s*\d+\s+\d+\s+(.+))|(\s*-\s+-\s+(.+))/);
             if (fileStats !== null) {
-                const file = fileStats[3];
+                const file = fileStats[2] || fileStats[4];
                 if (entryFiles.indexedUntracked.indexOf(file) !== -1) {
                     return;
                 }
@@ -184,8 +184,8 @@ export default class StashGit extends Git {
         ];
 
         return {
-            base: await this.exec(paramsBase),
-            modified: await this.exec(paramsModified)
+            base: await this.call(paramsBase),
+            modified: await this.call(paramsModified)
         };
     }
 
@@ -195,13 +195,13 @@ export default class StashGit extends Git {
      * @param index the int with the index of the parent stash
      * @param file  the string with the stashed file name
      */
-    public async untrackedFileContents(index: number, file: string): Promise<string> {
+    public async untrackedFileContents(index: number, file: string): Promise<Buffer | string> {
         const params = [
             'show',
             `stash@{${index}}^3:${file}`
         ];
 
-        return await this.exec(params, null, 'binary');
+        return await this.call(params);
     }
 
     /**
@@ -210,13 +210,13 @@ export default class StashGit extends Git {
      * @param index the int with the index of the parent stash
      * @param file  the string with the stashed file name
      */
-    public async indexedUntrackedFileContents(index: number, file: string): Promise<string> {
+    public async indexedUntrackedFileContents(index: number, file: string): Promise<Buffer | string> {
         const params = [
             'show',
             `stash@{${index}}:${file}`
         ];
 
-        return await this.exec(params, null, 'binary');
+        return await this.call(params);
     }
 
     /**
@@ -225,12 +225,12 @@ export default class StashGit extends Git {
      * @param index the int with the index of the parent stash
      * @param file  the string with the stashed file name
      */
-    public async deletedFileContents(index: number, file: string): Promise<string> {
+    public async deletedFileContents(index: number, file: string): Promise<Buffer | string> {
         const params = [
             'show',
             `stash@{${index}}^1:${file}`
         ];
 
-        return await this.exec(params, null, 'binary');
+        return await this.call(params);
     }
 }
