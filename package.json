@@ -11,7 +11,7 @@
         "theme": "dark"
     },
     "engines": {
-        "vscode": "^1.14.0"
+        "vscode": "^1.23.0"
     },
     "categories": [
         "Other"
@@ -92,8 +92,8 @@
                 "title": "Refresh the stash explorer",
                 "category": "GitStash",
                 "icon": {
-                    "light": "./resources/light/refresh.png",
-                    "dark": "./resources/dark/refresh.png"
+                    "light": "resources/light/refresh.png",
+                    "dark": "resources/dark/refresh.png"
                 }
             },
             {
@@ -167,10 +167,10 @@
             }
         ],
         "views": {
-            "explorer": [
+            "scm": [
                 {
                     "id": "gitstash.explorer",
-                    "name": "Git Stash",
+                    "name": "Stashes",
                     "when": "hasGitRepository && gitstash.explorer.enabled"
                 }
             ]

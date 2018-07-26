@@ -5,10 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Fixed
-  - Some text encoding problems
 ### Added
   - Binary files like images are now supported
+### Updated
+  - Tree is now displayed on SCM view container
+### Fixed
+  - Some text encoding problems
 
 ## [[0.7.1] 2017-10-20](https://github.com/arturock/vscode-gitstash/tree/v0.7.1)
 ### Fixed
