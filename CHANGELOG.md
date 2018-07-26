@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
   - Binary files like images are now supported
+  - Configurable tooltips for tree elements
 ### Updated
   - Tree is now displayed on SCM view container
+  - A new default configuration for tree entries to remove some clutter
 ### Fixed
   - Some text encoding problems
 

@@ -52,13 +52,23 @@
                 },
                 "gitstash.entryFormat": {
                     "type": "string",
-                    "default": "#${index}:   ${description} (${branch})",
+                    "default": "#${index}:   ${description}",
                     "description": "Specifies the format for each stash entry\nAvailable tokens:\n${branch} - the branch where the stash was created\n${description} - the custom or default description for the stash entry\n${date} - the stash creation date\n${index} - the stash index"
+                },
+                "gitstash.entryTooltipFormat": {
+                    "type": "string",
+                    "default": "Source branch: ${branch}",
+                    "description": "Specifies the format for each stash entry tooltip \nAvailable tokens:\nSame than entryFormat"
                 },
                 "gitstash.fileFormat": {
                     "type": "string",
-                    "default": "${filename} (${filepath})",
+                    "default": "${filename}",
                     "description": "Specifies the format for each stashed file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${index} - the file index"
+                },
+                "gitstash.fileTooltipFormat": {
+                    "type": "string",
+                    "default": "${filepath}${filename}",
+                    "description": "Specifies the format for each stashed file tooltip\nAvailable tokens:\nSame than fileFormat"
                 },
                 "gitstash.diffTitleFormat": {
                     "type": "string",

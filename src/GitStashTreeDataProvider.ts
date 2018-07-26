@@ -115,6 +115,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     private getEntryItem(node: StashNode): TreeItem {
         return {
             label: this.stashLabels.getEntryName(node),
+            tooltip: this.stashLabels.getEntryTooltip(node),
             contextValue: 'diffEntry',
             collapsibleState: TreeItemCollapsibleState.Collapsed,
             command: void 0,
@@ -133,11 +134,11 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     private getFileItem(node: StashNode): TreeItem {
         return {
             label: this.stashLabels.getFileName(node),
+            tooltip: this.stashLabels.getFileTooltip(node),
             contextValue: 'diffFile',
             collapsibleState: void 0,
             command: {
                 title: 'Show stash diff',
-                tooltip: 'Show stash diff',
                 command: 'gitstash.show',
                 arguments: [this.model, node]
             },
