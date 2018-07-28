@@ -102,8 +102,8 @@
                 "title": "Refresh the stash explorer",
                 "category": "GitStash",
                 "icon": {
-                    "light": "resources/light/refresh.png",
-                    "dark": "resources/dark/refresh.png"
+                    "light": "resources/light/refresh.svg",
+                    "dark": "resources/dark/refresh.svg"
                 }
             },
             {
