@@ -40,15 +40,17 @@ Clicking on a file will display a diff view with the changes on that file, bring
 
 ## Extension Settings
 
-|Name                         | Default                                              | Description
-|-----------------------------|------------------------------------------------------|------------
-| `gitstash.explorer.enabled` | `true`                                               | Enables or disables the stash explorer tree on startup.
-| `gitstash.explorer.buttons` | `true`                                               | Shows or hides the explorer buttons.
-| `gitstash.entryFormat`      | `#${stashEntry.index}:   ${description} (${branch})` | Specifies the format for each stash entry. Available tokens: `${branch}` - the branch where the stash was created, `${description}` - the custom or default description for the stash entry, `${date}` - the stash creation date, `${index}` the stash index
-| `gitstash.fileFormat`       | `${filename} (${filepath})`                          | Specifies the format for each stashed file. Available tokens: `${filename}` - the file name, `${filepath}` - the file path
-| `gitstash.diffTitleFormat`  | `#${stashIndex}: ${filename} (${filepath})`          | Specifies the format for the diff document title. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${date}` - the entry date, `${description}` - the entry description, `${branch}` - the entry branch, `${stashIndex}` - the entry index
-| `gitstash.dateFormat`       | `default`                                            | Specifies the date format for each stash entry. Available formats: `default`, `iso`, `local`, `raw`, `relative`, `rfc`, `short`
-| `gitstash.log.autoclear`    | `false`                                              | Clears the log window before showing the action result.
+|Name                           | Default                                              | Description
+|-------------------------------|------------------------------------------------------|------------
+| `gitstash.explorer.enabled`   | `true`                                               | Enables or disables the stash explorer tree on startup.
+| `gitstash.explorer.buttons`   | `true`                                               | Shows or hides the explorer buttons.
+| `gitstash.entryFormat`        | `#${stashEntry.index}:   ${description} (${branch})` | Specifies the format for each stash entry. Available tokens: `${branch}` - the branch where the stash was created, `${description}` - the custom or default description for the stash entry, `${date}` - the stash creation date, `${index}` the stash index
+| `gitstash.entryTooltipFormat` | `#${stashEntry.index}:   ${description} (${branch})` | Specifies the format for each stash entry tooltip. Available tokens: Same than entryFormat
+| `gitstash.fileFormat`         | `${filename} (${filepath})`                          | Specifies the format for each stashed file. Available tokens: `${filename}` - the file name, `${filepath}` - the file path
+| `gitstash.fileTooltipFormat`  | `${filename} (${filepath})`                          | Specifies the format for each stashed file tooltip. Available tokens: Same than fileFormat
+| `gitstash.diffTitleFormat`    | `#${stashIndex}: ${filename} (${filepath})`          | Specifies the format for the diff document title. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${date}` - the entry date, `${description}` - the entry description, `${branch}` - the entry branch, `${stashIndex}` - the entry index
+| `gitstash.dateFormat`         | `default`                                            | Specifies the date format for each stash entry. Available formats: `default`, `iso`, `local`, `raw`, `relative`, `rfc`, `short`
+| `gitstash.log.autoclear`      | `false`                                              | Clears the log window before showing the action result.
 
 
 ## Tips

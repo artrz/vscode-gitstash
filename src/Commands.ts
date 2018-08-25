@@ -248,14 +248,15 @@ export class Commands {
     /**
      * Show a quick pick with the branches list and executes a callback on it.
      *
-     * @param params   the object containing the params
+     * @param options  the object containing the quick pick options
      * @param callback the callback to execute
      */
-    private showStashPick(params, callback) {
+    private showStashPick(options: vscode.QuickPickOptions, callback) {
+        options.canPickMany = false;
         this.stashGit.getStashList().then((list) => {
             if (list.length > 0) {
                 vscode.window
-                    .showQuickPick<QuickPickStashNodeItem>(this.makeStashOptionsList(list), params)
+                    .showQuickPick<QuickPickStashNodeItem>(this.makeStashOptionsList(list), options)
                     .then((selection) => {
                         if (typeof selection !== 'undefined') {
                             callback(selection.node);

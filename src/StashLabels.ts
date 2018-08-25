@@ -25,12 +25,36 @@ export default class {
     }
 
     /**
+     * Generates the stash tree item name.
+     *
+     * @param node The node to be used as base
+     */
+    public getEntryTooltip(node: StashNode): string {
+        return this.config.settings.entryTooltipFormat
+            .replace('${index}', node.index)
+            .replace('${branch}', this.getEntryBranch(node))
+            .replace('${description}', this.getEntryDescription(node))
+            .replace('${date}', node.date);
+    }
+
+    /**
      * Generates the stashed file tree item.
      *
      * @param node The node to be used as base
      */
     public getFileName(node: StashNode): string {
         return this.config.settings.fileFormat
+            .replace('${filename}', path.basename(node.name))
+            .replace('${filepath}', `${path.dirname(node.name)}/`);
+    }
+
+    /**
+     * Generates the stashed file tree item.
+     *
+     * @param node The node to be used as base
+     */
+    public getFileTooltip(node: StashNode): string {
+        return this.config.settings.fileTooltipFormat
             .replace('${filename}', path.basename(node.name))
             .replace('${filepath}', `${path.dirname(node.name)}/`);
     }
