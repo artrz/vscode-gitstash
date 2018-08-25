@@ -120,8 +120,8 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
             collapsibleState: TreeItemCollapsibleState.Collapsed,
             command: void 0,
             iconPath: {
-                light: this.getIcon('light', 'chest.png'),
-                dark: this.getIcon('dark', 'chest.png')
+                light: this.getIcon('light', 'chest.svg'),
+                dark: this.getIcon('dark', 'chest.svg')
             }
         };
     }

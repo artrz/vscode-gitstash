@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - Tree is now displayed on SCM view container
   - A new default configuration for tree entries to remove some clutter
   - Update refresh icon
+  - Slightly faster diff displaying
 ### Fixed
   - Some text encoding problems
 
