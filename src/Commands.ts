@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import Config from './Config';
 import Model from './Model';
 import StashGit, { StashEntry } from './StashGit';
+import { StashCommands } from './StashCommands';
 import StashLabels from './StashLabels';
 import StashNode from './StashNode';
 import StashNodeFactory from './StashNodeFactory';
@@ -14,19 +15,16 @@ interface QuickPickStashNodeItem extends vscode.QuickPickItem {
 }
 
 export class Commands {
-    private config: Config;
-    private stashLabels: StashLabels;
-    private channel: vscode.OutputChannel;
     private stashGit: StashGit;
+    private stashLabels: StashLabels;
+    private stashCommands: StashCommands;
     private stashNodeFactory: StashNodeFactory;
     private displayer: DiffDisplayer;
 
     constructor(config: Config, stashLabels: StashLabels, channel: vscode.OutputChannel) {
-        this.config = config;
-        this.stashLabels = stashLabels;
-        this.channel = channel;
-
         this.stashGit = new StashGit();
+        this.stashLabels = stashLabels;
+        this.stashCommands = new StashCommands(config, channel);
         this.stashNodeFactory = new StashNodeFactory();
         this.displayer = new DiffDisplayer(this.stashLabels);
     }
@@ -34,14 +32,14 @@ export class Commands {
     /**
      * Shows a stashed file diff document.
      */
-    public gitstashShow = (model: Model, node: StashNode) => {
+    public show = (model: Model, node: StashNode) => {
         this.displayer.display(model, node);
     }
 
     /**
      * Generates a stash.
      */
-    public gitstashStash = () => {
+    public stash = () => {
         this.stashGit.isStashable().then((isStashable) => {
             if (!isStashable) {
                 return vscode.window.showInformationMessage('There are no changes to stash.');
@@ -52,22 +50,22 @@ export class Commands {
                     {
                         label: 'Stash only',
                         description: 'Crate a simple stash',
-                        param: null
+                        type: StashCommands.StashType.Simple
                     },
                     {
                         label: 'Keep index',
                         description: 'Stash but keep all changes added to the index intact',
-                        param: '--keep-index'
+                        type: StashCommands.StashType.KeepIndex
                     },
                     {
                         label: 'Include untracked',
                         description: 'Stash also untracked files',
-                        param: '--include-untracked'
+                        type: StashCommands.StashType.IncludeUntracked
                     },
                     {
                         label: 'All',
                         description: 'Stash also untracked and ignored files',
-                        param: '--all'
+                        type: StashCommands.StashType.All
                     }
                 ])
                 .then((option) => {
@@ -79,17 +77,7 @@ export class Commands {
                             })
                             .then((stashMessage) => {
                                 if (typeof stashMessage === 'string') {
-                                    const params = ['stash', 'save'];
-
-                                    if (typeof option.param === 'string') {
-                                        params.push(option.param);
-                                    }
-
-                                    if (stashMessage.length > 0) {
-                                        params.push(stashMessage);
-                                    }
-
-                                    this.exec(params, 'Stash created');
+                                    this.stashCommands.stash(option.type, stashMessage);
                                 }
                             });
                     }
@@ -100,79 +88,82 @@ export class Commands {
     /**
      * Pops a stash entry.
      */
-    public gitstashPop = () => {
+    public pop = () => {
         this.showStashPick(
             { placeHolder: 'Pick a stash to pop' },
             (node: StashNode) => {
                 vscode.window
-                    .showQuickPick([
-                        {
-                            label: 'Pop only',
-                            description: 'Perform a simple pop',
-                            param: null
-                        },
-                        {
-                            label: 'Pop and reindex',
-                            description: 'Pop and reinstate the files added to index',
-                            param: '--index'
-                        }
-                    ])
+                    .showQuickPick(
+                        [
+                            {
+                                label: 'Pop only',
+                                description: 'Perform a simple pop',
+                                withIndex: false
+                            },
+                            {
+                                label: 'Pop and reindex',
+                                description: 'Pop and reinstate the files added to index',
+                                withIndex: true
+                            }
+                        ],
+                        { placeHolder: this.stashLabels.getEntryName(node) }
+                    )
                     .then((option) => {
                         if (typeof option !== 'undefined') {
-                            const params = ['stash', 'pop'];
-
-                            if (option.param !== null) {
-                                params.push(option.param);
-                            }
-
-                            params.push(`stash@{${node.index}}`);
-
-                            this.exec(params, 'Stash popped');
+                            this.stashCommands.pop(node, option.withIndex);
                         }
                     });
         });
     }
 
     /**
-     * Applies a stash entry.
+     * Selects a stash to apply.
      */
-    public gitstashApply = () => {
+    public apply = () => {
         this.showStashPick(
             { placeHolder: 'Pick a stash to apply' },
             (node: StashNode) => {
-                vscode.window
-                    .showQuickPick([
-                        {
-                            label: 'Apply only',
-                            description: 'Perform a simple apply',
-                            param: null
-                        },
-                        {
-                            label: 'Apply and reindex',
-                            description: 'Apply and reinstate the files added to index',
-                            param: '--index'
-                        }
-                    ])
-                    .then((option) => {
-                        if (typeof option !== 'undefined') {
-                            const params = ['stash', 'apply'];
+                this.applyPerform(node);
+        });
+    }
 
-                            if (option.param !== null) {
-                                params.push(option.param);
-                            }
+    /**
+     * Applies the currently selected stash.
+     */
+    public applyCurrent = (node: StashNode) => {
+        this.applyPerform(node);
+    }
 
-                            params.push(`stash@{${node.index}}`);
-
-                            this.exec(params, 'Stash applied');
-                        }
-                    });
+    /**
+     * Confirms and applies.
+     */
+    private applyPerform = (node: StashNode) => {
+        vscode.window.showQuickPick(
+            [
+                {
+                    label: 'Apply only',
+                    description: 'Perform a simple apply',
+                    withIndex: false
+                },
+                {
+                    label: 'Apply and reindex',
+                    description: 'Apply and reinstate the files added to index',
+                    withIndex: true
+                }
+            ],
+            { placeHolder: this.stashLabels.getEntryName(node) }
+        )
+        .then((option) => {
+            if (typeof option !== 'undefined') {
+                this.stashCommands.apply(node, option.withIndex);
+            }
         });
     }
 
     /**
      * Branches a stash entry.
      */
-    public gitstashBranch = () => {
+    public branch = () => {
         this.showStashPick(
             { placeHolder: 'Pick a stash to branch' },
             (node: StashNode) => {
@@ -180,14 +171,7 @@ export class Commands {
                     .showInputBox({ placeHolder: 'Branch name' })
                     .then((branchName) => {
                         if (typeof branchName === 'string' && branchName.length > 0) {
-                            const params = [
-                                'stash',
-                                'branch',
-                                branchName,
-                                `stash@{${node.index}}`
-                            ];
-
-                            this.exec(params, 'Stash branched');
+                            this.stashCommands.branch(node, branchName);
                         }
                     });
             }
@@ -195,38 +179,46 @@ export class Commands {
     }
 
     /**
-     * Drops a stash entry.
+     * Selects a stash to drop.
      */
-    public gitstashDrop = () => {
+    public drop = (node?: StashNode) => {
         this.showStashPick(
             { placeHolder: 'Pick a stash to drop' },
             (node: StashNode) => {
-                const label = this.stashLabels.getEntryName(node);
-
-                vscode.window
-                    .showWarningMessage<vscode.MessageItem>(
-                        `This will clear all changes on\n\n${label}\n\nAre you sure?`,
-                        { modal: true },
-                        { title: 'Proceed' }
-                    )
-                    .then((option) => {
-                        if (typeof option !== 'undefined') {
-                            const params = [
-                                'stash',
-                                'drop',
-                                `stash@{${node.index}}`
-                            ];
-
-                            this.exec(params, 'Stash dropped');
-                        }
-                    });
+                this.dropPerform(node);
         });
+    }
+
+    /**
+     * Drops the currently selected stash.
+     */
+    public dropCurrent = (node: StashNode) => {
+        this.dropPerform(node);
+    }
+
+    /**
+     * Confirms and drops.
+     */
+    private dropPerform = (node: StashNode) => {
+        const label = this.stashLabels.getEntryName(node);
+
+        vscode.window
+            .showWarningMessage<vscode.MessageItem>(
+                `${label}\n${node.date}\n\nDrop this stash?`,
+                { modal: true },
+                { title: 'Proceed' }
+            )
+            .then((option) => {
+                if (typeof option !== 'undefined') {
+                    this.stashCommands.drop(node);
+                }
+            });
     }
 
     /**
      * Removes the stash entry list.
      */
-    public gitstashClear = () => {
+    public clear = () => {
         vscode.window
             .showWarningMessage<vscode.MessageItem>(
                 'This will remove all the stash entries. Are you sure?',
@@ -236,9 +228,7 @@ export class Commands {
             .then(
                 (option) => {
                     if (typeof option !== 'undefined') {
-                        const params = ['stash', 'clear'];
-
-                        this.exec(params, 'Stash list cleared');
+                        this.stashCommands.clear();
                     }
                 },
                 (e) => console.error('failure', e)
@@ -287,68 +277,5 @@ export class Commands {
         }
 
         return options;
-    }
-
-    /**
-     * Executes the git command.
-     *
-     * @param params         the array of command parameters
-     * @param successMessage the string message to show on success
-     */
-    private exec(params: string[], successMessage: string): void {
-        this.stashGit.exec(params)
-            .then(
-                (result) => {
-                    this.showDetails('success', result, successMessage);
-                },
-                (error) => {
-                    const excerpt = error.substring(error.indexOf(':') + 1).trim();
-                    this.showDetails('error', error, excerpt);
-                }
-            )
-            .catch((error) => {
-                this.showDetails('error', error);
-            });
-    }
-
-    /**
-     * Shows the result message to the user.
-     *
-     * @param type        the string message type
-     * @param message     the string result message
-     * @param description the optional string alert description
-     */
-    private showDetails(type: string, message: string, description?: string): void {
-        message = message.trim();
-
-        const resume = description || message;
-        const actions = message.length > 0
-            ? [{ title: 'Show log' }]
-            : [];
-
-        if (this.config.settings.log.autoclear) {
-            this.channel.clear();
-        }
-
-        if (message.length > 0) {
-            this.channel.appendLine(`${message}\n`);
-        }
-
-        if (type === 'success') {
-            vscode.window.showInformationMessage(resume, ...actions)
-                .then((value) => {
-                    if (typeof value !== 'undefined') {
-                        this.channel.show(true);
-                    }
-                });
-        }
-        else {
-            vscode.window.showErrorMessage(resume, ...actions)
-                .then((value) => {
-                    if (typeof value !== 'undefined') {
-                        this.channel.show(true);
-                    }
-                });
-        }
     }
 }

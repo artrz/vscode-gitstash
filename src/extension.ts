@@ -29,13 +29,16 @@ export function activate(context: ExtensionContext) {
         commands.registerCommand('gitstash.explorer.toggle', treeProvider.toggle),
         commands.registerCommand('gitstash.explorer.refresh', treeProvider.refresh),
 
-        commands.registerCommand('gitstash.show', stashCommands.gitstashShow),
-        commands.registerCommand('gitstash.stash', stashCommands.gitstashStash),
-        commands.registerCommand('gitstash.pop', stashCommands.gitstashPop),
-        commands.registerCommand('gitstash.apply', stashCommands.gitstashApply),
-        commands.registerCommand('gitstash.branch', stashCommands.gitstashBranch),
-        commands.registerCommand('gitstash.drop', stashCommands.gitstashDrop),
-        commands.registerCommand('gitstash.clear', stashCommands.gitstashClear),
+        commands.registerCommand('gitstash.show', stashCommands.show),
+        commands.registerCommand('gitstash.stash', stashCommands.stash),
+        commands.registerCommand('gitstash.pop', stashCommands.pop),
+        commands.registerCommand('gitstash.apply', stashCommands.apply),
+        commands.registerCommand('gitstash.branch', stashCommands.branch),
+        commands.registerCommand('gitstash.drop', stashCommands.drop),
+        commands.registerCommand('gitstash.clear', stashCommands.clear),
+
+        commands.registerCommand('gitstash.applyCurrent', stashCommands.applyCurrent),
+        commands.registerCommand('gitstash.dropCurrent', stashCommands.dropCurrent),
 
         watcher.onDidCreate((event) => treeProvider.reload('create', event)),
         watcher.onDidChange((event) => treeProvider.reload('update', event)),

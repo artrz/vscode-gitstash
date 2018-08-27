@@ -140,40 +140,24 @@
                 "command": "gitstash.clear",
                 "title": "Stash Clear",
                 "category": "GitStash"
-            }
-        ],
-        "commandPalette": [
-            {
-                "command": "gitstash.explorer.toggle",
-                "when": "hasGitRepository"
             },
             {
-                "command": "gitstash.stash",
-                "when": "hasGitRepository"
+                "command": "gitstash.applyCurrent",
+                "title": "Stash Apply",
+                "category": "GitStash",
+                "icon": {
+                    "light": "resources/light/tree/apply.png",
+                    "dark": "resources/dark/tree/apply.png"
+                }
             },
             {
-                "command": "gitstash.pop",
-                "when": "hasGitRepository"
-            },
-            {
-                "command": "gitstash.apply",
-                "when": "hasGitRepository"
-            },
-            {
-                "command": "gitstash.branch",
-                "when": "hasGitRepository"
-            },
-            {
-                "command": "gitstash.drop",
-                "when": "hasGitRepository"
-            },
-            {
-                "command": "gitstash.clear",
-                "when": "hasGitRepository"
-            },
-            {
-                "command": "gitstash.explorer.refresh",
-                "when": "hasGitRepository && gitstash.explorer.enabled"
+                "command": "gitstash.dropCurrent",
+                "title": "Stash Drop",
+                "category": "GitStash",
+                "icon": {
+                    "light": "resources/light/tree/drop.png",
+                    "dark": "resources/dark/tree/drop.png"
+                }
             }
         ],
         "views": {
@@ -186,6 +170,48 @@
             ]
         },
         "menus": {
+            "commandPalette": [
+                {
+                    "command": "gitstash.explorer.toggle",
+                    "when": "hasGitRepository"
+                },
+                {
+                    "command": "gitstash.stash",
+                    "when": "hasGitRepository"
+                },
+                {
+                    "command": "gitstash.pop",
+                    "when": "hasGitRepository"
+                },
+                {
+                    "command": "gitstash.apply",
+                    "when": "hasGitRepository"
+                },
+                {
+                    "command": "gitstash.branch",
+                    "when": "hasGitRepository"
+                },
+                {
+                    "command": "gitstash.drop",
+                    "when": "hasGitRepository"
+                },
+                {
+                    "command": "gitstash.clear",
+                    "when": "hasGitRepository"
+                },
+                {
+                    "command": "gitstash.explorer.refresh",
+                    "when": "hasGitRepository && gitstash.explorer.enabled"
+                },
+                {
+                    "command": "gitstash.applyCurrent",
+                    "when": "false"
+                },
+                {
+                    "command": "gitstash.dropCurrent",
+                    "when": "false"
+                }
+            ],
             "view/title": [
                 {
                     "command": "gitstash.explorer.refresh",
@@ -199,6 +225,18 @@
                 {
                     "command": "gitstash.stash",
                     "when": "view == gitstash.explorer && config.gitstash.explorer.buttons"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "gitstash.applyCurrent",
+                    "when": "view == gitstash.explorer && viewItem == diffEntry",
+                    "group": "inline"
+                },
+                {
+                    "command": "gitstash.dropCurrent",
+                    "when": "view == gitstash.explorer && viewItem == diffEntry",
+                    "group": "inline"
                 }
             ]
         }
