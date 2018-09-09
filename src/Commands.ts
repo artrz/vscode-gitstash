@@ -117,21 +117,19 @@ export class Commands {
     }
 
     /**
-     * Selects a stash to apply.
+     * Applies the selected stash or selects one to apply.
      */
-    public apply = () => {
+    public apply = (node?: StashNode) => {
+        if (node) {
+            this.applyPerform(node);
+            return;
+        }
+
         this.showStashPick(
             { placeHolder: 'Pick a stash to apply' },
             (node: StashNode) => {
                 this.applyPerform(node);
         });
-    }
-
-    /**
-     * Applies the currently selected stash.
-     */
-    public applyCurrent = (node: StashNode) => {
-        this.applyPerform(node);
     }
 
     /**
@@ -179,21 +177,19 @@ export class Commands {
     }
 
     /**
-     * Selects a stash to drop.
+     * Drops the currently selected stash or selects a stash to drop.
      */
     public drop = (node?: StashNode) => {
+        if (node) {
+            this.dropPerform(node);
+            return;
+        }
+
         this.showStashPick(
             { placeHolder: 'Pick a stash to drop' },
             (node: StashNode) => {
                 this.dropPerform(node);
         });
-    }
-
-    /**
-     * Drops the currently selected stash.
-     */
-    public dropCurrent = (node: StashNode) => {
-        this.dropPerform(node);
     }
 
     /**

@@ -124,7 +124,11 @@
             {
                 "command": "gitstash.apply",
                 "title": "Stash Apply...",
-                "category": "GitStash"
+                "category": "GitStash",
+                "icon": {
+                    "light": "resources/light/tree/apply.png",
+                    "dark": "resources/dark/tree/apply.png"
+                }
             },
             {
                 "command": "gitstash.branch",
@@ -134,30 +138,16 @@
             {
                 "command": "gitstash.drop",
                 "title": "Stash Drop...",
-                "category": "GitStash"
-            },
-            {
-                "command": "gitstash.clear",
-                "title": "Stash Clear",
-                "category": "GitStash"
-            },
-            {
-                "command": "gitstash.applyCurrent",
-                "title": "Stash Apply",
-                "category": "GitStash",
-                "icon": {
-                    "light": "resources/light/tree/apply.png",
-                    "dark": "resources/dark/tree/apply.png"
-                }
-            },
-            {
-                "command": "gitstash.dropCurrent",
-                "title": "Stash Drop",
                 "category": "GitStash",
                 "icon": {
                     "light": "resources/light/tree/drop.png",
                     "dark": "resources/dark/tree/drop.png"
                 }
+            },
+            {
+                "command": "gitstash.clear",
+                "title": "Stash Clear",
+                "category": "GitStash"
             }
         ],
         "views": {
@@ -202,14 +192,6 @@
                 {
                     "command": "gitstash.explorer.refresh",
                     "when": "hasGitRepository && gitstash.explorer.enabled"
-                },
-                {
-                    "command": "gitstash.applyCurrent",
-                    "when": "false"
-                },
-                {
-                    "command": "gitstash.dropCurrent",
-                    "when": "false"
                 }
             ],
             "view/title": [
@@ -229,12 +211,12 @@
             ],
             "view/item/context": [
                 {
-                    "command": "gitstash.applyCurrent",
+                    "command": "gitstash.apply",
                     "when": "view == gitstash.explorer && viewItem == diffEntry",
                     "group": "inline"
                 },
                 {
-                    "command": "gitstash.dropCurrent",
+                    "command": "gitstash.drop",
                     "when": "view == gitstash.explorer && viewItem == diffEntry",
                     "group": "inline"
                 }
