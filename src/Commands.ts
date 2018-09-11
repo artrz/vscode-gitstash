@@ -86,33 +86,76 @@ export class Commands {
     }
 
     /**
-     * Pops a stash entry.
+     * Shows a selector to perform an apply / pop action.
      */
-    public pop = () => {
+    public applyOrPop = (node: StashNode) => {
+        vscode.window
+            .showQuickPick(
+                [
+                    {
+                        label: 'Pop',
+                        description: 'Pop the selected stash',
+                        action: 'pop'
+                    },
+                    {
+                        label: 'Apply',
+                        description: 'Apply the selected stash',
+                        action: 'apply'
+                    }
+                ],
+                { placeHolder: this.stashLabels.getEntryName(node) }
+            )
+            .then((option) => {
+                if (typeof option !== 'undefined') {
+                    if (option.action === 'pop') {
+                        this.pop(node);
+                    }
+                    else if (option.action === 'apply') {
+                        this.apply(node);
+                    }
+                }
+            });
+    }
+
+    /**
+     * Pops the selected stash or selects one to pop.
+     */
+    public pop = (node?: StashNode) => {
+        if (node) {
+            this.popPerform(node);
+            return;
+        }
+
         this.showStashPick(
             { placeHolder: 'Pick a stash to pop' },
             (node: StashNode) => {
-                vscode.window
-                    .showQuickPick(
-                        [
-                            {
-                                label: 'Pop only',
-                                description: 'Perform a simple pop',
-                                withIndex: false
-                            },
-                            {
-                                label: 'Pop and reindex',
-                                description: 'Pop and reinstate the files added to index',
-                                withIndex: true
-                            }
-                        ],
-                        { placeHolder: this.stashLabels.getEntryName(node) }
-                    )
-                    .then((option) => {
-                        if (typeof option !== 'undefined') {
-                            this.stashCommands.pop(node, option.withIndex);
-                        }
-                    });
+                this.popPerform(node);
+            });
+    }
+
+    /**
+     * Confirms and pops.
+     */
+    private popPerform = (node: StashNode) => {
+        vscode.window.showQuickPick(
+            [
+                {
+                    label: 'Pop only',
+                    description: 'Perform a simple pop',
+                    withIndex: false
+                },
+                {
+                    label: 'Pop and reindex',
+                    description: 'Pop and reinstate the files added to index',
+                    withIndex: true
+                }
+            ],
+            { placeHolder: this.stashLabels.getEntryName(node) }
+        )
+        .then((option) => {
+            if (typeof option !== 'undefined') {
+                this.stashCommands.pop(node, option.withIndex);
+            }
         });
     }
 

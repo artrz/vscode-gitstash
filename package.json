@@ -124,11 +124,7 @@
             {
                 "command": "gitstash.apply",
                 "title": "Stash Apply...",
-                "category": "GitStash",
-                "icon": {
-                    "light": "resources/icons/light/apply.png",
-                    "dark": "resources/icons/dark/apply.png"
-                }
+                "category": "GitStash"
             },
             {
                 "command": "gitstash.branch",
@@ -140,14 +136,23 @@
                 "title": "Stash Drop...",
                 "category": "GitStash",
                 "icon": {
-                    "light": "resources/icons/light/drop.png",
-                    "dark": "resources/icons/dark/drop.png"
+                    "light": "resources/icons/light/close.svg",
+                    "dark": "resources/icons/dark/close.svg"
                 }
             },
             {
                 "command": "gitstash.clear",
                 "title": "Stash Clear",
                 "category": "GitStash"
+            },
+            {
+                "command": "gitstash.applyOrPop",
+                "title": " Apply/Pop...",
+                "category": "GitStash",
+                "icon": {
+                    "light": "resources/icons/light/check.svg",
+                    "dark": "resources/icons/dark/check.svg"
+                }
             }
         ],
         "views": {
@@ -192,6 +197,10 @@
                 {
                     "command": "gitstash.explorer.refresh",
                     "when": "hasGitRepository && gitstash.explorer.enabled"
+                },
+                {
+                    "command": "gitstash.applyOrPop",
+                    "when": "false"
                 }
             ],
             "view/title": [
@@ -211,7 +220,7 @@
             ],
             "view/item/context": [
                 {
-                    "command": "gitstash.apply",
+                    "command": "gitstash.applyOrPop",
                     "when": "view == gitstash.explorer && viewItem == diffEntry",
                     "group": "inline"
                 },

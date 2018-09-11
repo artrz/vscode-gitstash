@@ -37,6 +37,8 @@ export function activate(context: ExtensionContext) {
         commands.registerCommand('gitstash.drop', stashCommands.drop),
         commands.registerCommand('gitstash.clear', stashCommands.clear),
 
+        commands.registerCommand('gitstash.applyOrPop', stashCommands.applyOrPop),
+
         watcher.onDidCreate((event) => treeProvider.reload('create', event)),
         watcher.onDidChange((event) => treeProvider.reload('update', event)),
         watcher.onDidDelete((event) => treeProvider.reload('delete', event)),
