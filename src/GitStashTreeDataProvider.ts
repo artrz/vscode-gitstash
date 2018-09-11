@@ -4,6 +4,7 @@ import {
     commands,
     Event,
     EventEmitter,
+    ThemeIcon,
     TreeDataProvider,
     TreeItem,
     TreeItemCollapsibleState,
@@ -116,13 +117,10 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
         return {
             label: this.stashLabels.getEntryName(node),
             tooltip: this.stashLabels.getEntryTooltip(node),
+            iconPath: this.getIcon('chest.svg'),
             contextValue: 'diffEntry',
             collapsibleState: TreeItemCollapsibleState.Collapsed,
-            command: void 0,
-            iconPath: {
-                light: this.getIcon('light', 'chest.svg'),
-                dark: this.getIcon('dark', 'chest.svg')
-            }
+            command: void 0
         };
     }
 
@@ -135,16 +133,13 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
         return {
             label: this.stashLabels.getFileName(node),
             tooltip: this.stashLabels.getFileTooltip(node),
+            iconPath: this.getFileIcon(node.type),
             contextValue: 'diffFile',
             collapsibleState: void 0,
             command: {
                 title: 'Show stash diff',
                 command: 'gitstash.show',
                 arguments: [this.model, node]
-            },
-            iconPath: {
-                light: this.getFileIcon('light', node.type),
-                dark: this.getFileIcon('dark', node.type)
             }
         };
     }
@@ -152,26 +147,27 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     /**
      * Builds an icon path.
      *
-     * @param scheme   The dark/light scheme
      * @param filename The filename of the icon
      */
-    private getIcon(scheme: string, filename: string): string {
-        return path.join(__filename, '..', '..', '..', 'resources', scheme, filename);
+    private getIcon(filename: string): { light: string; dark: string } {
+        return {
+            light: path.join(__filename, '..', '..', '..', 'resources', 'icons', 'light', filename),
+            dark: path.join(__filename, '..', '..', '..', 'resources', 'icons', 'dark', filename)
+        };
     }
 
     /**
      * Builds a file icon path.
      *
-     * @param scheme   The dark/light scheme
      * @param filename The filename of the icon
      */
-    private getFileIcon(scheme: string, type: NodeType): string {
+    private getFileIcon(type: NodeType): { light: string; dark: string } | ThemeIcon {
         switch (type) {
-            case NodeType.Modified: return this.getIcon(scheme, 'modified.png');
-            case NodeType.Untracked: return this.getIcon(scheme, 'untracked.png');
-            case NodeType.IndexedUntracked: return this.getIcon(scheme, 'indexed-untracked.png');
-            case NodeType.Deleted: return this.getIcon(scheme, 'deleted.png');
-            default: return this.getIcon(scheme, 'file.png');
+            case NodeType.Modified: return this.getIcon('status-modified.svg');
+            case NodeType.Untracked: return this.getIcon('status-untracked.svg');
+            case NodeType.IndexAdded: return this.getIcon('status-added.svg');
+            case NodeType.Deleted: return this.getIcon('status-deleted.svg');
+            default: return ThemeIcon.File;
         }
     }
 

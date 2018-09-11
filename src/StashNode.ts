@@ -11,7 +11,7 @@ interface Node {
 export enum NodeType {
     'Entry' = 'e',
     'Untracked' = 'u',
-    'IndexedUntracked' = 'i',
+    'IndexAdded' = 'a',
     'Modified' = 'm',
     'Deleted' = 'd'
 }

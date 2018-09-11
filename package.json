@@ -102,8 +102,8 @@
                 "title": "Refresh the stash explorer",
                 "category": "GitStash",
                 "icon": {
-                    "light": "resources/light/refresh.svg",
-                    "dark": "resources/dark/refresh.svg"
+                    "light": "resources/icons/light/refresh.svg",
+                    "dark": "resources/icons/dark/refresh.svg"
                 }
             },
             {
@@ -126,8 +126,8 @@
                 "title": "Stash Apply...",
                 "category": "GitStash",
                 "icon": {
-                    "light": "resources/light/tree/apply.png",
-                    "dark": "resources/dark/tree/apply.png"
+                    "light": "resources/icons/light/apply.png",
+                    "dark": "resources/icons/dark/apply.png"
                 }
             },
             {
@@ -140,8 +140,8 @@
                 "title": "Stash Drop...",
                 "category": "GitStash",
                 "icon": {
-                    "light": "resources/light/tree/drop.png",
-                    "dark": "resources/dark/tree/drop.png"
+                    "light": "resources/icons/light/drop.png",
+                    "dark": "resources/icons/dark/drop.png"
                 }
             },
             {

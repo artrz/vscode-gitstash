@@ -44,8 +44,8 @@ export class DiffDisplayer {
             });
         }
 
-        else if (node.type === NodeType.IndexedUntracked) {
-            model.getIndexedUntrackedFile(node).then((content) => {
+        else if (node.type === NodeType.IndexAdded) {
+            model.getIndexAddedFile(node).then((content) => {
                 this.showDiff(
                     this.getResourceAsUri(),
                     this.getResourceAsUri(content, node),

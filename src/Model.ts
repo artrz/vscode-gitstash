@@ -55,8 +55,8 @@ export default class Model {
                 list.push(this.stashNodeFactory.fileToNode(stashFile, node, NodeType.Untracked));
             });
 
-            stashedFiles.indexedUntracked.forEach((stashFile: string) => {
-                list.push(this.stashNodeFactory.fileToNode(stashFile, node, NodeType.IndexedUntracked));
+            stashedFiles.indexAdded.forEach((stashFile: string) => {
+                list.push(this.stashNodeFactory.fileToNode(stashFile, node, NodeType.IndexAdded));
             });
 
             stashedFiles.deleted.forEach((stashFile: string) => {
@@ -99,9 +99,9 @@ export default class Model {
      *
      * @param node the stashed node file
      */
-    public getIndexedUntrackedFile(node: StashNode): Thenable<Buffer | string> {
-        return node.isFile && node.type === NodeType.IndexedUntracked
-            ? this.stashGit.indexedUntrackedFileContents(node.parent.index, node.name).then((rawContent) => {
+    public getIndexAddedFile(node: StashNode): Thenable<Buffer | string> {
+        return node.isFile && node.type === NodeType.IndexAdded
+            ? this.stashGit.indexAddedFileContents(node.parent.index, node.name).then((rawContent) => {
                 return rawContent;
             })
             : null;
