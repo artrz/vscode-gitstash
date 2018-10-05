@@ -16,7 +16,7 @@ export interface StashedFileContents {
 
 export interface StashedFiles {
     untracked: string[];
-    indexedUntracked: string[];
+    indexAdded: string[];
     modified: string[];
     deleted: string[];
 }
@@ -92,7 +92,7 @@ export default class StashGit extends Git {
     public async getStashedFiles(index: number): Promise<StashedFiles> {
         const entryFiles = {
             untracked: await this.getStashUntracked(index),
-            indexedUntracked: [],
+            indexAdded: [],
             modified: [],
             deleted: []
         };
@@ -113,7 +113,7 @@ export default class StashGit extends Git {
                 const stat = fileSummary[1].toLowerCase();
                 const file = fileSummary[4];
                 if (stat === 'create') {
-                    entryFiles.indexedUntracked.push(file);
+                    entryFiles.indexAdded.push(file);
                 }
                 else if (stat === 'delete') {
                     entryFiles.deleted.push(file);
@@ -125,7 +125,7 @@ export default class StashGit extends Git {
             const fileStats = line.match(/(\s*\d+\s+\d+\s+(.+))|(\s*-\s+-\s+(.+))/);
             if (fileStats !== null) {
                 const file = fileStats[2] || fileStats[4];
-                if (entryFiles.indexedUntracked.indexOf(file) !== -1) {
+                if (entryFiles.indexAdded.indexOf(file) !== -1) {
                     return;
                 }
                 if (entryFiles.deleted.indexOf(file) !== -1) {
@@ -205,12 +205,12 @@ export default class StashGit extends Git {
     }
 
     /**
-     * Gets the file contents of an indexed untracked file.
+     * Gets the file contents of an index added file.
      *
      * @param index the int with the index of the parent stash
      * @param file  the string with the stashed file name
      */
-    public async indexedUntrackedFileContents(index: number, file: string): Promise<Buffer | string> {
+    public async indexAddedFileContents(index: number, file: string): Promise<Buffer | string> {
         const params = [
             'show',
             `stash@{${index}}:${file}`

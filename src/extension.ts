@@ -8,17 +8,22 @@ import StashLabels from './StashLabels';
 
 import GitStashTreeDataProvider from './GitStashTreeDataProvider';
 import { EmptyDocumentContentProvider } from './EmptyDocumentContentProvider';
+import Model from './Model';
+import { StashCommands } from './StashCommands';
+import { DiffDisplayer } from './DiffDisplayer';
 
 export function activate(context: ExtensionContext) {
+    const model = new Model();
     const config = new Config();
-
-    const channel = window.createOutputChannel('GitStash');
-
     const stashLabels = new StashLabels(config);
-    const treeProvider = new GitStashTreeDataProvider(config, stashLabels);
-    const emptyDocumentProvider = new EmptyDocumentContentProvider();
 
-    const stashCommands = new Commands(config, stashLabels, channel);
+    const treeProvider = new GitStashTreeDataProvider(config, model, stashLabels);
+    const emptyDocumentProvider = new EmptyDocumentContentProvider();
+    const stashCommands = new Commands(
+        new StashCommands(config, window.createOutputChannel('GitStash')),
+        new DiffDisplayer(model, stashLabels),
+        stashLabels
+    );
 
     const watcher = workspace.createFileSystemWatcher('**/refs/stash', false, false, false);
 
@@ -29,13 +34,16 @@ export function activate(context: ExtensionContext) {
         commands.registerCommand('gitstash.explorer.toggle', treeProvider.toggle),
         commands.registerCommand('gitstash.explorer.refresh', treeProvider.refresh),
 
-        commands.registerCommand('gitstash.show', stashCommands.gitstashShow),
-        commands.registerCommand('gitstash.stash', stashCommands.gitstashStash),
-        commands.registerCommand('gitstash.pop', stashCommands.gitstashPop),
-        commands.registerCommand('gitstash.apply', stashCommands.gitstashApply),
-        commands.registerCommand('gitstash.branch', stashCommands.gitstashBranch),
-        commands.registerCommand('gitstash.drop', stashCommands.gitstashDrop),
-        commands.registerCommand('gitstash.clear', stashCommands.gitstashClear),
+        commands.registerCommand('gitstash.show', stashCommands.show),
+        commands.registerCommand('gitstash.stash', stashCommands.stash),
+        commands.registerCommand('gitstash.pop', stashCommands.pop),
+        commands.registerCommand('gitstash.apply', stashCommands.apply),
+        commands.registerCommand('gitstash.branch', stashCommands.branch),
+        commands.registerCommand('gitstash.drop', stashCommands.drop),
+        commands.registerCommand('gitstash.clear', stashCommands.clear),
+
+        commands.registerCommand('gitstash.applyOrPop', stashCommands.applyOrPop),
+        commands.registerCommand('gitstash.diffCurrent', stashCommands.diffCurrent),
 
         watcher.onDidCreate((event) => treeProvider.reload('create', event)),
         watcher.onDidChange((event) => treeProvider.reload('update', event)),

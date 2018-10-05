@@ -4,6 +4,7 @@ import {
     commands,
     Event,
     EventEmitter,
+    ThemeIcon,
     TreeDataProvider,
     TreeItem,
     TreeItemCollapsibleState,
@@ -26,8 +27,9 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     private loadTimeout;
     private showExplorer;
 
-    constructor(config: Config, stashLabels: StashLabels) {
+    constructor(config: Config, model: Model, stashLabels: StashLabels) {
         this.config = config;
+        this.model = model;
         this.stashLabels = stashLabels;
     }
 
@@ -60,14 +62,14 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
      */
     public getChildren(node?: StashNode): Thenable<StashNode[]> {
         if (!node) {
-            this.getModel().raw.then((rawStash) => {
+            this.model.raw.then((rawStash) => {
                 this.rawStash = rawStash;
             });
 
-            return this.getModel().roots;
+            return this.model.roots;
         }
 
-        return this.getModel().getFiles(node);
+        return this.model.getFiles(node);
     }
 
     /**
@@ -97,7 +99,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
                 this._onDidChangeTreeData.fire();
             }
             else {
-                this.getModel().raw.then((rawStash) => {
+                this.model.raw.then((rawStash) => {
                     if (this.rawStash !== rawStash) {
                         this.rawStash = rawStash;
                         this._onDidChangeTreeData.fire();
@@ -116,13 +118,10 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
         return {
             label: this.stashLabels.getEntryName(node),
             tooltip: this.stashLabels.getEntryTooltip(node),
+            iconPath: this.getIcon('chest.svg'),
             contextValue: 'diffEntry',
             collapsibleState: TreeItemCollapsibleState.Collapsed,
-            command: void 0,
-            iconPath: {
-                light: this.getIcon('light', 'chest.svg'),
-                dark: this.getIcon('dark', 'chest.svg')
-            }
+            command: void 0
         };
     }
 
@@ -135,16 +134,13 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
         return {
             label: this.stashLabels.getFileName(node),
             tooltip: this.stashLabels.getFileTooltip(node),
+            iconPath: this.getFileIcon(node.type),
             contextValue: 'diffFile',
             collapsibleState: void 0,
             command: {
                 title: 'Show stash diff',
                 command: 'gitstash.show',
-                arguments: [this.model, node]
-            },
-            iconPath: {
-                light: this.getFileIcon('light', node.type),
-                dark: this.getFileIcon('dark', node.type)
+                arguments: [node]
             }
         };
     }
@@ -152,33 +148,27 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     /**
      * Builds an icon path.
      *
-     * @param scheme   The dark/light scheme
      * @param filename The filename of the icon
      */
-    private getIcon(scheme: string, filename: string): string {
-        return path.join(__filename, '..', '..', '..', 'resources', scheme, filename);
+    private getIcon(filename: string): { light: string; dark: string } {
+        return {
+            light: path.join(__filename, '..', '..', '..', 'resources', 'icons', 'light', filename),
+            dark: path.join(__filename, '..', '..', '..', 'resources', 'icons', 'dark', filename)
+        };
     }
 
     /**
      * Builds a file icon path.
      *
-     * @param scheme   The dark/light scheme
      * @param filename The filename of the icon
      */
-    private getFileIcon(scheme: string, type: NodeType): string {
+    private getFileIcon(type: NodeType): { light: string; dark: string } | ThemeIcon {
         switch (type) {
-            case NodeType.Modified: return this.getIcon(scheme, 'modified.png');
-            case NodeType.Untracked: return this.getIcon(scheme, 'untracked.png');
-            case NodeType.IndexedUntracked: return this.getIcon(scheme, 'indexed-untracked.png');
-            case NodeType.Deleted: return this.getIcon(scheme, 'deleted.png');
-            default: return this.getIcon(scheme, 'file.png');
+            case NodeType.Modified: return this.getIcon('status-modified.svg');
+            case NodeType.Untracked: return this.getIcon('status-untracked.svg');
+            case NodeType.IndexAdded: return this.getIcon('status-added.svg');
+            case NodeType.Deleted: return this.getIcon('status-deleted.svg');
+            default: return ThemeIcon.File;
         }
-    }
-
-    /**
-     * Returns the model to be used in this provider.
-     */
-    private getModel(): Model {
-        return !this.model ? this.model = new Model() : this.model;
     }
 }
