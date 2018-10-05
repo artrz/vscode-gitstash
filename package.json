@@ -153,6 +153,15 @@
                     "light": "resources/icons/light/check.svg",
                     "dark": "resources/icons/dark/check.svg"
                 }
+            },
+            {
+                "command": "gitstash.diffCurrent",
+                "title": "Compare with current",
+                "category": "GitStash",
+                "icon": {
+                    "light": "resources/icons/light/diff.svg",
+                    "dark": "resources/icons/dark/diff.svg"
+                }
             }
         ],
         "views": {
@@ -201,6 +210,10 @@
                 {
                     "command": "gitstash.applyOrPop",
                     "when": "false"
+                },
+                {
+                    "command": "gitstash.diffCurrent",
+                    "when": "false"
                 }
             ],
             "view/title": [
@@ -227,6 +240,11 @@
                 {
                     "command": "gitstash.drop",
                     "when": "view == gitstash.explorer && viewItem == diffEntry",
+                    "group": "inline"
+                },
+                {
+                    "command": "gitstash.diffCurrent",
+                    "when": "view == gitstash.explorer && viewItem == diffFile",
                     "group": "inline"
                 }
             ]

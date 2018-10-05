@@ -27,8 +27,9 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     private loadTimeout;
     private showExplorer;
 
-    constructor(config: Config, stashLabels: StashLabels) {
+    constructor(config: Config, model: Model, stashLabels: StashLabels) {
         this.config = config;
+        this.model = model;
         this.stashLabels = stashLabels;
     }
 
@@ -61,14 +62,14 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
      */
     public getChildren(node?: StashNode): Thenable<StashNode[]> {
         if (!node) {
-            this.getModel().raw.then((rawStash) => {
+            this.model.raw.then((rawStash) => {
                 this.rawStash = rawStash;
             });
 
-            return this.getModel().roots;
+            return this.model.roots;
         }
 
-        return this.getModel().getFiles(node);
+        return this.model.getFiles(node);
     }
 
     /**
@@ -98,7 +99,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
                 this._onDidChangeTreeData.fire();
             }
             else {
-                this.getModel().raw.then((rawStash) => {
+                this.model.raw.then((rawStash) => {
                     if (this.rawStash !== rawStash) {
                         this.rawStash = rawStash;
                         this._onDidChangeTreeData.fire();
@@ -139,7 +140,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
             command: {
                 title: 'Show stash diff',
                 command: 'gitstash.show',
-                arguments: [this.model, node]
+                arguments: [node]
             }
         };
     }
@@ -169,12 +170,5 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
             case NodeType.Deleted: return this.getIcon('status-deleted.svg');
             default: return ThemeIcon.File;
         }
-    }
-
-    /**
-     * Returns the model to be used in this provider.
-     */
-    private getModel(): Model {
-        return !this.model ? this.model = new Model() : this.model;
     }
 }

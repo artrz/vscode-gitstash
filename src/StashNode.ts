@@ -1,11 +1,15 @@
 'use strict';
 
+import { workspace } from 'vscode';
+import { existsSync } from 'fs';
+
 interface Node {
     type: NodeType;
     name: string;
     index?: number;
     parent?: StashNode;
     date?: string;
+    path?: string;
 }
 
 export enum NodeType {
@@ -60,5 +64,16 @@ export default class StashNode {
      */
     public get isFile(): boolean {
         return this.entry.parent !== null;
+    }
+
+    /**
+     * Gets the file path of the stashed file if exists.
+     */
+    public get path(): string | null {
+        if (!this.isFile) {
+            return null;
+        }
+        const path = `${workspace.rootPath}/${this.name}`;
+        return existsSync(path) ? path : null;
     }
 }

@@ -1,8 +1,6 @@
 'use string';
 
 import * as vscode from 'vscode';
-import Config from './Config';
-import Model from './Model';
 import StashGit, { StashEntry } from './StashGit';
 import { StashCommands } from './StashCommands';
 import StashLabels from './StashLabels';
@@ -21,19 +19,26 @@ export class Commands {
     private stashNodeFactory: StashNodeFactory;
     private displayer: DiffDisplayer;
 
-    constructor(config: Config, stashLabels: StashLabels, channel: vscode.OutputChannel) {
-        this.stashGit = new StashGit();
+    constructor(stashCommands: StashCommands, diffDisplayer: DiffDisplayer, stashLabels: StashLabels) {
+        this.stashCommands = stashCommands;
         this.stashLabels = stashLabels;
-        this.stashCommands = new StashCommands(config, channel);
+        this.displayer = diffDisplayer;
+        this.stashGit = new StashGit();
         this.stashNodeFactory = new StashNodeFactory();
-        this.displayer = new DiffDisplayer(this.stashLabels);
     }
 
     /**
      * Shows a stashed file diff document.
      */
-    public show = (model: Model, node: StashNode) => {
-        this.displayer.display(model, node);
+    public show = (node: StashNode) => {
+        this.displayer.display(node);
+    }
+
+    /**
+     * Shows a stashed file diff document compared with the HEAD version.
+     */
+    public diffCurrent = (node: StashNode) => {
+        this.displayer.diffCurrent(node);
     }
 
     /**

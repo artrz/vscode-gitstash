@@ -9,9 +9,11 @@ import StashLabels from './StashLabels';
 import StashNode, { NodeType } from './StashNode';
 
 export class DiffDisplayer {
+    private model: Model;
     private stashLabels: StashLabels;
 
-    constructor(stashLabels: StashLabels) {
+    constructor(model: Model, stashLabels: StashLabels) {
+        this.model = model;
         this.stashLabels = stashLabels;
 
         tmp.setGracefulCleanup();
@@ -20,12 +22,11 @@ export class DiffDisplayer {
     /**
      * Shows a stashed file diff document.
      *
-     * @param model
      * @param node
      */
-    public display(model: Model, node: StashNode) {
+    public display(node: StashNode) {
         if (node.type === NodeType.Modified) {
-            model.getStashedFile(node).then((files) => {
+            this.model.getStashedFile(node).then((files) => {
                 this.showDiff(
                     this.getResourceAsUri(files.base, node),
                     this.getResourceAsUri(files.modified, node),
@@ -33,9 +34,8 @@ export class DiffDisplayer {
                 );
             });
         }
-
         else if (node.type === NodeType.Untracked) {
-            model.getUntrackedFile(node).then((content) => {
+            this.model.getUntrackedFile(node).then((content) => {
                 this.showDiff(
                     this.getResourceAsUri(),
                     this.getResourceAsUri(content, node),
@@ -43,9 +43,8 @@ export class DiffDisplayer {
                 );
             });
         }
-
         else if (node.type === NodeType.IndexAdded) {
-            model.getIndexAddedFile(node).then((content) => {
+            this.model.getIndexAddedFile(node).then((content) => {
                 this.showDiff(
                     this.getResourceAsUri(),
                     this.getResourceAsUri(content, node),
@@ -53,12 +52,61 @@ export class DiffDisplayer {
                 );
             });
         }
-
         else if (node.type === NodeType.Deleted) {
-            model.getDeletedFile(node).then((content) => {
+            this.model.getDeletedFile(node).then((content) => {
                 this.showDiff(
                     this.getResourceAsUri(content, node),
                     this.getResourceAsUri(),
+                    node
+                );
+            });
+        }
+    }
+
+    /**
+     * Shows a stashed file diff document.
+     *
+     * @param node
+     */
+    public diffCurrent(node: StashNode) {
+        const current = node.path;
+        if (!current) {
+            vscode.window.showErrorMessage('No file available to compare');
+            return;
+        }
+
+        if (node.type === NodeType.Modified) {
+            this.model.getStashedFile(node).then((files) => {
+                this.showDiff(
+                    this.getResourceAsUri(files.modified, node),
+                    vscode.Uri.parse(`file://${current}`),
+                    node
+                );
+            });
+        }
+        else if (node.type === NodeType.Untracked) {
+            this.model.getUntrackedFile(node).then((content) => {
+                this.showDiff(
+                    this.getResourceAsUri(content, node),
+                    vscode.Uri.parse(`file://${current}`),
+                    node
+                );
+            });
+        }
+        else if (node.type === NodeType.IndexAdded) {
+            this.model.getIndexAddedFile(node).then((content) => {
+                this.showDiff(
+                    this.getResourceAsUri(content, node),
+                    vscode.Uri.parse(`file://${current}`),
+                    node
+                );
+            });
+        }
+        else if (node.type === NodeType.Deleted) {
+            this.model.getDeletedFile(node).then((content) => {
+                this.showDiff(
+                    this.getResourceAsUri(content, node),
+                    vscode.Uri.parse(`file://${current}`),
                     node
                 );
             });
