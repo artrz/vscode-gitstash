@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Updated
   - Icons are now consistent with the general UI
   - Improve default stash tooltips for tree items
+  - Notify when a stash application has conflicts
+  - Log shows date and involved stash if available
 
 ## [[0.8.0] 2018-08-25](https://github.com/arturock/vscode-gitstash/tree/v0.8.0)
 ### Added

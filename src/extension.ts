@@ -20,7 +20,7 @@ export function activate(context: ExtensionContext) {
     const treeProvider = new GitStashTreeDataProvider(config, model, stashLabels);
     const emptyDocumentProvider = new EmptyDocumentContentProvider();
     const stashCommands = new Commands(
-        new StashCommands(config, window.createOutputChannel('GitStash')),
+        new StashCommands(config, window.createOutputChannel('GitStash'), stashLabels),
         new DiffDisplayer(model, stashLabels),
         stashLabels
     );
