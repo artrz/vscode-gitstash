@@ -2,7 +2,7 @@
 
 import * as path from 'path';
 import Config from './Config';
-import StashNode from './StashNode';
+import StashNode, { NodeType } from './StashNode';
 
 export default class {
     private config: Config;
@@ -12,51 +12,64 @@ export default class {
     }
 
     /**
-     * Generates the stash tree item name.
+     * Generates a stash item name.
      *
      * @param node The node to be used as base
      */
     public getEntryName(node: StashNode): string {
-        return this.config.settings.entryFormat
-            .replace('${index}', node.index)
-            .replace('${branch}', this.getEntryBranch(node))
-            .replace('${description}', this.getEntryDescription(node))
-            .replace('${date}', node.date);
+        return this.parseItemLabel(node, this.config.settings.entryFormat);
     }
 
     /**
-     * Generates the stash tree item name.
+     * Generates a stash item tooltip.
      *
      * @param node The node to be used as base
      */
     public getEntryTooltip(node: StashNode): string {
-        return this.config.settings.entryTooltipFormat
-            .replace('${index}', node.index)
+        return this.parseItemLabel(node, this.config.settings.entryTooltipFormat);
+    }
+
+    /**
+     * Generates a stash item label.
+     *
+     * @param node The node to be used as base
+     */
+    private parseItemLabel(node: StashNode, template: string): string {
+        return template
+            .replace('${index}', node.index.toString())
             .replace('${branch}', this.getEntryBranch(node))
             .replace('${description}', this.getEntryDescription(node))
             .replace('${date}', node.date);
     }
 
     /**
-     * Generates the stashed file tree item.
+     * Generates a stashed file name.
      *
      * @param node The node to be used as base
      */
     public getFileName(node: StashNode): string {
-        return this.config.settings.fileFormat
-            .replace('${filename}', path.basename(node.name))
-            .replace('${filepath}', `${path.dirname(node.name)}/`);
+        return this.parseFileLabel(node, this.config.settings.fileFormat);
     }
 
     /**
-     * Generates the stashed file tree item.
+     * Generates a stashed file tooltip.
      *
      * @param node The node to be used as base
      */
     public getFileTooltip(node: StashNode): string {
-        return this.config.settings.fileTooltipFormat
+        return this.parseFileLabel(node, this.config.settings.fileTooltipFormat);
+    }
+
+    /**
+     * Generates a stashed file label.
+     *
+     * @param node The node to be used as base
+     */
+    private parseFileLabel(node: StashNode, template: string): string {
+        return template
             .replace('${filename}', path.basename(node.name))
-            .replace('${filepath}', `${path.dirname(node.name)}/`);
+            .replace('${filepath}', `${path.dirname(node.name)}/`)
+            .replace('${type}', this.getTypeLabel(node));
     }
 
     /**
@@ -71,7 +84,8 @@ export default class {
             .replace('${date}', node.date)
             .replace('${stashIndex}', node.parent.index)
             .replace('${description}', this.getEntryDescription(node.parent))
-            .replace('${branch}', this.getEntryBranch(node.parent));
+            .replace('${branch}', this.getEntryBranch(node.parent))
+            .replace('${type}', this.getTypeLabel(node));
     }
 
     /**
@@ -92,5 +106,20 @@ export default class {
      */
     private getEntryDescription(node: StashNode): string {
         return node.name.substring(node.name.indexOf(':') + 2);
+    }
+
+    /**
+     * Gets a label for the node type.
+     *
+     * @param node the source node
+     */
+    private getTypeLabel(node: StashNode): string {
+        switch (node.type) {
+            case NodeType.Untracked: return 'Untracked';
+            case NodeType.IndexAdded: return 'Index Added';
+            case NodeType.Modified: return 'Modified';
+            case NodeType.Deleted: return 'Deleted';
+            default: return 'Other';
+        }
     }
 }

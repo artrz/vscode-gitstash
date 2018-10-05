@@ -57,22 +57,22 @@
                 },
                 "gitstash.entryTooltipFormat": {
                     "type": "string",
-                    "default": "Source branch: ${branch}",
+                    "default": "${branch}\n${date}\n${description}",
                     "description": "Specifies the format for each stash entry tooltip \nAvailable tokens:\nSame than entryFormat"
                 },
                 "gitstash.fileFormat": {
                     "type": "string",
                     "default": "${filename}",
-                    "description": "Specifies the format for each stashed file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${index} - the file index"
+                    "description": "Specifies the format for each stashed file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${index} - the file index\n${type} - the change type"
                 },
                 "gitstash.fileTooltipFormat": {
                     "type": "string",
-                    "default": "${filepath}${filename}",
+                    "default": "${filepath}${filename} • ${type}",
                     "description": "Specifies the format for each stashed file tooltip\nAvailable tokens:\nSame than fileFormat"
                 },
                 "gitstash.diffTitleFormat": {
                     "type": "string",
-                    "default": "#${stashIndex}: ${filename} (${filepath})",
+                    "default": "#${stashIndex}: ${filename} - ${type} (${filepath})",
                     "description": "Specifies the format for the diff document title\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${fileIndex} - the file index\n${date} - the entry date\n${description} - the entry description\n${branch} - the entry branch\n${stashIndex} - the entry index"
                 },
                 "gitstash.dateFormat": {

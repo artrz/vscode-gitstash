@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+  - Actions to tree entries
+    - Stash: Apply/pop and Drop
+### Updated
+  - Icons are now consistent with the general UI
+  - Improve default stash tooltips for tree items
 
 ## [[0.8.0] 2018-08-25](https://github.com/arturock/vscode-gitstash/tree/v0.8.0)
 ### Added
