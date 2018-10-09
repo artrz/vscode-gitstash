@@ -135,30 +135,31 @@ export class StashCommands {
                         }
                     }
                     if (!hasConflict) {
-                        this.showDetails('success', result, successMessage, node);
+                        this.showDetails(params, 'success', result, successMessage, node);
                     }
                     else {
-                        this.showDetails('warning', result, `${successMessage} with conflicts`, node);
+                        this.showDetails(params, 'warning', result, `${successMessage} with conflicts`, node);
                     }
                 },
                 (error) => {
                     const excerpt = error.substring(error.indexOf(':') + 1).trim();
-                    this.showDetails('error', error, excerpt, node);
+                    this.showDetails(params, 'error', error, excerpt, node);
                 }
             )
             .catch((error) => {
-                this.showDetails('error', error);
+                this.showDetails(params, 'error', error);
             });
     }
 
     /**
      * Shows the result message to the user.
      *
+     * @param params      the git command params
      * @param type        the string message type
      * @param message     the string result message
      * @param description the optional string alert description
      */
-    private showDetails(type: string, message: string, description?: string, node?: StashNode): void {
+    private showDetails(params: string[], type: string, message: string, description?: string, node?: StashNode): void {
         message = message.trim();
 
         if (this.config.settings.log.autoclear) {
@@ -171,10 +172,12 @@ export class StashCommands {
             if (node) {
                 this.channel.append(`: ${this.stashLabels.getEntryName(node)}`);
             }
-            this.channel.appendLine(`\n${message}\n`);
+            this.channel.appendLine('');
+            this.channel.appendLine(`  git ${params.join(' ')}`);
+            this.channel.appendLine(`${message}\n`);
         }
 
-        const resume = description || message;
+        const resume = (description || message).substr(0, 300);
         const actions = message.length > 0 ? [{ title: 'Show log' }] : [];
         const callback = (value) => {
             if (typeof value !== 'undefined') {
