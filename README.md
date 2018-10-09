@@ -6,29 +6,32 @@ Add extra git stash powers to VS Code.
 
  - Configurable explorer tree
  - Practically all stash commands with most common options
+ - Apply actions to stashed data from the tree view
+    - Apply, pop, drop stashes
+    - Diff stashed file changes or compare with current file state
+    - Apply changes from single stashed file
 
-This plugin list all stashed entries in a tree view* along with their modified files.
-Clicking on a file will display a diff view with the changes on that file, bringing an easy way to review or pickup stashed code.
+This extension allows to comfortably create, apply, delete and inspect stashes. It results helpful when working on different features, switching to branches for modifications or creating sets of local experimental features.
+Navigate on your stash entries, and run basically all stash commands visually and review the results.
 
 ![GitStash preview](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/screencast.gif)
 
-### Icons
+![Tree actions](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/tree.png)
 
-| Light themes                                                                                                                       | Dark themes                                                                                                                       | Type
-|------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|-----
-| ![Modified file](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/light/modified.png)                   | ![Modified file](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/dark/modified.png)                   | Modified file
-| ![Untracked file](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/light/untracked.png)                 | ![Untracked file](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/dark/untracked.png)                 | Untracked file
-| ![Indexed untracked file](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/light/indexed-untracked.png) | ![Indexed untracked file](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/dark/indexed-untracked.png) | Indexed untracked file
-| ![Deleted file](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/light/deleted.png)                     | ![Deleted file](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/dark/deleted.png)                     | Deleted file
+![Conflicts notification](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/success.png)
 
-* The tree view will be only shown on git tracked projects.
+![Conflicts notification](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/conflicts.png)
+
+![Conflicts notification](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/failure.png)
+
+![Image diff](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/image-diff.png)
 
 
 ## Commands
 
 | Title                     | Command                   | Description
 |---------------------------|---------------------------|------------
-| Stash...                  | gitstash.stash            | Generate a stash with custom options. Use `stash only` to generate a simple stash. Use `Keep index` to stash but keep all changes added to the index intact (besides stashing them). Use `Include untracked` if you want to stash also untracked files, leaving the working directory in a very clean state. If you want to stash besides the untracked files, the ignored ones, use the `All` option instead. **WARNING**: Using `Include untracked` (which applies the --include-untracked option) will clean/delete any ignored file, this is not a behavior implemented on the extension but the way git works.
+| Stash...                  | gitstash.stash            | Generate a stash with custom options. Use `stash only` to generate a simple stash. Use `Keep index` to stash but keep all changes added to the index intact (besides stashing them). Use `Include untracked` if you want to stash also untracked files, leaving the working directory in a very clean state. If you want to stash besides the untracked files, the ignored ones, use the `All` option instead. **WARNING**: Using `Include untracked` (which applies the --include-untracked option) will clean/delete any ignored file, this is not a behavior implemented on the extension but the way some old git versions work.
 | Stash Pop...              | gitstash.pop              | Pops a stash w/ or w/o file reindexing, If reindexing selected, every change added to index will be back to that state. this can fail, when you have conflicts (which are stored in the index, where you therefore can no longer apply the changes as they were originally).
 | Stash Apply...            | gitstash.apply            | Applies a stash w/ or w/o file reindexing. Reindexing will work the same as Stash Pop with reindex.
 | Stash Branch...           | gitstash.branch           | Creates and checks out a new branch starting from the commit at which the stash was originally created, applies the changes recorded in the selected stash to the new working tree and index. If that succeeds the stash will be dropped.
@@ -46,7 +49,7 @@ Clicking on a file will display a diff view with the changes on that file, bring
 | `gitstash.explorer.buttons`   | `true`                                               | Shows or hides the explorer buttons.
 | `gitstash.entryFormat`        | `#${stashEntry.index}:   ${description} (${branch})` | Specifies the format for each stash entry. Available tokens: `${branch}` - the branch where the stash was created, `${description}` - the custom or default description for the stash entry, `${date}` - the stash creation date, `${index}` the stash index
 | `gitstash.entryTooltipFormat` | `#${stashEntry.index}:   ${description} (${branch})` | Specifies the format for each stash entry tooltip. Available tokens: Same than entryFormat
-| `gitstash.fileFormat`         | `${filename} (${filepath})`                          | Specifies the format for each stashed file. Available tokens: `${filename}` - the file name, `${filepath}` - the file path
+| `gitstash.fileFormat`         | `${filename} (${filepath})`                          | Specifies the format for each stashed file. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${type}` - the change type
 | `gitstash.fileTooltipFormat`  | `${filename} (${filepath})`                          | Specifies the format for each stashed file tooltip. Available tokens: Same than fileFormat
 | `gitstash.diffTitleFormat`    | `#${stashIndex}: ${filename} (${filepath})`          | Specifies the format for the diff document title. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${date}` - the entry date, `${description}` - the entry description, `${branch}` - the entry branch, `${stashIndex}` - the entry index
 | `gitstash.dateFormat`         | `default`                                            | Specifies the date format for each stash entry. Available formats: `default`, `iso`, `local`, `raw`, `relative`, `rfc`, `short`
