@@ -68,9 +68,19 @@ export class Commands {
                         type: StashCommands.StashType.IncludeUntracked
                     },
                     {
+                        label: 'Include untracked + keep index',
+                        description: '',
+                        type: StashCommands.StashType.IncludeUntrackedKeepIndex
+                    },
+                    {
                         label: 'All',
                         description: 'Stash also untracked and ignored files',
                         type: StashCommands.StashType.All
+                    },
+                    {
+                        label: 'All + keep index',
+                        description: '',
+                        type: StashCommands.StashType.AllKeepIndex
                     }
                 ])
                 .then((option) => {

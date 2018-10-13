@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - Actions to tree entries
     - Stash: Apply/pop and Drop
     - File: Diff to file in current state
+  - More Keep index commands
 ### Updated
   - Icons are now consistent with the general UI
   - Improve default stash tooltips for tree items

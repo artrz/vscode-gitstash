@@ -7,10 +7,12 @@ import StashLabels from './StashLabels';
 import StashNode from './StashNode';
 
 enum StashType {
-    'All',
-    'IncludeUntracked',
+    'Simple',
     'KeepIndex',
-    'Simple'
+    'IncludeUntracked',
+    'IncludeUntrackedKeepIndex',
+    'All',
+    'AllKeepIndex'
 }
 
 export class StashCommands {
@@ -36,11 +38,21 @@ export class StashCommands {
 
         switch (type) {
             case StashType.KeepIndex:
-                params.concat('--keep-index');
+                params.push('--keep-index');
+                break;
             case StashType.IncludeUntracked:
-                params.concat('--include-untracked');
+                params.push('--include-untracked');
+                break;
+            case StashType.IncludeUntrackedKeepIndex:
+                params.push('--include-untracked');
+                params.push('--keep-index');
+                break;
             case StashType.All:
-                params.concat('--all');
+                params.push('--all');
+            case StashType.AllKeepIndex:
+                params.push('--all');
+                params.push('--keep-index');
+            break;
         }
 
         if (message.length > 0) {
