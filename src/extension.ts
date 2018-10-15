@@ -44,6 +44,7 @@ export function activate(context: ExtensionContext) {
 
         commands.registerCommand('gitstash.applyOrPop', stashCommands.applyOrPop),
         commands.registerCommand('gitstash.diffCurrent', stashCommands.diffCurrent),
+        commands.registerCommand('gitstash.applySingle', stashCommands.applySingle),
 
         watcher.onDidCreate((event) => treeProvider.reload('create', event)),
         watcher.onDidChange((event) => treeProvider.reload('update', event)),

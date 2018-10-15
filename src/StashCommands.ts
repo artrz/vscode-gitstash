@@ -49,6 +49,7 @@ export class StashCommands {
                 break;
             case StashType.All:
                 params.push('--all');
+                break;
             case StashType.AllKeepIndex:
                 params.push('--all');
                 params.push('--keep-index');
@@ -90,6 +91,19 @@ export class StashCommands {
         params.push(`stash@{${node.index}}`);
 
         this.exec(params, 'Stash applied', node);
+    }
+
+    /**
+     * Applies a stash entry.
+     */
+    public applySingle = (node: StashNode) => {
+        const params = [
+            'checkout',
+            `stash@{${node.parent.index}}`,
+            node.name
+        ];
+
+        this.exec(params, 'Changes from file applied', node.parent);
     }
 
     /**
@@ -159,7 +173,7 @@ export class StashCommands {
                 }
             )
             .catch((error) => {
-                this.showDetails(params, 'error', error);
+                this.showDetails(params, 'error', error.toString());
             });
     }
 
@@ -174,22 +188,27 @@ export class StashCommands {
     private showDetails(params: string[], type: string, message: string, description?: string, node?: StashNode): void {
         message = message.trim();
 
+        console.log(params.join(' '));
+
         if (this.config.settings.log.autoclear) {
             this.channel.clear();
         }
 
+        const currentTime = new Date();
+        this.channel.append(`> ${currentTime}`);
+        if (node) {
+            this.channel.append(`: ${this.stashLabels.getEntryName(node)}`);
+        }
+        this.channel.appendLine('');
+        this.channel.appendLine(`  git ${params.join(' ')}`);
+
         if (message.length > 0) {
-            const currentTime = new Date();
-            this.channel.append(`> ${currentTime}`);
-            if (node) {
-                this.channel.append(`: ${this.stashLabels.getEntryName(node)}`);
-            }
-            this.channel.appendLine('');
-            this.channel.appendLine(`  git ${params.join(' ')}`);
-            this.channel.appendLine(`${message}\n`);
+            this.channel.appendLine(message);
         }
 
-        const resume = (description || message).substr(0, 300);
+        this.channel.appendLine('');
+
+        const summary = (description || message).substr(0, 300);
         const actions = message.length > 0 ? [{ title: 'Show log' }] : [];
         const callback = (value) => {
             if (typeof value !== 'undefined') {
@@ -198,13 +217,13 @@ export class StashCommands {
         };
 
         if (type === 'success') {
-            vscode.window.showInformationMessage(resume, ...actions).then(callback);
+            vscode.window.showInformationMessage(summary, ...actions).then(callback);
         }
         else if (type === 'warning') {
-            vscode.window.showWarningMessage(resume, ...actions).then(callback);
+            vscode.window.showWarningMessage(summary, ...actions).then(callback);
         }
         else {
-            vscode.window.showErrorMessage(resume, ...actions).then(callback);
+            vscode.window.showErrorMessage(summary, ...actions).then(callback);
         }
     }
 }

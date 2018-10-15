@@ -131,11 +131,19 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
      * @param node The node to be used as base
      */
     private getFileItem(node: StashNode): TreeItem {
+        let context = 'diffFile';
+        switch (node.type) {
+            case (NodeType.Deleted): context += ':deleted'; break;
+            case (NodeType.Modified): context += ':modified'; break;
+            case (NodeType.Untracked): context += ':untracked'; break;
+            case (NodeType.IndexAdded): context += ':indexAdded'; break;
+        }
+
         return {
             label: this.stashLabels.getFileName(node),
             tooltip: this.stashLabels.getFileTooltip(node),
             iconPath: this.getFileIcon(node.type),
-            contextValue: 'diffFile',
+            contextValue: context,
             collapsibleState: void 0,
             command: {
                 title: 'Show stash diff',

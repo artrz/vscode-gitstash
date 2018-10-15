@@ -118,22 +118,22 @@
             },
             {
                 "command": "gitstash.pop",
-                "title": "Stash Pop...",
+                "title": "Pop...",
                 "category": "GitStash"
             },
             {
                 "command": "gitstash.apply",
-                "title": "Stash Apply...",
+                "title": "Apply...",
                 "category": "GitStash"
             },
             {
                 "command": "gitstash.branch",
-                "title": "Stash Branch...",
+                "title": "Branch...",
                 "category": "GitStash"
             },
             {
                 "command": "gitstash.drop",
-                "title": "Stash Drop...",
+                "title": "Drop...",
                 "category": "GitStash",
                 "icon": {
                     "light": "resources/icons/light/close.svg",
@@ -161,6 +161,15 @@
                 "icon": {
                     "light": "resources/icons/light/diff.svg",
                     "dark": "resources/icons/dark/diff.svg"
+                }
+            },
+            {
+                "command": "gitstash.applySingle",
+                "title": "Apply changes from this file",
+                "category": "GitStash",
+                "icon": {
+                    "light": "resources/icons/light/tasklist.svg",
+                    "dark": "resources/icons/dark/tasklist.svg"
                 }
             }
         ],
@@ -214,6 +223,10 @@
                 {
                     "command": "gitstash.diffCurrent",
                     "when": "false"
+                },
+                {
+                    "command": "gitstash.applySingle",
+                    "when": "false"
                 }
             ],
             "view/title": [
@@ -244,7 +257,12 @@
                 },
                 {
                     "command": "gitstash.diffCurrent",
-                    "when": "view == gitstash.explorer && viewItem == diffFile",
+                    "when": "view == gitstash.explorer && viewItem =~ /diffFile/",
+                    "group": "inline"
+                },
+                {
+                    "command": "gitstash.applySingle",
+                    "when": "view == gitstash.explorer && viewItem =~ /diffFile:(modified|indexAdded)/",
                     "group": "inline"
                 }
             ]

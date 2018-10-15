@@ -29,6 +29,8 @@ export class Commands {
 
     /**
      * Shows a stashed file diff document.
+     *
+     * @param node the involved node
      */
     public show = (node: StashNode) => {
         this.displayer.display(node);
@@ -36,9 +38,32 @@ export class Commands {
 
     /**
      * Shows a stashed file diff document compared with the HEAD version.
+     *
+     * @param node the involved node
      */
     public diffCurrent = (node: StashNode) => {
         this.displayer.diffCurrent(node);
+    }
+
+    /**
+     * Applies the changes on the stashed file
+     *
+     * @param node the involved node
+     */
+    public applySingle = (node: StashNode) => {
+        const label = this.stashLabels.getFileName(node);
+
+        vscode.window
+            .showWarningMessage<vscode.MessageItem>(
+                `Apply changes from ${label}?`,
+                { modal: true },
+                { title: 'Proceed' }
+            )
+            .then((option) => {
+                if (typeof option !== 'undefined') {
+                    this.stashCommands.applySingle(node);
+                }
+            });
     }
 
     /**
@@ -102,6 +127,8 @@ export class Commands {
 
     /**
      * Shows a selector to perform an apply / pop action.
+     *
+     * @param node the involved node
      */
     public applyOrPop = (node: StashNode) => {
         vscode.window
@@ -134,6 +161,8 @@ export class Commands {
 
     /**
      * Pops the selected stash or selects one to pop.
+     *
+     * @param node the involved node
      */
     public pop = (node?: StashNode) => {
         if (node) {
@@ -150,6 +179,8 @@ export class Commands {
 
     /**
      * Confirms and pops.
+     *
+     * @param node the involved node
      */
     private popPerform = (node: StashNode) => {
         vscode.window.showQuickPick(
@@ -176,6 +207,8 @@ export class Commands {
 
     /**
      * Applies the selected stash or selects one to apply.
+     *
+     * @param node the involved node
      */
     public apply = (node?: StashNode) => {
         if (node) {
@@ -192,6 +225,8 @@ export class Commands {
 
     /**
      * Confirms and applies.
+     *
+     * @param node the involved node
      */
     private applyPerform = (node: StashNode) => {
         vscode.window.showQuickPick(
@@ -236,6 +271,8 @@ export class Commands {
 
     /**
      * Drops the currently selected stash or selects a stash to drop.
+     *
+     * @param node the involved node
      */
     public drop = (node?: StashNode) => {
         if (node) {
@@ -252,6 +289,8 @@ export class Commands {
 
     /**
      * Confirms and drops.
+     *
+     * @param node the involved node
      */
     private dropPerform = (node: StashNode) => {
         const label = this.stashLabels.getEntryName(node);
