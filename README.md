@@ -29,16 +29,16 @@ Navigate on your stash entries, and run basically all stash commands visually an
 
 ## Commands
 
-| Title                     | Command                   | Description
-|---------------------------|---------------------------|------------
-| Stash...                  | gitstash.stash            | Generate a stash with custom options. Use `stash only` to generate a simple stash. Use `Keep index` to stash but keep all changes added to the index intact (besides stashing them). Use `Include untracked` if you want to stash also untracked files, leaving the working directory in a very clean state. If you want to stash besides the untracked files, the ignored ones, use the `All` option instead. **WARNING**: Using `Include untracked` (which applies the --include-untracked option) will clean/delete any ignored file, this is not a behavior implemented on the extension but the way some old git versions work.
-| Stash Pop...              | gitstash.pop              | Pops a stash w/ or w/o file reindexing, If reindexing selected, every change added to index will be back to that state. this can fail, when you have conflicts (which are stored in the index, where you therefore can no longer apply the changes as they were originally).
-| Stash Apply...            | gitstash.apply            | Applies a stash w/ or w/o file reindexing. Reindexing will work the same as Stash Pop with reindex.
-| Stash Branch...           | gitstash.branch           | Creates and checks out a new branch starting from the commit at which the stash was originally created, applies the changes recorded in the selected stash to the new working tree and index. If that succeeds the stash will be dropped.
-| Stash Drop...             | gitstash.drop             | Drops a stash.
-| Stash Clear               | gitstash.clear            | Removes all the stash entries.
-| Reload the stash explorer | gitstash.explorer.refresh | Reloads the stash explorer tree.
-| Toggle the stash explorer | gitstash.explorer.toggle  | Shows/hides the stash explorer tree.
+| Title            | Command                   | Description
+|------------------|---------------------------|------------
+| Stash...         | gitstash.stash            | Generate a stash with custom options. Use `stash only` to generate a simple stash. Use `Keep index` to stash but keep all changes added to the index intact (besides stashing them). Use `Include untracked` if you want to stash also untracked files, leaving the working directory in a very clean state. If you want to stash besides the untracked files, the ignored ones, use the `All` option instead. **WARNING**: Using `Include untracked` (which applies the --include-untracked option) will clean/delete any ignored file, this is not a behavior implemented on the extension but the way some old git versions work.
+| Pop...           | gitstash.pop              | Pops a stash w/ or w/o file reindexing, If reindexing selected, every change added to index will be back to that state. this can fail, when you have conflicts (which are stored in the index, where you therefore can no longer apply the changes as they were originally).
+| Apply...         | gitstash.apply            | Applies a stash w/ or w/o file reindexing. Reindexing will work the same as Stash Pop with reindex.
+| Branch...        | gitstash.branch           | Creates and checks out a new branch starting from the commit at which the stash was originally created, applies the changes recorded in the selected stash to the new working tree and index. If that succeeds the stash will be dropped.
+| Drop...          | gitstash.drop             | Drops a stash.
+| Clear            | gitstash.clear            | Removes all the stash entries.
+| Refresh explorer | gitstash.explorer.refresh | Reloads the stash explorer tree.
+| Toggle explorer  | gitstash.explorer.toggle  | Shows/hides the stash explorer tree.
 
 
 ## Extension Settings

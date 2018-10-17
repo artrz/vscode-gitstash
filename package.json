@@ -99,7 +99,7 @@
         "commands": [
             {
                 "command": "gitstash.explorer.refresh",
-                "title": "Refresh the stash explorer",
+                "title": "Refresh explorer",
                 "category": "GitStash",
                 "icon": {
                     "light": "resources/icons/light/refresh.svg",
@@ -108,7 +108,7 @@
             },
             {
                 "command": "gitstash.explorer.toggle",
-                "title": "Toggle the stash explorer",
+                "title": "Toggle explorer",
                 "category": "GitStash"
             },
             {
@@ -142,7 +142,7 @@
             },
             {
                 "command": "gitstash.clear",
-                "title": "Stash Clear",
+                "title": "Clear",
                 "category": "GitStash"
             },
             {
