@@ -37,10 +37,17 @@ export default class StashGit extends Git {
             '--exclude-standard'
         ];
 
+        const paramsStaged = [
+            'diff',
+            '--cached',
+            '--name-only'
+        ];
+
         const modifiedFiles = (await this.exec(paramsModifiedAndDeleted)).trim().length > 0;
         const untrackedFiles = (await this.exec(paramsUntracked)).trim().length > 0;
+        const stagedFiles = (await this.exec(paramsStaged)).trim().length > 0;
 
-        return modifiedFiles || untrackedFiles;
+        return modifiedFiles || untrackedFiles || stagedFiles;
     }
 
     /**

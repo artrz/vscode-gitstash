@@ -31,9 +31,10 @@ export default class Git {
             cmd.stderr.on('error', (err: Error) => errors.push(err.message));
 
             cmd.on('close', () => {
+                const bufferResponse = response.length ? Buffer.concat(response) : new Buffer(0);
                 errors.length === 0
-                    ? resolve(response.length ? Buffer.concat(response) : new Buffer(0))
-                    : reject(errors.join(' '));
+                    ? resolve(bufferResponse)
+                    : reject(`${errors.join(' ')}\n${bufferResponse.toString('utf8')}`.trim());
             });
         });
     }
