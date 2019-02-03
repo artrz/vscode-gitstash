@@ -22,12 +22,16 @@ export default class {
     /**
      * Generates a node from a stashed file.
      *
-     *@param entry The stash entry to use as base.
+     * @param path       the file path
+     * @param file       the file name
+     * @param parentNode the parent node
+     * @param type       the stash type
      */
-    public fileToNode(file: string, parentNode: StashNode, type: NodeType): StashNode {
+    public fileToNode(path: string, file: string, parentNode: StashNode, type: NodeType): StashNode {
         return new StashNode({
             type: type,
             name: file,
+            path: path,
             index: null,
             parent: parentNode,
             date: parentNode.date

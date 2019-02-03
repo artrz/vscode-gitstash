@@ -79,7 +79,7 @@ export class DiffDisplayer {
             this.model.getStashedFile(node).then((files) => {
                 this.showDiff(
                     this.getResourceAsUri(files.modified, node),
-                    vscode.Uri.parse(`file://${current}`),
+                    vscode.Uri.file(current),
                     node
                 );
             });
@@ -88,7 +88,7 @@ export class DiffDisplayer {
             this.model.getUntrackedFile(node).then((content) => {
                 this.showDiff(
                     this.getResourceAsUri(content, node),
-                    vscode.Uri.parse(`file://${current}`),
+                    vscode.Uri.file(current),
                     node
                 );
             });
@@ -97,7 +97,7 @@ export class DiffDisplayer {
             this.model.getIndexAddedFile(node).then((content) => {
                 this.showDiff(
                     this.getResourceAsUri(content, node),
-                    vscode.Uri.parse(`file://${current}`),
+                    vscode.Uri.file(current),
                     node
                 );
             });
@@ -106,7 +106,7 @@ export class DiffDisplayer {
             this.model.getDeletedFile(node).then((content) => {
                 this.showDiff(
                     this.getResourceAsUri(content, node),
-                    vscode.Uri.parse(`file://${current}`),
+                    vscode.Uri.file(current),
                     node
                 );
             });
