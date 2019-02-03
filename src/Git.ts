@@ -64,6 +64,13 @@ export default class Git {
     /**
      * Gets the root directory for the git project.
      */
+    public get root(): string {
+        return this.gitRootPath;
+    }
+
+    /**
+     * Gets the root directory for the git project.
+     */
     private async getGitRoot(): Promise<string> {
         if (!this.gitRootPath && workspace.rootPath) {
             const params = [

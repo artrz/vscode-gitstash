@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [[1.0.2] 2019-02-02](https://github.com/arturock/vscode-gitstash/tree/v1.0.2)
+### Fixed
+  - Unable to compare with current version on Win
+
 ## [[1.0.1] 2018-11-01](https://github.com/arturock/vscode-gitstash/tree/v1.0.1)
 ### Fixed
   - Unable to create stash when al changes are staged

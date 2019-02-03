@@ -46,21 +46,22 @@ export default class Model {
         return this.stashGit.getStashedFiles(node.index).then((stashedFiles: StashedFiles) => {
 
             const list = [];
+            const path = this.stashGit.root;
 
             stashedFiles.modified.forEach((stashFile: string) => {
-                list.push(this.stashNodeFactory.fileToNode(stashFile, node, NodeType.Modified));
+                list.push(this.stashNodeFactory.fileToNode(path, stashFile, node, NodeType.Modified));
             });
 
             stashedFiles.untracked.forEach((stashFile: string) => {
-                list.push(this.stashNodeFactory.fileToNode(stashFile, node, NodeType.Untracked));
+                list.push(this.stashNodeFactory.fileToNode(path, stashFile, node, NodeType.Untracked));
             });
 
             stashedFiles.indexAdded.forEach((stashFile: string) => {
-                list.push(this.stashNodeFactory.fileToNode(stashFile, node, NodeType.IndexAdded));
+                list.push(this.stashNodeFactory.fileToNode(path, stashFile, node, NodeType.IndexAdded));
             });
 
             stashedFiles.deleted.forEach((stashFile: string) => {
-                list.push(this.stashNodeFactory.fileToNode(stashFile, node, NodeType.Deleted));
+                list.push(this.stashNodeFactory.fileToNode(path, stashFile, node, NodeType.Deleted));
             });
 
             return list;

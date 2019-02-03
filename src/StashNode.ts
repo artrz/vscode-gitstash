@@ -1,6 +1,5 @@
 'use strict';
 
-import { workspace } from 'vscode';
 import { existsSync } from 'fs';
 
 interface Node {
@@ -73,7 +72,8 @@ export default class StashNode {
         if (!this.isFile) {
             return null;
         }
-        const path = `${workspace.rootPath}/${this.name}`;
+
+        const path = `${this.entry.path}/${this.name}`;
         return existsSync(path) ? path : null;
     }
 }
