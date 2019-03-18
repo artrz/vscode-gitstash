@@ -22,42 +22,46 @@ export class DiffDisplayer {
     /**
      * Shows a stashed file diff document.
      *
-     * @param node
+     * @param fileNode
      */
-    public display(node: StashNode) {
-        if (node.type === NodeType.Modified) {
-            this.model.getStashedFile(node).then((files) => {
+    public display(fileNode: StashNode) {
+        if (fileNode.type === NodeType.Modified) {
+            this.model.getStashedFile(fileNode).then((files) => {
                 this.showDiff(
-                    this.getResourceAsUri(files.base, node),
-                    this.getResourceAsUri(files.modified, node),
-                    node
+                    this.getResourceAsUri(files.base, fileNode),
+                    this.getResourceAsUri(files.modified, fileNode),
+                    fileNode,
+                    true
                 );
             });
         }
-        else if (node.type === NodeType.Untracked) {
-            this.model.getUntrackedFile(node).then((content) => {
+        else if (fileNode.type === NodeType.Untracked) {
+            this.model.getFileContents(fileNode).then((content) => {
                 this.showDiff(
                     this.getResourceAsUri(),
-                    this.getResourceAsUri(content, node),
-                    node
+                    this.getResourceAsUri(content, fileNode),
+                    fileNode,
+                    true
                 );
             });
         }
-        else if (node.type === NodeType.IndexAdded) {
-            this.model.getIndexAddedFile(node).then((content) => {
+        else if (fileNode.type === NodeType.IndexAdded) {
+            this.model.getFileContents(fileNode).then((content) => {
                 this.showDiff(
                     this.getResourceAsUri(),
-                    this.getResourceAsUri(content, node),
-                    node
+                    this.getResourceAsUri(content, fileNode),
+                    fileNode,
+                    true
                 );
             });
         }
-        else if (node.type === NodeType.Deleted) {
-            this.model.getDeletedFile(node).then((content) => {
+        else if (fileNode.type === NodeType.Deleted) {
+            this.model.getFileContents(fileNode).then((content) => {
                 this.showDiff(
-                    this.getResourceAsUri(content, node),
+                    this.getResourceAsUri(content, fileNode),
                     this.getResourceAsUri(),
-                    node
+                    fileNode,
+                    true
                 );
             });
         }
@@ -66,48 +70,52 @@ export class DiffDisplayer {
     /**
      * Shows a stashed file diff document.
      *
-     * @param node
+     * @param fileNode
      */
-    public diffCurrent(node: StashNode) {
-        const current = node.path;
-        if (!current) {
+    public diffCurrent(fileNode: StashNode) {
+        const current = fileNode.path;
+        if (!fs.existsSync(current)) {
             vscode.window.showErrorMessage('No file available to compare');
             return;
         }
 
-        if (node.type === NodeType.Modified) {
-            this.model.getStashedFile(node).then((files) => {
+        if (fileNode.type === NodeType.Modified) {
+            this.model.getStashedFile(fileNode).then((files) => {
                 this.showDiff(
-                    this.getResourceAsUri(files.modified, node),
+                    this.getResourceAsUri(files.modified, fileNode),
                     vscode.Uri.file(current),
-                    node
+                    fileNode,
+                    false
                 );
             });
         }
-        else if (node.type === NodeType.Untracked) {
-            this.model.getUntrackedFile(node).then((content) => {
+        else if (fileNode.type === NodeType.Untracked) {
+            this.model.getFileContents(fileNode).then((content) => {
                 this.showDiff(
-                    this.getResourceAsUri(content, node),
+                    this.getResourceAsUri(content, fileNode),
                     vscode.Uri.file(current),
-                    node
+                    fileNode,
+                    false
                 );
             });
         }
-        else if (node.type === NodeType.IndexAdded) {
-            this.model.getIndexAddedFile(node).then((content) => {
+        else if (fileNode.type === NodeType.IndexAdded) {
+            this.model.getFileContents(fileNode).then((content) => {
                 this.showDiff(
-                    this.getResourceAsUri(content, node),
+                    this.getResourceAsUri(content, fileNode),
                     vscode.Uri.file(current),
-                    node
+                    fileNode,
+                    false
                 );
             });
         }
-        else if (node.type === NodeType.Deleted) {
-            this.model.getDeletedFile(node).then((content) => {
+        else if (fileNode.type === NodeType.Deleted) {
+            this.model.getFileContents(fileNode).then((content) => {
                 this.showDiff(
-                    this.getResourceAsUri(content, node),
+                    this.getResourceAsUri(content, fileNode),
                     vscode.Uri.file(current),
-                    node
+                    fileNode,
+                    false
                 );
             });
         }
@@ -118,14 +126,15 @@ export class DiffDisplayer {
      *
      * @param base     the resource uri of the file prior the modification
      * @param modified the resource uri of the file after the modification
-     * @param node     the stash node that's being displayed
+     * @param fileNode the stash node that's being displayed
+     * @param hint     the hint reference to know file origin
      */
-    private showDiff(base: vscode.Uri, modified: vscode.Uri, node: StashNode) {
+    private showDiff(base: vscode.Uri, modified: vscode.Uri, fileNode: StashNode, hint: boolean) {
         vscode.commands.executeCommand<void>(
             'vscode.diff',
             base,
             modified,
-            this.stashLabels.getDiffTitle(node),
+            this.stashLabels.getDiffTitle(fileNode, hint),
             { preview: true }
         );
     }

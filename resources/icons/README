@@ -1,9 +1,8 @@
 All icons prefixed with status- and refresh.svg are unmodified copies of files with the same name from the vscode git extension
-check.svg files are adjusted in size versions from the files with the same name from the vscode git extension
 close.svg files are adjusted in color versions from the editor
 https://github.com/Microsoft/vscode/tree/master/extensions/git/resources/icons
 https://github.com/Microsoft/vscode/blob/master/src/vs/workbench/browser/parts/editor/media/close.svg
 https://github.com/Microsoft/vscode/blob/master/src/vs/workbench/browser/parts/editor/media/close-inverse.svg
 
-diff.svg and tasklist.svg from the set of icons by GitHub
- https://octicons.github.com/
+diff.svg, repo.svg, tasklist.svg
+from the set of icons by GitHub https://octicons.github.com/

@@ -23,9 +23,9 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     private config: Config;
     private stashLabels: StashLabels;
     private model: Model;
-    private rawStash: string;
-    private loadTimeout;
-    private showExplorer;
+    private rawStashes = {};
+    private loadTimeout: NodeJS.Timer;
+    private showExplorer: boolean;
 
     constructor(config: Config, model: Model, stashLabels: StashLabels) {
         this.config = config;
@@ -56,20 +56,18 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     }
 
     /**
-     * Gets the tree children, (root) stash entries, or entry files.
+     * Gets the tree children, which may be repositories, stashes or files.
      *
-     * @param node If specified, return the files list, if not, the stash list
+     * @param node the parent node for the requested children
      */
     public getChildren(node?: StashNode): Thenable<StashNode[]> {
         if (!node) {
-            this.model.raw.then((rawStash) => {
-                this.rawStash = rawStash;
-            });
-
-            return this.model.roots;
+            return this.model.getRepositories();
         }
 
-        return this.model.getFiles(node);
+        return node.type === NodeType.Repository
+            ? this.model.getStashes(node)
+            : this.model.getFiles(node);
     }
 
     /**
@@ -78,15 +76,17 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
      * @param node The node to be used as base
      */
     public getTreeItem(node: StashNode): TreeItem {
-        return node.isFile
-            ? this.getFileItem(node)
-            : this.getEntryItem(node);
+        switch (node.type) {
+            case NodeType.Repository: return this.getRepositoryItem(node);
+            case NodeType.Stash:      return this.getStashItem(node);
+            default:                  return this.getFileItem(node);
+        }
     }
 
     /**
      * Reloads the git stash tree view.
      *
-     * @param type the event type
+     * @param type the event type: settings, force, create, update, delete
      * @param event The event file URI
      */
     public reload(type: string, event?: Uri): void {
@@ -99,9 +99,16 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
                 this._onDidChangeTreeData.fire();
             }
             else {
-                this.model.raw.then((rawStash) => {
-                    if (this.rawStash !== rawStash) {
-                        this.rawStash = rawStash;
+                let cwd = event.path;
+                while (cwd.indexOf('/.git') > -1) {
+                    cwd = path.dirname(cwd);
+                }
+
+                this.model.getRawStashesList(cwd).then((rawStash: string) => {
+                    const currentRawStash = this.rawStashes[cwd] || null;
+
+                    if (currentRawStash !== rawStash) {
+                        this.rawStashes[cwd] = rawStash;
                         this._onDidChangeTreeData.fire();
                     }
                 });
@@ -110,16 +117,32 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     }
 
     /**
+     * Generates an repository tree item.
+     *
+     * @param node The node to be used as base
+     */
+    private getRepositoryItem(node: StashNode): TreeItem {
+        return {
+            label: this.stashLabels.getName(node),
+            tooltip: this.stashLabels.getTooltip(node),
+            iconPath: this.getIcon('repository.svg'),
+            contextValue: 'repository',
+            collapsibleState: TreeItemCollapsibleState.Collapsed,
+            command: void 0
+        };
+    }
+
+    /**
      * Generates an stash tree item.
      *
      * @param node The node to be used as base
      */
-    private getEntryItem(node: StashNode): TreeItem {
+    private getStashItem(node: StashNode): TreeItem {
         return {
-            label: this.stashLabels.getEntryName(node),
-            tooltip: this.stashLabels.getEntryTooltip(node),
+            label: this.stashLabels.getName(node),
+            tooltip: this.stashLabels.getTooltip(node),
             iconPath: this.getIcon('chest.svg'),
-            contextValue: 'diffEntry',
+            contextValue: 'stash',
             collapsibleState: TreeItemCollapsibleState.Collapsed,
             command: void 0
         };
@@ -131,7 +154,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
      * @param node The node to be used as base
      */
     private getFileItem(node: StashNode): TreeItem {
-        let context = 'diffFile';
+        let context = 'file';
         switch (node.type) {
             case (NodeType.Deleted): context += ':deleted'; break;
             case (NodeType.Modified): context += ':modified'; break;
@@ -140,8 +163,8 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
         }
 
         return {
-            label: this.stashLabels.getFileName(node),
-            tooltip: this.stashLabels.getFileTooltip(node),
+            label: this.stashLabels.getName(node),
+            tooltip: this.stashLabels.getTooltip(node),
             iconPath: this.getFileIcon(node.type),
             contextValue: context,
             collapsibleState: void 0,

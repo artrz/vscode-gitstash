@@ -1,11 +1,10 @@
 'use strict';
 
+import { existsSync } from 'fs';
 import { spawn } from 'child_process';
-import { workspace } from 'vscode';
+import { workspace, WorkspaceFolder } from 'vscode';
 
 export default class Git {
-    private gitRootPath: string;
-
     /**
      * Executes a git command.
      *
@@ -14,7 +13,7 @@ export default class Git {
      */
     public async call(args: string[], cwd?: string): Promise<Buffer | string> {
         if (!cwd) {
-            cwd = await this.getGitRoot();
+            cwd = await this.getDefaultRoot() || '';
         }
 
         const response = [];
@@ -31,7 +30,7 @@ export default class Git {
             cmd.stderr.on('error', (err: Error) => errors.push(err.message));
 
             cmd.on('close', () => {
-                const bufferResponse = response.length ? Buffer.concat(response) : new Buffer(0);
+                const bufferResponse = response.length ? Buffer.concat(response) : Buffer.from(new ArrayBuffer(0));
                 errors.length === 0
                     ? resolve(bufferResponse)
                     : reject(`${errors.join(' ')}\n${bufferResponse.toString('utf8')}`.trim());
@@ -58,29 +57,61 @@ export default class Git {
      * Indicates if there's a current git repository.
      */
     public async hasGitRepository(): Promise<boolean> {
-        return (await this.getGitRoot()).length > 0;
+        const repository = await this.getRepositories(true);
+
+        return repository && repository.length > 0;
     }
 
     /**
-     * Gets the root directory for the git project.
+     * Gets the directory to be used as fallback.
      */
-    public get root(): string {
-        return this.gitRootPath;
+    private async getDefaultRoot(): Promise<string | null> {
+        const repositories = await this.getRepositories(true);
+
+        return repositories[0] || null;
     }
 
     /**
-     * Gets the root directory for the git project.
+     * Gets the directories for git repositories on the workspace.
      */
-    private async getGitRoot(): Promise<string> {
-        if (!this.gitRootPath && workspace.rootPath) {
-            const params = [
-                'rev-parse',
-                '--show-toplevel'
-            ];
+    public async getRepositories(firstOnly?: boolean): Promise<string[]> {
+        const params = [
+            'rev-parse',
+            '--show-toplevel'
+        ];
 
-            this.gitRootPath = (await this.exec(params, workspace.rootPath)).trim();
+        const paths = [];
+        for (const cwd of this.getWorkspacePaths()) {
+            let gitPath: string;
+            try {
+                gitPath = (await this.exec(params, cwd)).trim();
+            } catch (e) {
+                continue;
+            }
+
+            paths.push(gitPath);
+
+            if (firstOnly) {
+                break;
+            }
         }
 
-        return this.gitRootPath;
+        return paths;
+    }
+
+    /**
+     * Gets the workspace directory paths.
+     */
+    private getWorkspacePaths(): string[] {
+        const folders = workspace.workspaceFolders || [];
+        const paths = [];
+
+        folders.forEach((folder: WorkspaceFolder) => {
+            if (existsSync(folder.uri.fsPath)) {
+                paths.push(folder.uri.fsPath);
+            }
+        });
+
+        return paths;
     }
 }
