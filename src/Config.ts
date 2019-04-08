@@ -1,9 +1,9 @@
 'use strict';
 
-import { workspace } from 'vscode';
+import { workspace, WorkspaceConfiguration } from 'vscode';
 
 export default class {
-    public settings;
+    public settings: WorkspaceConfiguration;
 
     constructor() {
         this.reload();

@@ -3,7 +3,7 @@
 import { workspace } from 'vscode';
 import Git from './Git';
 
-export interface StashEntry {
+export interface Stash {
     index: number;
     description: string;
     date: string;
@@ -23,9 +23,25 @@ export interface StashedFiles {
 
 export default class StashGit extends Git {
     /**
-     * Indicates if there's something able to be stashed.
+     * Gets the raw git stash command data.
+     *
+     * @param cwd the current working directory
      */
-    public async isStashable(): Promise<boolean> {
+    public async getRawStash(cwd: string): Promise<string> {
+        const params = [
+            'stash',
+            'list'
+        ];
+
+        return (await this.exec(params, cwd)).trim();
+    }
+
+    /**
+     * Indicates if there's something able to be stashed.
+     *
+     * @param cwd the current working directory
+     */
+    public async isStashable(cwd: string): Promise<boolean> {
         const paramsModifiedAndDeleted = [
             'diff',
             '--name-only'
@@ -43,29 +59,21 @@ export default class StashGit extends Git {
             '--name-only'
         ];
 
-        const modifiedFiles = (await this.exec(paramsModifiedAndDeleted)).trim().length > 0;
-        const untrackedFiles = (await this.exec(paramsUntracked)).trim().length > 0;
-        const stagedFiles = (await this.exec(paramsStaged)).trim().length > 0;
+        const modifiedFiles = await this.exec(paramsModifiedAndDeleted, cwd);
+        const untrackedFiles = await this.exec(paramsUntracked, cwd);
+        const stagedFiles = await this.exec(paramsStaged, cwd);
 
-        return modifiedFiles || untrackedFiles || stagedFiles;
+        return modifiedFiles.trim().length > 0
+            || untrackedFiles.trim().length > 0
+            || stagedFiles.trim().length > 0;
     }
 
     /**
-     * Gets the raw git stash command data.
+     * Gets the stashes list.
+     *
+     * @param cwd the current working directory
      */
-    public async getRawStash(): Promise<string> {
-        const params = [
-            'stash',
-            'list'
-        ];
-
-        return (await this.exec(params)).trim();
-    }
-
-    /**
-     * Gets the stash entries list.
-     */
-    public async getStashList(): Promise<StashEntry[]> {
+    public async getStashes(cwd: string): Promise<Stash[]> {
         const validFormats = ['default', 'iso', 'local', 'raw', 'relative', 'rfc', 'short'];
         const dateFormat = workspace.getConfiguration('gitstash').dateFormat;
         const params = [
@@ -74,16 +82,16 @@ export default class StashGit extends Git {
             '--date=' + (validFormats.indexOf(dateFormat) > -1 ? dateFormat : 'default')
         ];
 
-        const stashList = (await this.exec(params)).trim();
+        const stashList = (await this.exec(params, cwd)).trim();
 
         const list = [];
 
         if (stashList.length > 0) {
-            stashList.split(/\r?\n/g).forEach((entry, index) => {
+            stashList.split(/\r?\n/g).forEach((stash, index) => {
                 list.push({
                     index: index,
-                    description: entry.substring(entry.indexOf('}:') + 2).trim(),
-                    date: entry.substring(entry.indexOf('{') + 1, entry.indexOf('}'))
+                    description: stash.substring(stash.indexOf('}:') + 2).trim(),
+                    date: stash.substring(stash.indexOf('{') + 1, stash.indexOf('}'))
                 });
             });
         }
@@ -92,13 +100,14 @@ export default class StashGit extends Git {
     }
 
     /**
-     * Gets the files of a stash entry.
+     * Gets the stash files.
      *
-     * @param index the int with the index of the stash entry
+     * @param cwd   the current working directory
+     * @param index the int with the stash index
      */
-    public async getStashedFiles(index: number): Promise<StashedFiles> {
-        const entryFiles = {
-            untracked: await this.getStashUntracked(index),
+    public async getStashedFiles(cwd: string, index: number): Promise<StashedFiles> {
+        const files = {
+            untracked: await this.getStashUntracked(cwd, index),
             indexAdded: [],
             modified: [],
             deleted: []
@@ -112,7 +121,7 @@ export default class StashGit extends Git {
             `stash@{${index}}`
         ];
 
-        const stashData = (await this.exec(params)).trim();
+        const stashData = (await this.exec(params, cwd)).trim();
 
         stashData.split(/\r?\n/g).forEach((line: string) => {
             const fileSummary = line.match(/\s*(.+)\s+(.+)\s+(.+)\s+(.+)/);
@@ -120,10 +129,10 @@ export default class StashGit extends Git {
                 const stat = fileSummary[1].toLowerCase();
                 const file = fileSummary[4];
                 if (stat === 'create') {
-                    entryFiles.indexAdded.push(file);
+                    files.indexAdded.push(file);
                 }
                 else if (stat === 'delete') {
-                    entryFiles.deleted.push(file);
+                    files.deleted.push(file);
                 }
             }
         });
@@ -132,25 +141,26 @@ export default class StashGit extends Git {
             const fileStats = line.match(/(\s*\d+\s+\d+\s+(.+))|(\s*-\s+-\s+(.+))/);
             if (fileStats !== null) {
                 const file = fileStats[2] || fileStats[4];
-                if (entryFiles.indexAdded.indexOf(file) !== -1) {
+                if (files.indexAdded.indexOf(file) !== -1) {
                     return;
                 }
-                if (entryFiles.deleted.indexOf(file) !== -1) {
+                if (files.deleted.indexOf(file) !== -1) {
                     return;
                 }
-                entryFiles.modified.push(file);
+                files.modified.push(file);
             }
         });
 
-        return entryFiles;
+        return files;
     }
 
     /**
-     * Gets the untracked files of a stash entry.
+     * Gets the stash untracked files.
      *
-     * @param index the int with the index of the stash entry
+     * @param cwd   the current working directory
+     * @param index the int with the stash index
      */
-    public async getStashUntracked(index: number): Promise<string[]> {
+    private async getStashUntracked(cwd: string, index: number): Promise<string[]> {
         const params = [
             'ls-tree',
             '-r',
@@ -161,7 +171,7 @@ export default class StashGit extends Git {
         const list = [];
 
         try {
-            const untrackedFiles = (await this.exec(params)).trim();
+            const untrackedFiles = (await this.exec(params, cwd)).trim();
 
             if (untrackedFiles.length > 0) {
                 untrackedFiles.split(/\r?\n/g).forEach((file: string) => {
@@ -176,10 +186,11 @@ export default class StashGit extends Git {
     /**
      * Gets the file contents of both, the base (original) and the modified data.
      *
+     * @param cwd   the current working directory
      * @param index the int with the index of the parent stash
      * @param file  the string with the stashed file name
      */
-    public async getStashFileContents(index: number, file: string): Promise<StashedFileContents> {
+    public async getStashFileContents(cwd: string, index: number, file: string): Promise<StashedFileContents> {
         const paramsModified = [
             'show',
             `stash@{${index}}:${file}`
@@ -191,53 +202,56 @@ export default class StashGit extends Git {
         ];
 
         return {
-            base: await this.call(paramsBase),
-            modified: await this.call(paramsModified)
+            base: await this.call(paramsBase, cwd),
+            modified: await this.call(paramsModified, cwd)
         };
     }
 
     /**
      * Gets the file contents of an untracked file.
      *
+     * @param cwd   the current working directory
      * @param index the int with the index of the parent stash
      * @param file  the string with the stashed file name
      */
-    public async untrackedFileContents(index: number, file: string): Promise<Buffer | string> {
+    public async untrackedFileContents(cwd: string, index: number, file: string): Promise<Buffer | string> {
         const params = [
             'show',
             `stash@{${index}}^3:${file}`
         ];
 
-        return await this.call(params);
+        return await this.call(params, cwd);
     }
 
     /**
      * Gets the file contents of an index added file.
      *
+     * @param cwd   the current working directory
      * @param index the int with the index of the parent stash
      * @param file  the string with the stashed file name
      */
-    public async indexAddedFileContents(index: number, file: string): Promise<Buffer | string> {
+    public async indexAddedFileContents(cwd: string, index: number, file: string): Promise<Buffer | string> {
         const params = [
             'show',
             `stash@{${index}}:${file}`
         ];
 
-        return await this.call(params);
+        return await this.call(params, cwd);
     }
 
     /**
      * Gets the file contents of a deleted file.
      *
+     * @param cwd   the current working directory
      * @param index the int with the index of the parent stash
      * @param file  the string with the stashed file name
      */
-    public async deletedFileContents(index: number, file: string): Promise<Buffer | string> {
+    public async deletedFileContents(cwd: string, index: number, file: string): Promise<Buffer | string> {
         const params = [
             'show',
             `stash@{${index}}^1:${file}`
         ];
 
-        return await this.call(params);
+        return await this.call(params, cwd);
     }
 }

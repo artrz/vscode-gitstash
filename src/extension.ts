@@ -1,18 +1,20 @@
 'use strict';
 
-import './init';
-import { commands, ExtensionContext, window, workspace } from 'vscode';
+import { commands, ConfigurationChangeEvent, ExtensionContext, Uri, window, workspace, WorkspaceFoldersChangeEvent } from 'vscode';
 import { Commands } from './Commands';
-import Config from './Config';
-import StashLabels from './StashLabels';
 
+import Config from './Config';
+import Model from './Model';
+import StashLabels from './StashLabels';
+import Git from './Git';
 import GitStashTreeDataProvider from './GitStashTreeDataProvider';
 import { EmptyDocumentContentProvider } from './EmptyDocumentContentProvider';
-import Model from './Model';
 import { StashCommands } from './StashCommands';
 import { DiffDisplayer } from './DiffDisplayer';
 
 export function activate(context: ExtensionContext) {
+    notifyHasRepository();
+
     const model = new Model();
     const config = new Config();
     const stashLabels = new StashLabels(config);
@@ -34,27 +36,44 @@ export function activate(context: ExtensionContext) {
         commands.registerCommand('gitstash.explorer.toggle', treeProvider.toggle),
         commands.registerCommand('gitstash.explorer.refresh', treeProvider.refresh),
 
-        commands.registerCommand('gitstash.show', stashCommands.show),
         commands.registerCommand('gitstash.stash', stashCommands.stash),
+        commands.registerCommand('gitstash.clear', stashCommands.clear),
+
+        commands.registerCommand('gitstash.show', stashCommands.show),
         commands.registerCommand('gitstash.pop', stashCommands.pop),
         commands.registerCommand('gitstash.apply', stashCommands.apply),
         commands.registerCommand('gitstash.branch', stashCommands.branch),
         commands.registerCommand('gitstash.drop', stashCommands.drop),
-        commands.registerCommand('gitstash.clear', stashCommands.clear),
 
         commands.registerCommand('gitstash.applyOrPop', stashCommands.applyOrPop),
         commands.registerCommand('gitstash.diffCurrent', stashCommands.diffCurrent),
         commands.registerCommand('gitstash.applySingle', stashCommands.applySingle),
 
-        watcher.onDidCreate((event) => treeProvider.reload('create', event)),
-        watcher.onDidChange((event) => treeProvider.reload('update', event)),
-        watcher.onDidDelete((event) => treeProvider.reload('delete', event)),
+        watcher.onDidCreate((event: Uri) => treeProvider.reload('create', event)),
+        watcher.onDidChange((event: Uri) => treeProvider.reload('update', event)),
+        watcher.onDidDelete((event: Uri) => treeProvider.reload('delete', event)),
 
-        workspace.onDidChangeConfiguration(() => {
-            config.reload();
+        workspace.onDidChangeWorkspaceFolders((e: WorkspaceFoldersChangeEvent) => {
+            notifyHasRepository();
             treeProvider.reload('settings');
+        }),
+
+        workspace.onDidChangeConfiguration((e: ConfigurationChangeEvent) => {
+            if (e.affectsConfiguration('gitstash')) {
+                config.reload();
+                treeProvider.reload('settings');
+            }
         })
     );
 
     treeProvider.toggle();
+}
+
+/**
+ * Checks if there is at least one git repository open and notifies it to vsc.
+ */
+function notifyHasRepository() {
+    new Git()
+        .hasGitRepository()
+        .then((has) => commands.executeCommand('setContext', 'hasGitRepository', has));
 }

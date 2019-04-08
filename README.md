@@ -12,7 +12,7 @@ Add extra git stash powers to VS Code.
     - Apply changes from single stashed file
 
 This extension allows to comfortably create, apply, delete and inspect stashes. It results helpful when working on different features, switching to branches for modifications or creating sets of local experimental features.
-Navigate on your stash entries, and run basically all stash commands visually and review the results.
+Navigate on your stashes, and run basically all stash commands visually and review the results.
 
 ![GitStash preview](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/screencast.gif)
 
@@ -36,24 +36,26 @@ Navigate on your stash entries, and run basically all stash commands visually an
 | Apply...         | gitstash.apply            | Applies a stash w/ or w/o file reindexing. Reindexing will work the same as Stash Pop with reindex.
 | Branch...        | gitstash.branch           | Creates and checks out a new branch starting from the commit at which the stash was originally created, applies the changes recorded in the selected stash to the new working tree and index. If that succeeds the stash will be dropped.
 | Drop...          | gitstash.drop             | Drops a stash.
-| Clear            | gitstash.clear            | Removes all the stash entries.
+| Clear            | gitstash.clear            | Removes all the repository stashes.
 | Refresh explorer | gitstash.explorer.refresh | Reloads the stash explorer tree.
 | Toggle explorer  | gitstash.explorer.toggle  | Shows/hides the stash explorer tree.
 
 
 ## Extension Settings
 
-|Name                           | Default                                              | Description
-|-------------------------------|------------------------------------------------------|------------
-| `gitstash.explorer.enabled`   | `true`                                               | Enables or disables the stash explorer tree on startup.
-| `gitstash.explorer.buttons`   | `true`                                               | Shows or hides the explorer buttons.
-| `gitstash.entryFormat`        | `#${stashEntry.index}:   ${description} (${branch})` | Specifies the format for each stash entry. Available tokens: `${branch}` - the branch where the stash was created, `${description}` - the custom or default description for the stash entry, `${date}` - the stash creation date, `${index}` the stash index
-| `gitstash.entryTooltipFormat` | `#${stashEntry.index}:   ${description} (${branch})` | Specifies the format for each stash entry tooltip. Available tokens: Same than entryFormat
-| `gitstash.fileFormat`         | `${filename} (${filepath})`                          | Specifies the format for each stashed file. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${type}` - the change type
-| `gitstash.fileTooltipFormat`  | `${filename} (${filepath})`                          | Specifies the format for each stashed file tooltip. Available tokens: Same than fileFormat
-| `gitstash.diffTitleFormat`    | `#${stashIndex}: ${filename} (${filepath})`          | Specifies the format for the diff document title. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${date}` - the entry date, `${description}` - the entry description, `${branch}` - the entry branch, `${stashIndex}` - the entry index
-| `gitstash.dateFormat`         | `default`                                            | Specifies the date format for each stash entry. Available formats: `default`, `iso`, `local`, `raw`, `relative`, `rfc`, `short`
-| `gitstash.log.autoclear`      | `false`                                              | Clears the log window before showing the action result.
+|Name                                | Default                                               | Description
+|------------------------------------|-------------------------------------------------------|------------
+| `gitstash.explorer.enabled`        | `true`                                                | Enables or disables the stash explorer tree on startup.
+| `gitstash.explorer.buttons`        | `true`                                                | Shows or hides the explorer buttons.
+| `gitstash.repositoryFormat`        | `${name}`                                             | Specifies the format for each repository. Available tokens: `${name}` - the repository name, `${directory}` - the repository directory base name, `${path}` - the full directory path
+| `gitstash.repositoryTooltipFormat` | `${path}`                                             | Specifies the format for each stash tooltip. Available tokens: Same than repositoryFormat
+| `gitstash.stashFormat`             | `#${index}:  ${description}`                          | Specifies the format for each stash. Available tokens: `${branch}` - the branch where the stash was created, `${description}` - the custom or default description for the stash, `${date}` - the stash creation date, `${index}` the stash index
+| `gitstash.stashTooltipFormat`      | `${branch}\n${date}\n${description}`                  | Specifies the format for each stash tooltip. Available tokens: Same than stashFormat
+| `gitstash.fileFormat`              | `${filename}`                                         | Specifies the format for each stashed file. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${type}` - the change type
+| `gitstash.fileTooltipFormat`       | `${filepath}${filename} • ${type}`                    | Specifies the format for each stashed file tooltip. Available tokens: Same than fileFormat
+| `gitstash.diffTitleFormat`         | `#${stashIndex}: ${filename}  ${hint} (${filepath})`  | Specifies the format for the diff document title. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${date}` - the stash date, `${description}` - the stash description, `${branch}` - the stash branch, `${stashIndex}` - the stash index, ${type} - the change type on the file like 'Modified' or 'Deleted', ${hint} - like ${type} but indicates also the editor position of the change
+| `gitstash.dateFormat`              | `default`                                             | Specifies the date format for each stash. Available formats: `default`, `iso`, `local`, `raw`, `relative`, `rfc`, `short`
+| `gitstash.log.autoclear`           | `false`                                               | Clears the log window before showing the action result.
 
 
 ## Tips

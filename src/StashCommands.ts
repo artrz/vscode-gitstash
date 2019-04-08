@@ -33,7 +33,7 @@ export class StashCommands {
     /**
      * Generates a stash.
      */
-    public stash = (type: StashType, message?: string) => {
+    public stash = (repositoryNode: StashNode, type: StashType, message?: string) => {
         const params = ['stash', 'save'];
 
         switch (type) {
@@ -60,97 +60,98 @@ export class StashCommands {
             params.push(message);
         }
 
-        this.exec(params, 'Stash created');
+        this.exec(repositoryNode.path, params, 'Stash created', repositoryNode);
     }
 
     /**
-     * Pops a stash entry.
+     * Removes the stashes list.
      */
-    public pop = (node: StashNode, withIndex: boolean) => {
+    public clear = (repositoryNode: StashNode) => {
+        const params = ['stash', 'clear'];
+
+        this.exec(repositoryNode.path, params, 'Stash list cleared', repositoryNode);
+    }
+
+    /**
+     * Pops a stash.
+     */
+    public pop = (stashNode: StashNode, withIndex: boolean) => {
         const params = ['stash', 'pop'];
 
         if (withIndex) {
             params.push('--index');
         }
 
-        params.push(`stash@{${node.index}}`);
+        params.push(`stash@{${stashNode.index}}`);
 
-        this.exec(params, 'Stash popped', node);
+        this.exec(stashNode.path, params, 'Stash popped', stashNode);
     }
 
     /**
-     * Applies a stash entry.
+     * Applies a stash.
      */
-    public apply = (node: StashNode, withIndex: boolean) => {
+    public apply = (stashNode: StashNode, withIndex: boolean) => {
         const params = ['stash', 'apply'];
 
         if (withIndex) {
             params.push('--index');
         }
 
-        params.push(`stash@{${node.index}}`);
+        params.push(`stash@{${stashNode.index}}`);
 
-        this.exec(params, 'Stash applied', node);
+        this.exec(stashNode.path, params, 'Stash applied', stashNode);
     }
 
     /**
-     * Applies a stash entry.
+     * Branches a stash.
      */
-    public applySingle = (node: StashNode) => {
-        const params = [
-            'checkout',
-            `stash@{${node.parent.index}}`,
-            node.name
-        ];
-
-        this.exec(params, 'Changes from file applied', node.parent);
-    }
-
-    /**
-     * Branches a stash entry.
-     */
-    public branch = (node: StashNode, name: string) => {
+    public branch = (stashNode: StashNode, name: string) => {
         const params = [
             'stash',
             'branch',
             name,
-            `stash@{${node.index}}`
+            `stash@{${stashNode.index}}`
         ];
 
-        this.exec(params, 'Stash branched', node);
+        this.exec(stashNode.path, params, 'Stash branched', stashNode);
     }
 
     /**
-     * Drops a stash entry.
+     * Drops a stash.
      */
-    public drop = (node: StashNode) => {
+    public drop = (stashNode: StashNode) => {
         const params = [
             'stash',
             'drop',
-            `stash@{${node.index}}`
+            `stash@{${stashNode.index}}`
         ];
 
-        this.exec(params, 'Stash dropped', node);
+        this.exec(stashNode.path, params, 'Stash dropped', stashNode);
     }
 
     /**
-     * Removes the stash entry list.
+     * Applies changes from a file.
      */
-    public clear = () => {
-        const params = ['stash', 'clear'];
+    public applySingle = (fileNode: StashNode) => {
+        const params = [
+            'checkout',
+            `stash@{${fileNode.parent.index}}`,
+            fileNode.name
+        ];
 
-        this.exec(params, 'Stash list cleared');
+        this.exec(fileNode.parent.path, params, 'Changes from file applied', fileNode);
     }
 
     /**
      * Executes the git command.
      *
+     * @param cwd            the current working directory
      * @param params         the array of command parameters
      * @param successMessage the string message to show on success
      * @param node           the involved node
      */
-    private exec(params: string[], successMessage: string, node?: StashNode): void {
-        this.stashGit.exec(params)
+    private exec(cwd: string, params: string[], successMessage: string, node?: StashNode): void {
+        this.stashGit.exec(params, cwd)
             .then(
                 (result) => {
                     let hasConflict = false;
@@ -188,8 +189,6 @@ export class StashCommands {
     private showDetails(params: string[], type: string, message: string, description?: string, node?: StashNode): void {
         message = message.trim();
 
-        console.log(params.join(' '));
-
         if (this.config.settings.log.autoclear) {
             this.channel.clear();
         }
@@ -197,10 +196,17 @@ export class StashCommands {
         const currentTime = new Date();
         this.channel.append(`> ${currentTime}`);
         if (node) {
-            this.channel.append(`: ${this.stashLabels.getEntryName(node)}`);
+            this.channel.append(`: ${this.stashLabels.getName(node)}`);
         }
         this.channel.appendLine('');
+        if (node) {
+            const cwd = node.isFile ? node.parent.path : node.path;
+            if (cwd) {
+                this.channel.appendLine(`  ${cwd}`);
+            }
+        }
         this.channel.appendLine(`  git ${params.join(' ')}`);
+        this.channel.appendLine('');
 
         if (message.length > 0) {
             this.channel.appendLine(message);

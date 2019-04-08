@@ -1,33 +1,50 @@
 'use strict';
 
-import { StashEntry } from './StashGit';
+import { Uri, workspace } from 'vscode';
+import { Stash } from './StashGit';
 import StashNode, { NodeType } from './StashNode';
 
 export default class {
     /**
-     * Generates a node from a stash entry.
+     * Generates a repository node.
      *
-     *@param entry The stash entry to use as base.
+     * @param path the repository path
      */
-    public entryToNode(entry: StashEntry): StashNode {
+    public createRepositoryNode(path: string): StashNode {
         return new StashNode({
-            type: NodeType.Entry,
-            name: entry.description,
-            index: entry.index,
+            type: NodeType.Repository,
+            name: workspace.getWorkspaceFolder(Uri.file(path)).name,
+            index: null,
             parent: null,
-            date: entry.date
+            date: null,
+            path: path
         });
     }
 
     /**
-     * Generates a node from a stashed file.
+     * Generates a stash node.
+     *
+     * @param stash the stash to use as base
+     */
+    public createStashNode(stash: Stash, parentNode: StashNode): StashNode {
+        return new StashNode({
+            type: NodeType.Stash,
+            name: stash.description,
+            index: stash.index,
+            parent: parentNode,
+            date: stash.date
+        });
+    }
+
+    /**
+     * Generates a file node.
      *
      * @param path       the file path
      * @param file       the file name
      * @param parentNode the parent node
      * @param type       the stash type
      */
-    public fileToNode(path: string, file: string, parentNode: StashNode, type: NodeType): StashNode {
+    public createFileNode(path: string, file: string, parentNode: StashNode, type: NodeType): StashNode {
         return new StashNode({
             type: type,
             name: file,

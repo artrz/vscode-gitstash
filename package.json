@@ -2,7 +2,7 @@
     "name": "gitstash",
     "displayName": "Git Stash",
     "description": "Give extra stash abilities to Code. Visually browse stashes, review and extract changes. Get all stash commands and more.",
-    "version": "1.0.2",
+    "version": "2.0.0",
     "publisher": "arturock",
     "license": "MIT",
     "icon": "resources/logo.png",
@@ -21,7 +21,8 @@
         "stash",
         "git stash",
         "diff",
-        "stash diff"
+        "stash diff",
+        "multi-root ready"
     ],
     "homepage": "https://github.com/arturock/vscode-gitstash/blob/master/README.md",
     "repository": {
@@ -50,15 +51,25 @@
                     "default": true,
                     "description": "Shows or hides the explorer tree refresh button"
                 },
-                "gitstash.entryFormat": {
+                "gitstash.repositoryFormat": {
                     "type": "string",
-                    "default": "#${index}:   ${description}",
-                    "description": "Specifies the format for each stash entry\nAvailable tokens:\n${branch} - the branch where the stash was created\n${description} - the custom or default description for the stash entry\n${date} - the stash creation date\n${index} - the stash index"
+                    "default": "${name}",
+                    "description": "Specifies the format for each repository\nAvailable tokens:\n${name} - the repository name\n${directory} - the repository directory base name\n${path} - the full directory path"
                 },
-                "gitstash.entryTooltipFormat": {
+                "gitstash.repositoryTooltipFormat": {
+                    "type": "string",
+                    "default": "${path}",
+                    "description": "Specifies the format for each repository tooltip \nAvailable tokens:\nSame than repositoryFormat"
+                },
+                "gitstash.stashFormat": {
+                    "type": "string",
+                    "default": "#${index}:  ${description}",
+                    "description": "Specifies the format for each stash\nAvailable tokens:\n${branch} - the branch where the stash was created\n${description} - the custom or default description for the stash\n${date} - the stash creation date\n${index} - the stash index"
+                },
+                "gitstash.stashTooltipFormat": {
                     "type": "string",
                     "default": "${branch}\n${date}\n${description}",
-                    "description": "Specifies the format for each stash entry tooltip \nAvailable tokens:\nSame than entryFormat"
+                    "description": "Specifies the format for each stash tooltip \nAvailable tokens:\nSame than stashFormat"
                 },
                 "gitstash.fileFormat": {
                     "type": "string",
@@ -72,8 +83,8 @@
                 },
                 "gitstash.diffTitleFormat": {
                     "type": "string",
-                    "default": "#${stashIndex}: ${filename} - ${type} (${filepath})",
-                    "description": "Specifies the format for the diff document title\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${fileIndex} - the file index\n${date} - the entry date\n${description} - the entry description\n${branch} - the entry branch\n${stashIndex} - the entry index"
+                    "default": "#${stashIndex}: ${filename}  ${hint} (${filepath})",
+                    "description": "Specifies the format for the diff document title\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${fileIndex} - the file index\n${date} - the stash date\n${description} - the stash description\n${branch} - the stash branch\n${stashIndex} - the stash index\n${type} - the change type on the file like 'Modified' or 'Deleted'\n${hint} - like ${type} but indicates also the editor position of the change"
                 },
                 "gitstash.dateFormat": {
                     "type": "string",
@@ -87,7 +98,7 @@
                         "rfc",
                         "short"
                     ],
-                    "description": "Specifies the date format for each stash entry\nAvailable formats:\ndefault\niso\nlocal\nraw\nrelative\nrfc\nshort"
+                    "description": "Specifies the date format for each stash\nAvailable formats:\ndefault\niso\nlocal\nraw\nrelative\nrfc\nshort"
                 },
                 "gitstash.log.autoclear": {
                     "type": "boolean",
@@ -98,22 +109,8 @@
         },
         "commands": [
             {
-                "command": "gitstash.explorer.refresh",
-                "title": "Refresh explorer",
-                "category": "GitStash",
-                "icon": {
-                    "light": "resources/icons/light/refresh.svg",
-                    "dark": "resources/icons/dark/refresh.svg"
-                }
-            },
-            {
                 "command": "gitstash.explorer.toggle",
                 "title": "Toggle explorer",
-                "category": "GitStash"
-            },
-            {
-                "command": "gitstash.stash",
-                "title": "Stash...",
                 "category": "GitStash"
             },
             {
@@ -132,6 +129,42 @@
                 "category": "GitStash"
             },
             {
+                "command": "gitstash.explorer.refresh",
+                "title": "Refresh explorer",
+                "category": "GitStash",
+                "icon": {
+                    "light": "resources/icons/light/refresh.svg",
+                    "dark": "resources/icons/dark/refresh.svg"
+                }
+            },
+            {
+                "command": "gitstash.stash",
+                "title": "Stash...",
+                "category": "GitStash",
+                "icon": {
+                    "light": "resources/icons/light/stash.svg",
+                    "dark": "resources/icons/dark/stash.svg"
+                }
+            },
+            {
+                "command": "gitstash.clear",
+                "title": "Clear",
+                "category": "GitStash",
+                "icon": {
+                    "light": "resources/icons/light/clear.svg",
+                    "dark": "resources/icons/dark/clear.svg"
+                }
+            },
+            {
+                "command": "gitstash.applyOrPop",
+                "title": "Apply/pop...",
+                "category": "GitStash",
+                "icon": {
+                    "light": "resources/icons/light/pop.svg",
+                    "dark": "resources/icons/dark/pop.svg"
+                }
+            },
+            {
                 "command": "gitstash.drop",
                 "title": "Drop...",
                 "category": "GitStash",
@@ -141,17 +174,12 @@
                 }
             },
             {
-                "command": "gitstash.clear",
-                "title": "Clear",
-                "category": "GitStash"
-            },
-            {
-                "command": "gitstash.applyOrPop",
-                "title": " Apply/Pop...",
+                "command": "gitstash.applySingle",
+                "title": "Apply changes from this file",
                 "category": "GitStash",
                 "icon": {
-                    "light": "resources/icons/light/check.svg",
-                    "dark": "resources/icons/dark/check.svg"
+                    "light": "resources/icons/light/tasklist.svg",
+                    "dark": "resources/icons/dark/tasklist.svg"
                 }
             },
             {
@@ -161,15 +189,6 @@
                 "icon": {
                     "light": "resources/icons/light/diff.svg",
                     "dark": "resources/icons/dark/diff.svg"
-                }
-            },
-            {
-                "command": "gitstash.applySingle",
-                "title": "Apply changes from this file",
-                "category": "GitStash",
-                "icon": {
-                    "light": "resources/icons/light/tasklist.svg",
-                    "dark": "resources/icons/dark/tasklist.svg"
                 }
             }
         ],
@@ -185,11 +204,19 @@
         "menus": {
             "commandPalette": [
                 {
+                    "command": "gitstash.explorer.refresh",
+                    "when": "hasGitRepository && gitstash.explorer.enabled"
+                },
+                {
                     "command": "gitstash.explorer.toggle",
                     "when": "hasGitRepository"
                 },
                 {
                     "command": "gitstash.stash",
+                    "when": "hasGitRepository"
+                },
+                {
+                    "command": "gitstash.clear",
                     "when": "hasGitRepository"
                 },
                 {
@@ -205,27 +232,19 @@
                     "when": "hasGitRepository"
                 },
                 {
-                    "command": "gitstash.drop",
-                    "when": "hasGitRepository"
-                },
-                {
-                    "command": "gitstash.clear",
-                    "when": "hasGitRepository"
-                },
-                {
-                    "command": "gitstash.explorer.refresh",
-                    "when": "hasGitRepository && gitstash.explorer.enabled"
-                },
-                {
                     "command": "gitstash.applyOrPop",
                     "when": "false"
                 },
                 {
-                    "command": "gitstash.diffCurrent",
-                    "when": "false"
+                    "command": "gitstash.drop",
+                    "when": "hasGitRepository"
                 },
                 {
                     "command": "gitstash.applySingle",
+                    "when": "false"
+                },
+                {
+                    "command": "gitstash.diffCurrent",
                     "when": "false"
                 }
             ],
@@ -234,36 +253,38 @@
                     "command": "gitstash.explorer.refresh",
                     "when": "view == gitstash.explorer && config.gitstash.explorer.buttons",
                     "group": "navigation"
-                },
-                {
-                    "command": "gitstash.clear",
-                    "when": "view == gitstash.explorer && config.gitstash.explorer.buttons"
-                },
-                {
-                    "command": "gitstash.stash",
-                    "when": "view == gitstash.explorer && config.gitstash.explorer.buttons"
                 }
             ],
             "view/item/context": [
                 {
+                    "command": "gitstash.stash",
+                    "when": "view == gitstash.explorer && viewItem == repository",
+                    "group": "inline@1"
+                },
+                {
+                    "command": "gitstash.clear",
+                    "when": "view == gitstash.explorer && viewItem == repository",
+                    "group": "inline@2"
+                },
+                {
                     "command": "gitstash.applyOrPop",
-                    "when": "view == gitstash.explorer && viewItem == diffEntry",
-                    "group": "inline"
+                    "when": "view == gitstash.explorer && viewItem == stash",
+                    "group": "inline@1"
                 },
                 {
                     "command": "gitstash.drop",
-                    "when": "view == gitstash.explorer && viewItem == diffEntry",
-                    "group": "inline"
+                    "when": "view == gitstash.explorer && viewItem == stash",
+                    "group": "inline@2"
                 },
                 {
                     "command": "gitstash.diffCurrent",
-                    "when": "view == gitstash.explorer && viewItem =~ /diffFile/",
-                    "group": "inline"
+                    "when": "view == gitstash.explorer && viewItem =~ /file/",
+                    "group": "inline@1"
                 },
                 {
                     "command": "gitstash.applySingle",
-                    "when": "view == gitstash.explorer && viewItem =~ /diffFile:(modified|indexAdded)/",
-                    "group": "inline"
+                    "when": "view == gitstash.explorer && viewItem =~ /file:(modified|indexAdded)/",
+                    "group": "inline@2"
                 }
             ]
         }
@@ -279,11 +300,11 @@
         "tmp": "0.0.33"
     },
     "devDependencies": {
-        "@types/mocha": "^2.2.48",
-        "@types/node": "^8.10.28",
+        "@types/mocha": "5.2.6",
+        "@types/node": "10.1.4",
         "@types/tmp": "0.0.33",
-        "tslint": "5.10.0",
-        "typescript": "2.9.2",
-        "vscode": "1.1.18"
+        "tslint": "5.14.0",
+        "typescript": "3.3.3",
+        "vscode": "1.1.33"
     }
 }

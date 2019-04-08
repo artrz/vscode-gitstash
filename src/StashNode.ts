@@ -12,7 +12,8 @@ interface Node {
 }
 
 export enum NodeType {
-    'Entry' = 'e',
+    'Repository' = 'r',
+    'Stash' = 's',
     'Untracked' = 'u',
     'IndexAdded' = 'a',
     'Modified' = 'm',
@@ -20,60 +21,72 @@ export enum NodeType {
 }
 
 export default class StashNode {
-    constructor(private entry: Node) {
+    constructor(private source: Node) {
     }
 
     /**
      * Gets the node type.
      */
     public get type(): NodeType {
-        return this.entry.type;
+        return this.source.type;
     }
 
     /**
      * Gets the node name.
      */
     public get name(): string {
-        return this.entry.name;
+        return this.source.name;
     }
 
     /**
      * Gets the node index.
      */
     public get index(): number {
-        return this.entry.index;
+        return this.source.index;
     }
 
     /**
      * Gets the node parent index.
      */
     public get parent(): StashNode | null {
-        return this.entry.parent as StashNode;
+        return this.source.parent as StashNode;
     }
 
     /**
      * Gets the node generation date.
      */
     public get date(): string | null {
-        return this.entry.date;
+        return this.source.date;
     }
 
     /**
      * Indicates if the node represents a stashed file or not.
      */
     public get isFile(): boolean {
-        return this.entry.parent !== null;
+        return [
+            NodeType.Deleted,
+            NodeType.IndexAdded,
+            NodeType.Modified,
+            NodeType.Untracked
+        ].indexOf(this.type) > -1;
     }
 
     /**
      * Gets the file path of the stashed file if exists.
      */
     public get path(): string | null {
-        if (!this.isFile) {
-            return null;
+        if (this.type === NodeType.Repository) {
+            return this.source.path;
         }
 
-        const path = `${this.entry.path}/${this.name}`;
-        return existsSync(path) ? path : null;
+        if (this.type === NodeType.Stash) {
+            return this.source.parent.path;
+        }
+
+        if (this.isFile) {
+            return `${this.source.path}/${this.name}`;
+        }
+
+        return null;
     }
 }

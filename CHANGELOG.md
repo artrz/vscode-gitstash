@@ -6,40 +6,49 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [[2.0.0] 2019-04-08](https://github.com/arturock/vscode-gitstash/tree/v2.0.0)
+### Added
+- Multi-root support
+### Updated
+- Some icons
+- Settings
+  - Rename some settings
+  - Update some default formats
+
 ## [[1.0.2] 2019-02-02](https://github.com/arturock/vscode-gitstash/tree/v1.0.2)
 ### Fixed
-  - Unable to compare with current version on Win
+- Unable to compare with current version on Win
 
 ## [[1.0.1] 2018-11-01](https://github.com/arturock/vscode-gitstash/tree/v1.0.1)
 ### Fixed
-  - Unable to create stash when al changes are staged
+- Unable to create stash when al changes are staged
 
 ## [[1.0.0] 2018-10-16](https://github.com/arturock/vscode-gitstash/tree/v1.0.0)
 ### Added
-  - Actions to tree entries
-    - Stash
-      - Apply/pop and Drop
-    - File
-      - Diff to file in current state
-      - Apply changes from single file
-  - More Keep index commands
+- Actions on tree stashes
+  - Stash
+    - Apply/pop and Drop
+  - File
+    - Diff to file in current state
+    - Apply changes from single file
+- More Keep index commands
 ### Updated
-  - Icons are now consistent with the general UI
-  - Improve default stash tooltips for tree items
-  - Notify when a stash application has conflicts
-  - Log shows date, git command and involved stash if available
+- Icons are now consistent with the general UI
+- Improve default stash tooltips for tree items
+- Notify when a stash application has conflicts
+- Log shows date, git command and involved stash if available
 
 ## [[0.8.0] 2018-08-25](https://github.com/arturock/vscode-gitstash/tree/v0.8.0)
 ### Added
-  - Binary files like images are now supported
-  - Configurable tooltips for tree elements
+- Binary files like images are now supported
+- Configurable tooltips for tree elements
 ### Updated
-  - Tree is now displayed on SCM view container
-  - A new default configuration for tree entries to remove some clutter
-  - Update refresh icon
-  - Slightly faster diff displaying
+- Tree is now displayed on SCM view container
+- A new default configuration for tree stashes to remove some clutter
+- Update refresh icon
+- Slightly faster diff displaying
 ### Fixed
-  - Some text encoding problems
+- Some text encoding problems
 
 ## [[0.7.1] 2017-10-20](https://github.com/arturock/vscode-gitstash/tree/v0.7.1)
 ### Fixed
@@ -49,7 +58,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Updated
 - Better file support
 - More specific icons
-- Stash list entries on commands are now formatted
+- Stashes list on commands are now formatted
 ### Fixed
 - Explorer showing non stash files in some cases
 - Not showing contents of indexed untracked files
@@ -104,5 +113,5 @@ Commands are now listed only when on a git repository
 ## [[0.1.0] 2017-09-24](https://github.com/arturock/vscode-gitstash/tree/v0.1.0)
 ### Added
 - Initial release
-  - Display an explorer tree with the stash entries and their files
+  - Display an explorer tree with the stashes and their files
   - Click on stashed file displays a diff view with the changes
