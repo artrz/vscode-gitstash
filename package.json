@@ -2,7 +2,7 @@
     "name": "gitstash",
     "displayName": "Git Stash",
     "description": "Give extra stash abilities to Code. Visually browse stashes, review and extract changes. Get all stash commands and more.",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "publisher": "arturock",
     "license": "MIT",
     "icon": "resources/logo.png",
@@ -174,6 +174,15 @@
                 }
             },
             {
+                "command": "gitstash.diffCurrent",
+                "title": "Compare with current",
+                "category": "GitStash",
+                "icon": {
+                    "light": "resources/icons/light/diff.svg",
+                    "dark": "resources/icons/dark/diff.svg"
+                }
+            },
+            {
                 "command": "gitstash.applySingle",
                 "title": "Apply changes from this file",
                 "category": "GitStash",
@@ -183,12 +192,12 @@
                 }
             },
             {
-                "command": "gitstash.diffCurrent",
-                "title": "Compare with current",
+                "command": "gitstash.createSingle",
+                "title": "Apply contents form this file",
                 "category": "GitStash",
                 "icon": {
-                    "light": "resources/icons/light/diff.svg",
-                    "dark": "resources/icons/dark/diff.svg"
+                    "light": "resources/icons/light/tasklist.svg",
+                    "dark": "resources/icons/dark/tasklist.svg"
                 }
             }
         ],
@@ -284,6 +293,11 @@
                 {
                     "command": "gitstash.applySingle",
                     "when": "view == gitstash.explorer && viewItem =~ /file:(modified|indexAdded)/",
+                    "group": "inline@2"
+                },
+                {
+                    "command": "gitstash.createSingle",
+                    "when": "view == gitstash.explorer && viewItem =~ /file:(untracked)/",
                     "group": "inline@2"
                 }
             ]
