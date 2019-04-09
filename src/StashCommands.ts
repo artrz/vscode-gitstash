@@ -143,6 +143,19 @@ export class StashCommands {
     }
 
     /**
+     * Applies changes from a file.
+     */
+    public createSingle = (fileNode: StashNode) => {
+        const params = [
+            'checkout',
+            `stash@{${fileNode.parent.index}}^3`,
+            fileNode.name
+        ];
+
+        this.exec(fileNode.parent.path, params, 'File created', fileNode);
+    }
+
+    /**
      * Executes the git command.
      *
      * @param cwd            the current working directory

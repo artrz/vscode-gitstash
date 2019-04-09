@@ -1,5 +1,6 @@
 'use string';
 
+import * as fs from 'fs';
 import * as vscode from 'vscode';
 import StashGit, { Stash } from './StashGit';
 import { StashCommands } from './StashCommands';
@@ -197,7 +198,7 @@ export class Commands {
 
         vscode.window
             .showWarningMessage<vscode.MessageItem>(
-                `This will remove all the stashes on\n\n${repositoryLabel}\n\nContinue?`,
+                `Clear stashes on ${repositoryLabel}?`,
                 { modal: true },
                 { title: 'Proceed' }
             )
@@ -293,7 +294,7 @@ export class Commands {
 
         vscode.window
             .showWarningMessage<vscode.MessageItem>(
-                `This will remove the stash\n\n${repositoryLabel}\n${stashLabel}\n${stashNode.date}\n\nContinue?`,
+                `${repositoryLabel}\n\nDrop ${stashLabel}?`,
                 { modal: true },
                 { title: 'Proceed' }
             )
@@ -346,18 +347,39 @@ export class Commands {
      * @param fileNode the involved node
      */
     public applySingle = (fileNode: StashNode) => {
-        const label = this.stashLabels.getName(fileNode);
         const parentLabel = this.stashLabels.getName(fileNode.parent);
 
         vscode.window
             .showWarningMessage<vscode.MessageItem>(
-                `This will apply changes on\n\n${parentLabel}\n${label}\n\nContinue?`,
+                `${parentLabel}\n\nApply changes on ${fileNode.name}?`,
                 { modal: true },
                 { title: 'Proceed' }
             )
             .then((option) => {
                 if (typeof option !== 'undefined') {
                     this.stashCommands.applySingle(fileNode);
+                }
+            });
+    }
+
+    /**
+     * Applies the changes on the stashed file.
+     *
+     * @param fileNode the involved node
+     */
+    public createSingle = (fileNode: StashNode) => {
+        const parentLabel = this.stashLabels.getName(fileNode.parent);
+        const exists = fs.existsSync(fileNode.path);
+
+        vscode.window
+            .showWarningMessage<vscode.MessageItem>(
+                `${parentLabel}\n\nCreate file ${fileNode.name}?${exists ? '\n\nThis will overwrite the current file' : ''}`,
+                { modal: true },
+                { title: 'Proceed' }
+            )
+            .then((option) => {
+                if (typeof option !== 'undefined') {
+                    this.stashCommands.createSingle(fileNode);
                 }
             });
     }
