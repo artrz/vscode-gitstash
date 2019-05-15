@@ -89,7 +89,7 @@ export default class Git {
                 continue;
             }
 
-            if(paths.indexOf(gitPath) === -1) {
+            if (paths.indexOf(gitPath) === -1) {
                 paths.push(gitPath);
             }
 

@@ -305,7 +305,7 @@
     },
     "scripts": {
         "build": "tsc -p ./",
-        "lint": "tslint --project tsconfig.json",
+        "lint": "tslint --project tsconfig.json --config tslint-prepublish.json",
         "postinstall": "node ./node_modules/vscode/bin/install",
         "vscode:prepublish": "npm run lint && npm run build",
         "watch": "tsc -watch -p ./"
