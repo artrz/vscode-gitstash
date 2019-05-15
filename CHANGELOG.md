@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [[2.1.1] 2019-05-15](https://github.com/arturock/vscode-gitstash/tree/v2.1.1)
+### Fixed
+Showing duplicated repositories on tree in some cases - thanks to [@nckcol](https://github.com/nckcol)
+
 ## [[2.1.0] 2019-04-09](https://github.com/arturock/vscode-gitstash/tree/v2.1.0)
 ### Added
 - Tree
