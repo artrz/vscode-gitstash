@@ -166,83 +166,114 @@ export class StashCommands {
     private exec(cwd: string, params: string[], successMessage: string, node?: StashNode): void {
         this.stashGit.exec(params, cwd)
             .then(
-                (result) => {
-                    let hasConflict = false;
-                    for (const line of result.split('\n')) {
-                        if (line.startsWith('CONFLICT (content): ')) {
-                            hasConflict = true;
-                            break;
-                        }
-                    }
-                    if (!hasConflict) {
-                        this.showDetails(params, 'success', result, successMessage, node);
+                (result: string) => {
+                    const conflictType = this.findResultIssues(result);
+
+                    if (conflictType === 'c') {
+                        this.logResult(params, 'warning', result, `${successMessage} with conflicts`, node);
                     }
                     else {
-                        this.showDetails(params, 'warning', result, `${successMessage} with conflicts`, node);
+                        this.logResult(params, 'success', result, successMessage, node);
                     }
                 },
                 (error) => {
                     const excerpt = error.substring(error.indexOf(':') + 1).trim();
-                    this.showDetails(params, 'error', error, excerpt, node);
+                    this.logResult(params, 'error', error, excerpt, node);
                 }
             )
             .catch((error) => {
-                this.showDetails(params, 'error', error.toString());
+                this.logResult(params, 'error', error.toString());
             });
     }
 
     /**
-     * Shows the result message to the user.
+     * Parses the result searching for possible issues / errors.
      *
-     * @param params      the git command params
-     * @param type        the string message type
-     * @param message     the string result message
-     * @param description the optional string alert description
+     * @param result the operation result
      */
-    private showDetails(params: string[], type: string, message: string, description?: string, node?: StashNode): void {
-        message = message.trim();
+    private findResultIssues(result: string): string|null {
+        for (const line of result.split('\n')) {
+            if (line.startsWith('CONFLICT (content): ')) {
+                return 'c';
+            }
+        }
 
+        return null;
+    }
+
+    /**
+     * Logs the command to the extension channel.
+     *
+     * @param params           the git command params
+     * @param type             the message type
+     * @param result           the result content
+     * @param notificationText the optional notification message
+     */
+    private logResult(params: string[], type: string, result: string, notificationText?: string, node?: StashNode): void {
+        this.prepareLogChannel();
+
+        this.performLogging(params, result, node);
+
+        this.showNotification(notificationText || result, type);
+    }
+
+    /**
+     * Prepares the log channel to before using it.
+     */
+    private prepareLogChannel() {
         if (this.config.settings.log.autoclear) {
             this.channel.clear();
         }
 
         const currentTime = new Date();
-        this.channel.append(`> ${currentTime}`);
-        if (node) {
-            this.channel.append(`: ${this.stashLabels.getName(node)}`);
-        }
-        this.channel.appendLine('');
+        this.channel.appendLine(`> ${currentTime.toLocaleString()}`);
+    }
+
+    /**
+     * Logs the command to the extension channel.
+     *
+     * @param params      the git command params
+     * @param type        the string message type
+     * @param result      the string result message
+     * @param description the optional string alert description
+     */
+    private performLogging(params: string[], result: string, node?: StashNode) {
         if (node) {
             const cwd = node.isFile ? node.parent.path : node.path;
-            if (cwd) {
-                this.channel.appendLine(`  ${cwd}`);
-            }
+            this.channel.appendLine(cwd
+                ? `  ${cwd} - ${this.stashLabels.getName(node)}`
+                : `  ${this.stashLabels.getName(node)}`
+            );
         }
+
         this.channel.appendLine(`  git ${params.join(' ')}`);
-        this.channel.appendLine('');
+        this.channel.appendLine(`${result.trim()}\n`);
+    }
 
-        if (message.length > 0) {
-            this.channel.appendLine(message);
-        }
+    /**
+     * Shows a notification with the given summary message.
+     *
+     * @param information the text to be displayed
+     * @param type        the the message type
+     */
+    private showNotification(information: string, type: string) {
+        const summary = information.substr(0, 300);
 
-        this.channel.appendLine('');
-
-        const summary = (description || message).substr(0, 300);
-        const actions = message.length > 0 ? [{ title: 'Show log' }] : [];
+        const actions = [{ title: 'Show log' }];
         const callback = (value) => {
             if (typeof value !== 'undefined') {
                 this.channel.show(true);
             }
         };
 
-        if (type === 'success') {
-            vscode.window.showInformationMessage(summary, ...actions).then(callback);
-        }
-        else if (type === 'warning') {
+        if (type === 'warning') {
             vscode.window.showWarningMessage(summary, ...actions).then(callback);
         }
-        else {
+        else if (type === 'error') {
             vscode.window.showErrorMessage(summary, ...actions).then(callback);
+        }
+        else {
+            vscode.window.showInformationMessage(summary, ...actions).then(callback);
         }
     }
 }

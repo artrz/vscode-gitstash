@@ -3,12 +3,15 @@
 import StashGit, { Stash, StashedFileContents, StashedFiles } from './StashGit';
 import StashNode, { NodeType } from './StashNode';
 import StashNodeFactory from './StashNodeFactory';
+import WorkspaceGit from './WorkspaceGit';
 
 export default class Model {
     private stashGit: StashGit;
+    private workspaceGit: WorkspaceGit;
     private stashNodeFactory: StashNodeFactory;
 
-    constructor() {
+    constructor(workspaceGit: WorkspaceGit) {
+        this.workspaceGit = workspaceGit;
         this.stashGit = new StashGit();
         this.stashNodeFactory = new StashNodeFactory();
     }
@@ -26,7 +29,7 @@ export default class Model {
      * Gets the repositories list.
      */
     public getRepositories(): Thenable<StashNode[]> {
-        return this.stashGit.getRepositories().then((rawList: string[]) => {
+        return this.workspaceGit.getRepositories().then((rawList: string[]) => {
             const repositoryNodes = [];
             rawList.forEach((repositoryPath: string) => {
                 repositoryNodes.push(this.stashNodeFactory.createRepositoryNode(repositoryPath));
@@ -61,16 +64,20 @@ export default class Model {
             const fileNodes = [];
             const path = stashNode.path;
 
+            stashedFiles.indexAdded.forEach((stashFile: string) => {
+                fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.IndexAdded));
+            });
+
             stashedFiles.modified.forEach((stashFile: string) => {
                 fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.Modified));
             });
 
-            stashedFiles.untracked.forEach((stashFile: string) => {
-                fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.Untracked));
+            stashedFiles.renamed.forEach((stashFile: any) => {
+                fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.Renamed));
             });
 
-            stashedFiles.indexAdded.forEach((stashFile: string) => {
-                fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.IndexAdded));
+            stashedFiles.untracked.forEach((stashFile: string) => {
+                fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.Untracked));
             });
 
             stashedFiles.deleted.forEach((stashFile: string) => {
@@ -87,7 +94,13 @@ export default class Model {
      * @param fileNode the stashed file node
      */
     public getStashedFile(fileNode: StashNode): Thenable<StashedFileContents | null> {
-        return this.stashGit.getStashFileContents(fileNode.parent.path, fileNode.parent.index, fileNode.name)
+        return this.stashGit
+            .getStashFileContents(
+                fileNode.parent.path,
+                fileNode.parent.index,
+                fileNode.name,
+                fileNode.oldName
+            )
             .then((rawContent: StashedFileContents) => {
                 return rawContent;
             });

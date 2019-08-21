@@ -1,10 +1,9 @@
 'use strict';
 
-import { existsSync } from 'fs';
-
 interface Node {
     type: NodeType;
     name: string;
+    oldName?: string;
     index?: number;
     parent?: StashNode;
     date?: string;
@@ -14,10 +13,11 @@ interface Node {
 export enum NodeType {
     'Repository' = 'r',
     'Stash' = 's',
-    'Untracked' = 'u',
+    'Deleted' = 'd',
     'IndexAdded' = 'a',
     'Modified' = 'm',
-    'Deleted' = 'd'
+    'Renamed' = 'n',
+    'Untracked' = 'u',
 }
 
 export default class StashNode {
@@ -36,6 +36,13 @@ export default class StashNode {
      */
     public get name(): string {
         return this.source.name;
+    }
+
+    /**
+     * Gets the node old name.
+     */
+    public get oldName(): string {
+        return this.source.oldName;
     }
 
     /**
@@ -72,7 +79,7 @@ export default class StashNode {
     }
 
     /**
-     * Gets the file path of the stashed file if exists.
+     * Gets the file path of the stashed file.
      */
     public get path(): string | null {
         if (this.type === NodeType.Repository) {

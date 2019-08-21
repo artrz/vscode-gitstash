@@ -6,26 +6,29 @@ import { Commands } from './Commands';
 import Config from './Config';
 import Model from './Model';
 import StashLabels from './StashLabels';
-import Git from './Git';
 import GitStashTreeDataProvider from './GitStashTreeDataProvider';
 import { EmptyDocumentContentProvider } from './EmptyDocumentContentProvider';
 import { StashCommands } from './StashCommands';
 import { DiffDisplayer } from './DiffDisplayer';
+import WorkspaceGit from './WorkspaceGit';
 
 export function activate(context: ExtensionContext) {
-    notifyHasRepository();
-
-    const model = new Model();
     const config = new Config();
+
+    const model = new Model(new WorkspaceGit(config));
     const stashLabels = new StashLabels(config);
 
     const treeProvider = new GitStashTreeDataProvider(config, model, stashLabels);
     const emptyDocumentProvider = new EmptyDocumentContentProvider();
     const stashCommands = new Commands(
+        new WorkspaceGit(config),
         new StashCommands(config, window.createOutputChannel('GitStash'), stashLabels),
         new DiffDisplayer(model, stashLabels),
         stashLabels
     );
+
+    const workspaceGit = new WorkspaceGit(config);
+    notifyHasRepository(workspaceGit);
 
     const watcher = workspace.createFileSystemWatcher('**/refs/stash', false, false, false);
 
@@ -55,7 +58,7 @@ export function activate(context: ExtensionContext) {
         watcher.onDidDelete((event: Uri) => treeProvider.reload('delete', event)),
 
         workspace.onDidChangeWorkspaceFolders((e: WorkspaceFoldersChangeEvent) => {
-            notifyHasRepository();
+            notifyHasRepository(workspaceGit);
             treeProvider.reload('settings');
         }),
 
@@ -73,8 +76,8 @@ export function activate(context: ExtensionContext) {
 /**
  * Checks if there is at least one git repository open and notifies it to vsc.
  */
-function notifyHasRepository() {
-    new Git()
+function notifyHasRepository(workspaceGit: WorkspaceGit) {
+    workspaceGit
         .hasGitRepository()
         .then((has) => commands.executeCommand('setContext', 'hasGitRepository', has));
 }

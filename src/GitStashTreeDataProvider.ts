@@ -157,9 +157,10 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
         let context = 'file';
         switch (node.type) {
             case (NodeType.Deleted): context += ':deleted'; break;
-            case (NodeType.Modified): context += ':modified'; break;
-            case (NodeType.Untracked): context += ':untracked'; break;
             case (NodeType.IndexAdded): context += ':indexAdded'; break;
+            case (NodeType.Modified): context += ':modified'; break;
+            case (NodeType.Renamed): context += ':renamed'; break;
+            case (NodeType.Untracked): context += ':untracked'; break;
         }
 
         return {
@@ -195,10 +196,11 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
      */
     private getFileIcon(type: NodeType): { light: string; dark: string } | ThemeIcon {
         switch (type) {
-            case NodeType.Modified: return this.getIcon('status-modified.svg');
-            case NodeType.Untracked: return this.getIcon('status-untracked.svg');
-            case NodeType.IndexAdded: return this.getIcon('status-added.svg');
             case NodeType.Deleted: return this.getIcon('status-deleted.svg');
+            case NodeType.IndexAdded: return this.getIcon('status-added.svg');
+            case NodeType.Modified: return this.getIcon('status-modified.svg');
+            case NodeType.Renamed: return this.getIcon('status-renamed.svg');
+            case NodeType.Untracked: return this.getIcon('status-untracked.svg');
             default: return ThemeIcon.File;
         }
     }

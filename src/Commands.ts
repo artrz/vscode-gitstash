@@ -8,6 +8,7 @@ import StashLabels from './StashLabels';
 import StashNode, { NodeType } from './StashNode';
 import StashNodeFactory from './StashNodeFactory';
 import { DiffDisplayer } from './DiffDisplayer';
+import WorkspaceGit from './WorkspaceGit';
 
 interface QuickPickRepositoryNodeItem extends vscode.QuickPickItem {
     node: StashNode;
@@ -18,12 +19,14 @@ interface QuickPickStashNodeItem extends vscode.QuickPickItem {
 
 export class Commands {
     private stashGit: StashGit;
+    private workspaceGit: WorkspaceGit;
     private stashLabels: StashLabels;
     private stashCommands: StashCommands;
     private stashNodeFactory: StashNodeFactory;
     private displayer: DiffDisplayer;
 
-    constructor(stashCommands: StashCommands, diffDisplayer: DiffDisplayer, stashLabels: StashLabels) {
+    constructor(workspaceGit: WorkspaceGit, stashCommands: StashCommands, diffDisplayer: DiffDisplayer, stashLabels: StashLabels) {
+        this.workspaceGit = workspaceGit;
         this.stashCommands = stashCommands;
         this.stashLabels = stashLabels;
         this.displayer = diffDisplayer;
@@ -436,7 +439,7 @@ export class Commands {
         }
 
         const editorPath = editor.document.uri.path;
-        this.stashGit.getRepositories().then((repositories) => {
+        this.workspaceGit.getRepositories().then((repositories) => {
             let cwd = null;
             repositories.forEach((repository) => {
                 if (editorPath.indexOf(repository) !== -1) {
@@ -465,7 +468,7 @@ export class Commands {
             canPickMany: false
         };
 
-        this.stashGit.getRepositories().then((repositories) => {
+        this.workspaceGit.getRepositories().then((repositories) => {
             if (repositories.length === 0) {
                 vscode.window.showInformationMessage('There are no git repositories.');
             }
