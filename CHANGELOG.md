@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Allow to configure a search depth for finding repositories on subdirectories
+- Support for renamed files
+### Updated
+- Some libraries
+### Fixed
+- Not handling correctly file paths with spaces in their names
+- Better success/error identification when running git commands
 
 ## [[2.1.1] 2019-05-15](https://github.com/arturock/vscode-gitstash/tree/v2.1.1)
 ### Fixed

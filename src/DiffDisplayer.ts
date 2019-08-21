@@ -25,7 +25,7 @@ export class DiffDisplayer {
      * @param fileNode
      */
     public display(fileNode: StashNode) {
-        if (fileNode.type === NodeType.Modified) {
+        if (fileNode.type === NodeType.Modified || fileNode.type === NodeType.Renamed) {
             this.model.getStashedFile(fileNode).then((files) => {
                 this.showDiff(
                     this.getResourceAsUri(files.base, fileNode),
@@ -73,13 +73,16 @@ export class DiffDisplayer {
      * @param fileNode
      */
     public diffCurrent(fileNode: StashNode) {
-        const current = fileNode.path;
+        const current = fileNode.type === NodeType.Renamed
+            ? `${fileNode.parent.path}/${fileNode.oldName}`
+            : fileNode.path;
+
         if (!fs.existsSync(current)) {
             vscode.window.showErrorMessage('No file available to compare');
             return;
         }
 
-        if (fileNode.type === NodeType.Modified) {
+        if (fileNode.type === NodeType.Modified || fileNode.type === NodeType.Renamed) {
             this.model.getStashedFile(fileNode).then((files) => {
                 this.showDiff(
                     this.getResourceAsUri(files.modified, fileNode),

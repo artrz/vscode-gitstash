@@ -23,8 +23,13 @@ export default class {
             case NodeType.Stash:
                 return this.parseStashLabel(node, this.config.settings.stashFormat);
             case NodeType.Deleted:
+                return this.parseFileLabel(node, this.config.settings.fileFormat);
             case NodeType.IndexAdded:
+                return this.parseFileLabel(node, this.config.settings.fileFormat);
             case NodeType.Modified:
+                return this.parseFileLabel(node, this.config.settings.fileFormat);
+            case NodeType.Renamed:
+                return this.parseFileLabel(node, this.config.settings.renamedFileFormat);
             case NodeType.Untracked:
                 return this.parseFileLabel(node, this.config.settings.fileFormat);
         }
@@ -42,8 +47,13 @@ export default class {
             case NodeType.Stash:
                 return this.parseStashLabel(node, this.config.settings.stashTooltipFormat);
             case NodeType.Deleted:
+                return this.parseFileLabel(node, this.config.settings.fileTooltipFormat);
             case NodeType.IndexAdded:
+                return this.parseFileLabel(node, this.config.settings.fileTooltipFormat);
             case NodeType.Modified:
+                return this.parseFileLabel(node, this.config.settings.fileTooltipFormat);
+            case NodeType.Renamed:
+                return this.parseFileLabel(node, this.config.settings.renamedFileTooltipFormat);
             case NodeType.Untracked:
                 return this.parseFileLabel(node, this.config.settings.fileTooltipFormat);
         }
@@ -82,6 +92,7 @@ export default class {
     private parseFileLabel(fileNode: StashNode, template: string): string {
         return template
             .replace('${filename}', path.basename(fileNode.name))
+            .replace('${oldFilename}', fileNode.oldName ? path.basename(fileNode.oldName) : '')
             .replace('${filepath}', `${path.dirname(fileNode.name)}/`)
             .replace('${type}', this.getTypeLabel(fileNode));
     }
@@ -131,10 +142,11 @@ export default class {
      */
     private getTypeLabel(fileNode: StashNode): string {
         switch (fileNode.type) {
-            case NodeType.Untracked: return 'Untracked';
+            case NodeType.Deleted: return 'Deleted';
             case NodeType.IndexAdded: return 'Index Added';
             case NodeType.Modified: return 'Modified';
-            case NodeType.Deleted: return 'Deleted';
+            case NodeType.Renamed: return 'Renamed';
+            case NodeType.Untracked: return 'Untracked';
             default: return 'Other';
         }
     }

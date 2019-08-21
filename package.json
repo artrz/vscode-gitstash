@@ -11,7 +11,7 @@
         "theme": "dark"
     },
     "engines": {
-        "vscode": "^1.23.0"
+        "vscode": "^1.27.0"
     },
     "categories": [
         "Other"
@@ -41,6 +41,11 @@
             "type": "object",
             "title": "GitStash",
             "properties": {
+                "gitstash.advanced.repositorySearchDepth": {
+                    "type": "integer",
+                    "default": 1,
+                    "description": "Search depth for finding repositories"
+                },
                 "gitstash.explorer.enabled": {
                     "type": "boolean",
                     "default": true,
@@ -76,9 +81,19 @@
                     "default": "${filename}",
                     "description": "Specifies the format for each stashed file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${index} - the file index\n${type} - the change type"
                 },
+                "gitstash.renamedFileFormat": {
+                    "type": "string",
+                    "default": "${filename}",
+                    "description": "Specifies the format for each stashed file\nAvailable tokens:\n${filename} - the file name\n${oldFilename} - the previous file name\n${filepath} - the file path\n${index} - the file index\n${type} - the change type"
+                },
                 "gitstash.fileTooltipFormat": {
                     "type": "string",
                     "default": "${filepath}${filename} • ${type}",
+                    "description": "Specifies the format for each stashed file tooltip\nAvailable tokens:\nSame than fileFormat"
+                },
+                "gitstash.renamedFileTooltipFormat": {
+                    "type": "string",
+                    "default": "${filepath}${filename} ← ${oldFilename} • ${type}",
                     "description": "Specifies the format for each stashed file tooltip\nAvailable tokens:\nSame than fileFormat"
                 },
                 "gitstash.diffTitleFormat": {
@@ -311,13 +326,13 @@
         "watch": "tsc -watch -p ./"
     },
     "dependencies": {
-        "tmp": "0.0.33"
+        "tmp": "0.1.0"
     },
     "devDependencies": {
         "@types/mocha": "5.2.6",
         "@types/node": "10.1.4",
-        "@types/tmp": "0.0.33",
-        "tslint": "5.14.0",
+        "@types/tmp": "0.1.0",
+        "tslint": "5.19.0",
         "typescript": "3.3.3",
         "vscode": "1.1.33"
     }
