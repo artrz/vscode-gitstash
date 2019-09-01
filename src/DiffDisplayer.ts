@@ -1,22 +1,19 @@
 'use string';
 
 import * as fs from 'fs';
-import * as path from 'path';
-import * as tmp from 'tmp';
 import * as vscode from 'vscode';
-import Model from './Model';
 import StashLabels from './StashLabels';
 import StashNode, { NodeType } from './StashNode';
+import UriGenerator from './uriGenerator';
+import { FileStage } from './StashGit';
 
 export class DiffDisplayer {
-    private model: Model;
     private stashLabels: StashLabels;
+    private uriGenerator: UriGenerator;
 
-    constructor(model: Model, stashLabels: StashLabels) {
-        this.model = model;
+    constructor(uriGenerator: UriGenerator, stashLabels: StashLabels) {
         this.stashLabels = stashLabels;
-
-        tmp.setGracefulCleanup();
+        this.uriGenerator = uriGenerator;
     }
 
     /**
@@ -24,46 +21,38 @@ export class DiffDisplayer {
      *
      * @param fileNode
      */
-    public display(fileNode: StashNode) {
+    public async showDiff(fileNode: StashNode) {
         if (fileNode.type === NodeType.Modified || fileNode.type === NodeType.Renamed) {
-            this.model.getStashedFile(fileNode).then((files) => {
-                this.showDiff(
-                    this.getResourceAsUri(files.base, fileNode),
-                    this.getResourceAsUri(files.modified, fileNode),
-                    fileNode,
-                    true
-                );
-            });
+            this.displayDiff(
+                await this.uriGenerator.create(fileNode, FileStage.Parent),
+                await this.uriGenerator.create(fileNode, FileStage.Change),
+                fileNode,
+                true
+            );
         }
         else if (fileNode.type === NodeType.Untracked) {
-            this.model.getFileContents(fileNode).then((content) => {
-                this.showDiff(
-                    this.getResourceAsUri(),
-                    this.getResourceAsUri(content, fileNode),
-                    fileNode,
-                    true
-                );
-            });
+            this.displayDiff(
+                await this.uriGenerator.create(),
+                await this.uriGenerator.create(fileNode),
+                fileNode,
+                true
+            );
         }
         else if (fileNode.type === NodeType.IndexAdded) {
-            this.model.getFileContents(fileNode).then((content) => {
-                this.showDiff(
-                    this.getResourceAsUri(),
-                    this.getResourceAsUri(content, fileNode),
-                    fileNode,
-                    true
-                );
-            });
+            this.displayDiff(
+                await this.uriGenerator.create(),
+                await this.uriGenerator.create(fileNode),
+                fileNode,
+                true
+            );
         }
         else if (fileNode.type === NodeType.Deleted) {
-            this.model.getFileContents(fileNode).then((content) => {
-                this.showDiff(
-                    this.getResourceAsUri(content, fileNode),
-                    this.getResourceAsUri(),
-                    fileNode,
-                    true
-                );
-            });
+            this.displayDiff(
+                await this.uriGenerator.create(fileNode),
+                await this.uriGenerator.create(),
+                fileNode,
+                true
+            );
         }
     }
 
@@ -72,7 +61,7 @@ export class DiffDisplayer {
      *
      * @param fileNode
      */
-    public diffCurrent(fileNode: StashNode) {
+    public async showDiffCurrent(fileNode: StashNode) {
         const current = fileNode.type === NodeType.Renamed
             ? `${fileNode.parent.path}/${fileNode.oldName}`
             : fileNode.path;
@@ -83,44 +72,36 @@ export class DiffDisplayer {
         }
 
         if (fileNode.type === NodeType.Modified || fileNode.type === NodeType.Renamed) {
-            this.model.getStashedFile(fileNode).then((files) => {
-                this.showDiff(
-                    this.getResourceAsUri(files.modified, fileNode),
-                    vscode.Uri.file(current),
-                    fileNode,
-                    false
-                );
-            });
+            this.displayDiff(
+                await this.uriGenerator.create(fileNode, FileStage.Change),
+                vscode.Uri.file(current),
+                fileNode,
+                false
+            );
         }
         else if (fileNode.type === NodeType.Untracked) {
-            this.model.getFileContents(fileNode).then((content) => {
-                this.showDiff(
-                    this.getResourceAsUri(content, fileNode),
-                    vscode.Uri.file(current),
-                    fileNode,
-                    false
-                );
-            });
+            this.displayDiff(
+                await this.uriGenerator.create(fileNode),
+                vscode.Uri.file(current),
+                fileNode,
+                false
+            );
         }
         else if (fileNode.type === NodeType.IndexAdded) {
-            this.model.getFileContents(fileNode).then((content) => {
-                this.showDiff(
-                    this.getResourceAsUri(content, fileNode),
-                    vscode.Uri.file(current),
-                    fileNode,
-                    false
-                );
-            });
+            this.displayDiff(
+                await this.uriGenerator.create(fileNode),
+                vscode.Uri.file(current),
+                fileNode,
+                false
+            );
         }
         else if (fileNode.type === NodeType.Deleted) {
-            this.model.getFileContents(fileNode).then((content) => {
-                this.showDiff(
-                    this.getResourceAsUri(content, fileNode),
-                    vscode.Uri.file(current),
-                    fileNode,
-                    false
-                );
-            });
+            this.displayDiff(
+                await this.uriGenerator.create(fileNode),
+                vscode.Uri.file(current),
+                fileNode,
+                false
+            );
         }
     }
 
@@ -132,42 +113,17 @@ export class DiffDisplayer {
      * @param fileNode the stash node that's being displayed
      * @param hint     the hint reference to know file origin
      */
-    private showDiff(base: vscode.Uri, modified: vscode.Uri, fileNode: StashNode, hint: boolean) {
+    private displayDiff(base: vscode.Uri, modified: vscode.Uri, fileNode: StashNode, hint: boolean) {
         vscode.commands.executeCommand<void>(
             'vscode.diff',
             base,
             modified,
             this.stashLabels.getDiffTitle(fileNode, hint),
-            { preview: true }
+            {
+                preserveFocus: true,
+                preview: true,
+                viewColumn: vscode.ViewColumn.Active
+            } as vscode.TextDocumentShowOptions
         );
-    }
-
-    /**
-     * Generates a resource uri for the resource content.
-     *
-     * @param content the resource content
-     * @param node    the stash node that's being displayed
-     */
-    private getResourceAsUri(content?: Buffer | string, node?: StashNode): vscode.Uri {
-        return content
-            ? vscode.Uri.file(this.createTmpFile(content, node.name).name)
-            : vscode.Uri.parse('empty-stash:');
-    }
-
-    /**
-     * Generates a file with content.
-     *
-     * @param content  the buffer with the content
-     * @param filename the string with the filename
-     */
-    private createTmpFile(content: Buffer | string, filename: string): tmp.SynchrounousResult {
-        const file = tmp.fileSync({
-            prefix: 'vscode-gitstash-',
-            postfix: path.extname(filename)
-        });
-
-        fs.writeFileSync(file.name, content);
-
-        return file;
     }
 }

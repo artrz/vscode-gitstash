@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Allow to configure a search depth for finding repositories on subdirectories
 - Support for renamed files
 ### Updated
+- Improve and speed up the way diff file contents are shown
 - Some libraries
 ### Fixed
 - Not handling correctly file paths with spaces in their names

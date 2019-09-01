@@ -14,9 +14,9 @@ export default class {
         return new StashNode({
             type: NodeType.Repository,
             name: workspace.getWorkspaceFolder(Uri.file(path)).name,
-            index: null,
-            parent: null,
-            date: null,
+            index: undefined,
+            parent: undefined,
+            date: undefined,
             path: path
         });
     }
@@ -48,9 +48,9 @@ export default class {
         return new StashNode({
             type: type,
             name: type === NodeType.Renamed ? file.new : file,
-            oldName: type === NodeType.Renamed ? file.old : null,
+            oldName: type === NodeType.Renamed ? file.old : undefined,
             path: path,
-            index: null,
+            index: undefined,
             parent: parentNode,
             date: parentNode.date
         });

@@ -40,7 +40,7 @@ export class Commands {
      * @param fileNode the involved node
      */
     public show = (fileNode: StashNode) => {
-        this.displayer.display(fileNode);
+        this.displayer.showDiff(fileNode);
     }
 
     /**
@@ -49,7 +49,7 @@ export class Commands {
      * @param fileNode the involved node
      */
     public diffCurrent = (fileNode: StashNode) => {
-        this.displayer.diffCurrent(fileNode);
+        this.displayer.showDiffCurrent(fileNode);
     }
 
     /**
