@@ -19,19 +19,19 @@ export default class {
     public getName(node: StashNode): string {
         switch (node.type) {
             case NodeType.Repository:
-                return this.parseRepositoryLabel(node, this.config.settings.repositoryFormat);
+                return this.parseRepositoryLabel(node, this.config.settings.explorer.labels.repositoryFormat);
             case NodeType.Stash:
-                return this.parseStashLabel(node, this.config.settings.stashFormat);
+                return this.parseStashLabel(node, this.config.settings.explorer.labels.stashFormat);
             case NodeType.Deleted:
-                return this.parseFileLabel(node, this.config.settings.deletedFileFormat);
+                return this.parseFileLabel(node, this.config.settings.explorer.labels.deletedFileFormat);
             case NodeType.IndexAdded:
-                return this.parseFileLabel(node, this.config.settings.addedFileFormat);
+                return this.parseFileLabel(node, this.config.settings.explorer.labels.addedFileFormat);
             case NodeType.Modified:
-                return this.parseFileLabel(node, this.config.settings.modifiedFileFormat);
+                return this.parseFileLabel(node, this.config.settings.explorer.labels.modifiedFileFormat);
             case NodeType.Renamed:
-                return this.parseFileLabel(node, this.config.settings.renamedFileFormat);
+                return this.parseFileLabel(node, this.config.settings.explorer.labels.renamedFileFormat);
             case NodeType.Untracked:
-                return this.parseFileLabel(node, this.config.settings.untrackedFileFormat);
+                return this.parseFileLabel(node, this.config.settings.explorer.labels.untrackedFileFormat);
         }
     }
 
@@ -43,19 +43,19 @@ export default class {
     public getTooltip(node: StashNode): string {
         switch (node.type) {
             case NodeType.Repository:
-                return this.parseRepositoryLabel(node, this.config.settings.repositoryTooltipFormat);
+                return this.parseRepositoryLabel(node, this.config.settings.explorer.labels.repositoryTooltipFormat);
             case NodeType.Stash:
-                return this.parseStashLabel(node, this.config.settings.stashTooltipFormat);
+                return this.parseStashLabel(node, this.config.settings.explorer.labels.stashTooltipFormat);
             case NodeType.Deleted:
-                return this.parseFileLabel(node, this.config.settings.deletedFileTooltipFormat);
+                return this.parseFileLabel(node, this.config.settings.explorer.labels.deletedFileTooltipFormat);
             case NodeType.IndexAdded:
-                return this.parseFileLabel(node, this.config.settings.addedFileTooltipFormat);
+                return this.parseFileLabel(node, this.config.settings.explorer.labels.addedFileTooltipFormat);
             case NodeType.Modified:
-                return this.parseFileLabel(node, this.config.settings.modifiedFileTooltipFormat);
+                return this.parseFileLabel(node, this.config.settings.explorer.labels.modifiedFileTooltipFormat);
             case NodeType.Renamed:
-                return this.parseFileLabel(node, this.config.settings.renamedFileTooltipFormat);
+                return this.parseFileLabel(node, this.config.settings.explorer.labels.renamedFileTooltipFormat);
             case NodeType.Untracked:
-                return this.parseFileLabel(node, this.config.settings.untrackedFileTooltipFormat);
+                return this.parseFileLabel(node, this.config.settings.explorer.labels.untrackedFileTooltipFormat);
         }
     }
 
@@ -104,7 +104,7 @@ export default class {
      * @param hint     the hint reference to know file origin
      */
     public getDiffTitle(fileNode: StashNode, hint: boolean): string {
-        return this.config.settings.diffTitleFormat
+        return this.config.settings.editor.diffTitleFormat
             .replace('${filename}', path.basename(fileNode.name))
             .replace('${filepath}', `${path.dirname(fileNode.name)}/`)
             .replace('${date}', fileNode.date)
