@@ -9,17 +9,17 @@ export interface Stash {
     date: string;
 }
 
-export interface StashedFileContents {
-    base: Buffer | string;
-    modified: Buffer | string;
-}
-
 export interface StashedFiles {
     indexAdded: string[];
     modified: string[];
     renamed: any[];
     untracked: string[];
     deleted: string[];
+}
+
+export const enum FileStage {
+    Parent = 'p',
+    Change = 'c'
 }
 
 export default class StashGit extends Git {
@@ -112,7 +112,7 @@ export default class StashGit extends Git {
             indexAdded: [],
             modified: [],
             deleted: [],
-            renamed: [],
+            renamed: []
         };
 
         const params = [
@@ -144,13 +144,14 @@ export default class StashGit extends Git {
                         const fileNames = file.match(/^\d+\s+([^\t]+)\t(.+)$/);
                         files.renamed.push({
                             new: fileNames[2],
-                            old: fileNames[1],
+                            old: fileNames[1]
                         });
                     }
                 });
             }
         } catch (e) {
-            console.log('StashGit.getStashedFiles', e);
+            console.log('StashGit.getStashedFiles');
+            console.log(e);
         }
 
         return files;
@@ -187,61 +188,18 @@ export default class StashGit extends Git {
     }
 
     /**
-     * Gets the contents of a deleted file.
-     *
-     * @param cwd   the current working directory
-     * @param index the int with the index of the parent stash
-     * @param file  the string with the stashed file name
-     */
-    public async deletedFileContents(cwd: string, index: number, file: string): Promise<Buffer | string> {
-        return await this.getParentContents(cwd, index, file);
-    }
-
-    /**
-     * Gets the contents of an index added file.
-     *
-     * @param cwd   the current working directory
-     * @param index the int with the index of the parent stash
-     * @param file  the string with the stashed file name
-     */
-    public async indexAddedFileContents(cwd: string, index: number, file: string): Promise<Buffer | string> {
-        return await this.getStashContents(cwd, index, file);
-    }
-
-    /**
-     * Gets the contents of both, the base (original) and the modified data.
-     *
-     * @param cwd     the current working directory
-     * @param index   the int with the index of the parent stash
-     * @param file    the string with the stashed file name
-     * @param oldFile the string with the stashed original file name if its a renamed file
-     */
-    public async getStashFileContents(cwd: string, index: number, file: string, oldFile?: string): Promise<StashedFileContents> {
-        return {
-            base: await this.getParentContents(cwd, index, oldFile || file),
-            modified: await this.getStashContents(cwd, index, file)
-        };
-    }
-
-    /**
-     * Gets the contents of an untracked file.
-     *
-     * @param cwd   the current working directory
-     * @param index the int with the index of the parent stash
-     * @param file  the string with the stashed file name
-     */
-    public async untrackedFileContents(cwd: string, index: number, file: string): Promise<Buffer | string> {
-        return await this.getThirdParentStashContents(cwd, index, file);
-    }
-
-    /**
      * Gets the file contents from the stash commit.
      *
+     * This gets the changed contents for:
+     *  - index-added
+     *  - modified
+     *  - renamed
+     *
      * @param cwd   the current working directory
      * @param index the int with the index of the parent stash
      * @param file  the string with the stashed file name
      */
-    private async getStashContents(cwd: string, index: number, file: string): Promise<Buffer | string> {
+    public async getStashContents(cwd: string, index: number, file: string): Promise<Buffer | string> {
         const params = [
             'show',
             `stash@{${index}}:${file}`
@@ -253,11 +211,16 @@ export default class StashGit extends Git {
     /**
      * Gets the file contents from the parent stash commit.
      *
+     * This gets the original contents for:
+     *  - deleted
+     *  - modified
+     *  - renamed
+     *
      * @param cwd   the current working directory
      * @param index the int with the index of the parent stash
      * @param file  the string with the stashed file name
      */
-    private async getParentContents(cwd: string, index: number, file: string): Promise<Buffer | string> {
+    public async getParentContents(cwd: string, index: number, file: string): Promise<Buffer | string> {
         const params = [
             'show',
             `stash@{${index}}^1:${file}`
@@ -273,7 +236,7 @@ export default class StashGit extends Git {
      * @param index the int with the index of the parent stash
      * @param file  the string with the stashed file name
      */
-    private async getThirdParentStashContents(cwd: string, index: number, file: string): Promise<Buffer | string> {
+    public async getThirdParentContents(cwd: string, index: number, file: string): Promise<Buffer | string> {
         const params = [
             'show',
             `stash@{${index}}^3:${file}`

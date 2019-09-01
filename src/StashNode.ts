@@ -10,14 +10,14 @@ interface Node {
     path?: string;
 }
 
-export enum NodeType {
-    'Repository' = 'r',
-    'Stash' = 's',
-    'Deleted' = 'd',
-    'IndexAdded' = 'a',
-    'Modified' = 'm',
-    'Renamed' = 'n',
-    'Untracked' = 'u',
+export const enum NodeType {
+    Repository = 'r',
+    Stash = 's',
+    Deleted = 'd',
+    IndexAdded = 'a',
+    Modified = 'm',
+    Renamed = 'n',
+    Untracked = 'u'
 }
 
 export default class StashNode {

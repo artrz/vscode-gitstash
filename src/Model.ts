@@ -1,6 +1,6 @@
 'use strict';
 
-import StashGit, { Stash, StashedFileContents, StashedFiles } from './StashGit';
+import StashGit, { FileStage, Stash, StashedFiles } from './StashGit';
 import StashNode, { NodeType } from './StashNode';
 import StashNodeFactory from './StashNodeFactory';
 import WorkspaceGit from './WorkspaceGit';
@@ -89,45 +89,27 @@ export default class Model {
     }
 
     /**
-     * Gets the file contents of both, the base (original) and the modified data.
-     *
-     * @param fileNode the stashed file node
-     */
-    public getStashedFile(fileNode: StashNode): Thenable<StashedFileContents | null> {
-        return this.stashGit
-            .getStashFileContents(
-                fileNode.parent.path,
-                fileNode.parent.index,
-                fileNode.name,
-                fileNode.oldName
-            )
-            .then((rawContent: StashedFileContents) => {
-                return rawContent;
-            });
-    }
-
-    /**
      * Gets the file contents of the untracked file.
      *
      * @param fileNode the stashed node file
+     * @param stage    the file stash stage
      */
-    public getFileContents(fileNode: StashNode): Thenable<Buffer | string> {
+    public getFileContents(fileNode: StashNode, stage?: FileStage): Thenable<Buffer | string> {
         switch (fileNode.type) {
-            case NodeType.Untracked:
-                return this.stashGit.untrackedFileContents(fileNode.parent.path, fileNode.parent.index, fileNode.name)
-                    .then((rawContent) => {
-                        return rawContent;
-                    });
-            case NodeType.IndexAdded:
-                return this.stashGit.indexAddedFileContents(fileNode.parent.path, fileNode.parent.index, fileNode.name)
-                    .then((rawContent) => {
-                        return rawContent;
-                    });
             case NodeType.Deleted:
-                return this.stashGit.deletedFileContents(fileNode.parent.path, fileNode.parent.index, fileNode.name)
-                    .then((rawContent) => {
-                        return rawContent;
-                    });
+                return this.stashGit.getParentContents(fileNode.parent.path, fileNode.parent.index, fileNode.name);
+            case NodeType.IndexAdded:
+                return this.stashGit.getStashContents(fileNode.parent.path, fileNode.parent.index, fileNode.name);
+            case NodeType.Modified:
+                return stage === FileStage.Parent
+                    ? this.stashGit.getParentContents(fileNode.parent.path, fileNode.parent.index, fileNode.name)
+                    : this.stashGit.getStashContents(fileNode.parent.path, fileNode.parent.index, fileNode.name);
+            case NodeType.Renamed:
+                return stage === FileStage.Parent
+                    ? this.stashGit.getParentContents(fileNode.parent.path, fileNode.parent.index, fileNode.oldName)
+                    : this.stashGit.getStashContents(fileNode.parent.path, fileNode.parent.index, fileNode.name);
+            case NodeType.Untracked:
+                return this.stashGit.getThirdParentContents(fileNode.parent.path, fileNode.parent.index, fileNode.name);
         }
     }
 }

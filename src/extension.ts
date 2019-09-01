@@ -2,28 +2,33 @@
 
 import { commands, ConfigurationChangeEvent, ExtensionContext, Uri, window, workspace, WorkspaceFoldersChangeEvent } from 'vscode';
 import { Commands } from './Commands';
-
 import Config from './Config';
 import Model from './Model';
 import StashLabels from './StashLabels';
 import GitStashTreeDataProvider from './GitStashTreeDataProvider';
+import { DocumentContentProvider } from './documentContentProvider';
 import { EmptyDocumentContentProvider } from './EmptyDocumentContentProvider';
 import { StashCommands } from './StashCommands';
 import { DiffDisplayer } from './DiffDisplayer';
+import UriGenerator from './uriGenerator';
 import WorkspaceGit from './WorkspaceGit';
 
 export function activate(context: ExtensionContext) {
+    const channelName = 'GitStash';
+
     const config = new Config();
 
     const model = new Model(new WorkspaceGit(config));
     const stashLabels = new StashLabels(config);
 
     const treeProvider = new GitStashTreeDataProvider(config, model, stashLabels);
+    const documentProvider = new DocumentContentProvider();
     const emptyDocumentProvider = new EmptyDocumentContentProvider();
+
     const stashCommands = new Commands(
         new WorkspaceGit(config),
-        new StashCommands(config, window.createOutputChannel('GitStash'), stashLabels),
-        new DiffDisplayer(model, stashLabels),
+        new StashCommands(config, window.createOutputChannel(channelName), stashLabels),
+        new DiffDisplayer(new UriGenerator(model), stashLabels),
         stashLabels
     );
 
@@ -34,7 +39,8 @@ export function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         window.registerTreeDataProvider('gitstash.explorer', treeProvider),
-        workspace.registerTextDocumentContentProvider('empty-stash', emptyDocumentProvider),
+        workspace.registerTextDocumentContentProvider(UriGenerator.fileScheme, documentProvider),
+        workspace.registerTextDocumentContentProvider(UriGenerator.emptyFileScheme, emptyDocumentProvider),
 
         commands.registerCommand('gitstash.explorer.toggle', treeProvider.toggle),
         commands.registerCommand('gitstash.explorer.refresh', treeProvider.refresh),
