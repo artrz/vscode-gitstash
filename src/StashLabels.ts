@@ -23,15 +23,15 @@ export default class {
             case NodeType.Stash:
                 return this.parseStashLabel(node, this.config.settings.stashFormat);
             case NodeType.Deleted:
-                return this.parseFileLabel(node, this.config.settings.fileFormat);
+                return this.parseFileLabel(node, this.config.settings.deletedFileFormat);
             case NodeType.IndexAdded:
-                return this.parseFileLabel(node, this.config.settings.fileFormat);
+                return this.parseFileLabel(node, this.config.settings.addedFileFormat);
             case NodeType.Modified:
-                return this.parseFileLabel(node, this.config.settings.fileFormat);
+                return this.parseFileLabel(node, this.config.settings.modifiedFileFormat);
             case NodeType.Renamed:
                 return this.parseFileLabel(node, this.config.settings.renamedFileFormat);
             case NodeType.Untracked:
-                return this.parseFileLabel(node, this.config.settings.fileFormat);
+                return this.parseFileLabel(node, this.config.settings.untrackedFileFormat);
         }
     }
 
@@ -47,15 +47,15 @@ export default class {
             case NodeType.Stash:
                 return this.parseStashLabel(node, this.config.settings.stashTooltipFormat);
             case NodeType.Deleted:
-                return this.parseFileLabel(node, this.config.settings.fileTooltipFormat);
+                return this.parseFileLabel(node, this.config.settings.deletedFileTooltipFormat);
             case NodeType.IndexAdded:
-                return this.parseFileLabel(node, this.config.settings.fileTooltipFormat);
+                return this.parseFileLabel(node, this.config.settings.addedFileTooltipFormat);
             case NodeType.Modified:
-                return this.parseFileLabel(node, this.config.settings.fileTooltipFormat);
+                return this.parseFileLabel(node, this.config.settings.modifiedFileTooltipFormat);
             case NodeType.Renamed:
                 return this.parseFileLabel(node, this.config.settings.renamedFileTooltipFormat);
             case NodeType.Untracked:
-                return this.parseFileLabel(node, this.config.settings.fileTooltipFormat);
+                return this.parseFileLabel(node, this.config.settings.untrackedFileTooltipFormat);
         }
     }
 

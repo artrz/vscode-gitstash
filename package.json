@@ -76,25 +76,55 @@
                     "default": "${branch}\n${date}\n${description}",
                     "description": "Specifies the format for each stash tooltip \nAvailable tokens:\nSame than stashFormat"
                 },
-                "gitstash.fileFormat": {
+                "gitstash.addedFileFormat": {
                     "type": "string",
                     "default": "${filename}",
-                    "description": "Specifies the format for each stashed file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${index} - the file index\n${type} - the change type"
+                    "description": "Specifies the format for each added file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${index} - the file index\n${type} - the change type"
+                },
+                "gitstash.deletedFileFormat": {
+                    "type": "string",
+                    "default": "${filename}",
+                    "description": "Specifies the format for each deleted file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${index} - the file index\n${type} - the change type"
+                },
+                "gitstash.modifiedFileFormat": {
+                    "type": "string",
+                    "default": "${filename}",
+                    "description": "Specifies the format for each modified file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${index} - the file index\n${type} - the change type"
                 },
                 "gitstash.renamedFileFormat": {
                     "type": "string",
                     "default": "${filename}",
-                    "description": "Specifies the format for each stashed file\nAvailable tokens:\n${filename} - the file name\n${oldFilename} - the previous file name\n${filepath} - the file path\n${index} - the file index\n${type} - the change type"
+                    "description": "Specifies the format for each renamed file\nAvailable tokens:\n${filename} - the file name\n${oldFilename} - the previous file name\n${filepath} - the file path\n${index} - the file index\n${type} - the change type"
                 },
-                "gitstash.fileTooltipFormat": {
+                "gitstash.untrackedFileFormat": {
+                    "type": "string",
+                    "default": "${filename}",
+                    "description": "Specifies the format for each untracked file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${index} - the file index\n${type} - the change type"
+                },
+                "gitstash.addedFileTooltipFormat": {
                     "type": "string",
                     "default": "${filepath}${filename} • ${type}",
-                    "description": "Specifies the format for each stashed file tooltip\nAvailable tokens:\nSame than fileFormat"
+                    "description": "Specifies the format for each added file tooltip\nAvailable tokens:\nSame than fileFormat"
+                },
+                "gitstash.deletedFileTooltipFormat": {
+                    "type": "string",
+                    "default": "${filepath}${filename} • ${type}",
+                    "description": "Specifies the format for each deleted file tooltip\nAvailable tokens:\nSame than fileFormat"
+                },
+                "gitstash.modifiedFileTooltipFormat": {
+                    "type": "string",
+                    "default": "${filepath}${filename} • ${type}",
+                    "description": "Specifies the format for each modified file tooltip\nAvailable tokens:\nSame than fileFormat"
                 },
                 "gitstash.renamedFileTooltipFormat": {
                     "type": "string",
                     "default": "${filepath}${filename} ← ${oldFilename} • ${type}",
-                    "description": "Specifies the format for each stashed file tooltip\nAvailable tokens:\nSame than fileFormat"
+                    "description": "Specifies the format for each renamed file tooltip\nAvailable tokens:\nSame than fileFormat"
+                },
+                "gitstash.untrackedFileTooltipFormat": {
+                    "type": "string",
+                    "default": "${filepath}${filename} • ${type}",
+                    "description": "Specifies the format for each untracked file tooltip\nAvailable tokens:\nSame than fileFormat"
                 },
                 "gitstash.diffTitleFormat": {
                     "type": "string",
