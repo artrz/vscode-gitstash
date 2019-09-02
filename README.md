@@ -43,22 +43,28 @@ Navigate on your stashes, and run basically all stash commands visually and revi
 
 ## Extension Settings
 
-|Name                                       | Default                                               | Description
-|-------------------------------------------|-------------------------------------------------------|------------
-| `gitstash.explorer.enabled`               | `true`                                                | Enables or disables the stash explorer tree on startup.
-| `gitstash.explorer.buttons`               | `true`                                                | Shows or hides the explorer buttons.
-| `gitstash.repositoryFormat`               | `${name}`                                             | Specifies the format for each repository. Available tokens: `${name}` - the repository name, `${directory}` - the repository directory base name, `${path}` - the full directory path
-| `gitstash.repositoryTooltipFormat`        | `${path}`                                             | Specifies the format for each stash tooltip. Available tokens: Same than repositoryFormat
-| `gitstash.stashFormat`                    | `#${index}:  ${description}`                          | Specifies the format for each stash. Available tokens: `${branch}` - the branch where the stash was created, `${description}` - the custom or default description for the stash, `${date}` - the stash creation date, `${index}` the stash index
-| `gitstash.stashTooltipFormat`             | `${branch}\n${date}\n${description}`                  | Specifies the format for each stash tooltip. Available tokens: Same than stashFormat
-| `gitstash.fileFormat`                     | `${filename}`                                         | Specifies the format for each stashed file. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${type}` - the change type
-| `gitstash.renamedFileFormat`              | `${filename}`                                         | Specifies the format for a stashed renamed file. Available tokens: `${filename}` - the file name, `${oldFilename}` - the previous file name, `${filepath}` - the file path, `${type}` - the change type
-| `gitstash.fileTooltipFormat`              | `${filepath}${filename} • ${type}`                    | Specifies the format for each stashed file tooltip. Available tokens: Same than fileFormat
-| `gitstash.renamedFileTooltipFormat`       | `${filepath}${filename} ← ${oldFilename} • ${type}`   | Specifies the format for a stashed renamed file tooltip. Available tokens: Same than renamedFileFormat
-| `gitstash.diffTitleFormat`                | `#${stashIndex}: ${filename}  ${hint} (${filepath})`  | Specifies the format for the diff document title. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${date}` - the stash date, `${description}` - the stash description, `${branch}` - the stash branch, `${stashIndex}` - the stash index, `${type}` - the change type on the file like 'Modified' or 'Deleted', `${hint}` - like `${type}` but indicates also the editor position of the change
-| `gitstash.dateFormat`                     | `default`                                             | Specifies the date format for each stash. Available formats: `default`, `iso`, `local`, `raw`, `relative`, `rfc`, `short`
-| `gitstash.log.autoclear`                  | `false`                                               | Clears the log window before showing the action result.
-| `gitstash.advanced.repositorySearchDepth` | `1`                                                   | Specifies the search depth for looking for repositories.
+|Name                                                   | Default                                               | Description
+|-------------------------------------------------------|-------------------------------------------------------|------------
+| `gitstash.explorer.enabled`                           | `true`                                                | Enables or disables the stash explorer tree on startup.
+| `gitstash.explorer.buttons`                           | `true`                                                | Shows or hides the explorer tree buttons.
+| `gitstash.explorer.labels.repositoryFormat`           | `${name}`                                             | Specifies the format for each repository. Available tokens: `${name}` - the repository name, `${directory}` - the repository directory base name, `${path}` - the full directory path
+| `gitstash.explorer.labels.repositoryTooltipFormat`    | `${path}`                                             | Specifies the format for each stash tooltip. Available tokens: Same than repositoryFormat
+| `gitstash.explorer.labels.stashFormat`                | `#${index}:  ${description}`                          | Specifies the format for each stash. Available tokens: `${branch}` - the branch where the stash was created, `${description}` - the custom or default description for the stash, `${date}` - the stash creation date, `${index}` the stash index
+| `gitstash.explorer.labels.stashTooltipFormat`         | `${branch}\n${date}\n${description}`                  | Specifies the format for each stash tooltip. Available tokens: Same than stashFormat
+| `gitstash.explorer.labels.addedFileFormat`            | `${filename}`                                         | Specifies the format for each added file. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${type}` - the change type
+| `gitstash.explorer.labels.deletedFileFormat`          | `${filename}`                                         | Specifies the format for each deleted file. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${type}` - the change type
+| `gitstash.explorer.labels.modifiedFileFormat`         | `${filename}`                                         | Specifies the format for each modified file. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${type}` - the change type
+| `gitstash.explorer.labels.renamedFileFormat`          | `${filename}`                                         | Specifies the format for a renamed file. Available tokens: `${filename}` - the file name, `${oldFilename}` - the previous file name, `${filepath}` - the file path, `${type}` - the change type
+| `gitstash.explorer.labels.untrackedFileFormat`        | `${filename}`                                         | Specifies the format for each untracked file. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${type}` - the change type
+| `gitstash.explorer.labels.addedFileTooltipFormat`     | `${filepath}${filename} • ${type}`                    | Specifies the format for each added file tooltip. Available tokens: Same than addedFileFormat
+| `gitstash.explorer.labels.deletedFileTooltipFormat`   | `${filepath}${filename} • ${type}`                    | Specifies the format for each deleted file tooltip. Available tokens: Same than deletedFileFormat
+| `gitstash.explorer.labels.modifiedFileTooltipFormat`  | `${filepath}${filename} • ${type}`                    | Specifies the format for each modified file tooltip. Available tokens: Same than modifiedFileFormat
+| `gitstash.explorer.labels.renamedFileTooltipFormat`   | `${filepath}${filename} ← ${oldFilename} • ${type}`   | Specifies the format for a renamed file tooltip. Available tokens: Same than renamedFileFormat
+| `gitstash.explorer.labels.untrackedFileTooltipFormat` | `${filepath}${filename} • ${type}`                    | Specifies the format for each untracked file tooltip. Available tokens: Same than untrackedFileFormat
+| `gitstash.editor.diffTitleFormat`                     | `#${stashIndex}: ${filename}  ${hint} (${filepath})`  | Specifies the format for the diff editor title. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${date}` - the stash date, `${description}` - the stash description, `${branch}` - the stash branch, `${stashIndex}` - the stash index, `${type}` - the change type on the file like 'Modified' or 'Deleted', `${hint}` - like `${type}` but indicates also the editor position of the change
+| `gitstash.dateFormat`                                 | `default`                                             | Specifies the date format for each stash. Available formats: `default`, `iso`, `local`, `raw`, `relative`, `rfc`, `short`
+| `gitstash.log.autoclear`                              | `false`                                               | Clears the log window before showing the action result.
+| `gitstash.advanced.repositorySearchDepth`             | `1`                                                   | Specifies the search depth for looking for repositories.
 
 
 ## Tips

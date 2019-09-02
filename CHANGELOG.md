@@ -8,8 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Allow to configure a search depth for finding repositories on subdirectories
 - Support for renamed files
+- Custom labels for each change type
 ### Updated
 - Improve and speed up the way diff file contents are shown
+- Renamed some settings
 - Some libraries
 ### Fixed
 - Not handling correctly file paths with spaces in their names
