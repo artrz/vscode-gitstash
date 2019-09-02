@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [[3.0.0] 2019-09-02](https://github.com/arturock/vscode-gitstash/tree/v3.0.0)
 ### Added
 - Allow to configure a search depth for finding repositories on subdirectories
 - Support for renamed files
