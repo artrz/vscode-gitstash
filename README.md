@@ -14,17 +14,17 @@ Add extra git stash powers to VS Code.
 This extension allows to comfortably create, apply, delete and inspect stashes. It results helpful when working on different features, switching to branches for modifications or creating sets of local experimental features.
 Navigate on your stashes, and run basically all stash commands visually and review the results.
 
-![GitStash preview](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/screencast.gif)
+![GitStash preview](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/docs/screencast.gif)
 
-![Tree actions](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/tree.png)
+![Tree actions](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/docs/tree.png)
 
-![Conflicts notification](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/success.png)
+![Success notification](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/docs/success.png)
 
-![Conflicts notification](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/conflicts.png)
+![Conflicts notification](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/docs/conflicts.png)
 
-![Conflicts notification](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/failure.png)
+![Failure notification](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/docs/failure.png)
 
-![Image diff](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/image-diff.png)
+![Image diff](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/docs/image-diff.png)
 
 
 ## Commands
