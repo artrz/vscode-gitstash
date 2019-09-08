@@ -1,9 +1,10 @@
 .vscode/**
-.vscode-test/**
 out/test/**
+resources/docs/**
 test/**
 src/**
 **/*.map
 .gitignore
 tsconfig.json
-vsc-extension-quickstart.md
+tslint.json
+tslint-prepublish.json
