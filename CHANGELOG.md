@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [[3.0.0] 2019-09-02](https://github.com/arturock/vscode-gitstash/tree/v3.0.0)
+## [[3.0.0] 2019-09-09](https://github.com/arturock/vscode-gitstash/tree/v3.0.0)
 ### Added
 - Allow to configure a search depth for finding repositories on subdirectories
 - Support for renamed files
@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Updated
 - Improve the extension loading time and lower extension size
 - Improve and speed up the way diff file contents are shown
+- Replace some icons with the latest ones from Visual Studio Code
 - Renamed some settings
 - Some libraries
 ### Fixed
