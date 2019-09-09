@@ -223,8 +223,8 @@
                 "title": "Compare with current",
                 "category": "GitStash",
                 "icon": {
-                    "light": "resources/icons/light/diff.svg",
-                    "dark": "resources/icons/dark/diff.svg"
+                    "light": "resources/icons/light/compare-changes.svg",
+                    "dark": "resources/icons/dark/compare-changes.svg"
                 }
             },
             {
@@ -232,8 +232,8 @@
                 "title": "Apply changes from this file",
                 "category": "GitStash",
                 "icon": {
-                    "light": "resources/icons/light/tasklist.svg",
-                    "dark": "resources/icons/dark/tasklist.svg"
+                    "light": "resources/icons/light/check.svg",
+                    "dark": "resources/icons/dark/check.svg"
                 }
             },
             {
@@ -241,8 +241,8 @@
                 "title": "Apply contents form this file",
                 "category": "GitStash",
                 "icon": {
-                    "light": "resources/icons/light/tasklist.svg",
-                    "dark": "resources/icons/dark/tasklist.svg"
+                    "light": "resources/icons/light/check.svg",
+                    "dark": "resources/icons/dark/check.svg"
                 }
             }
         ],
