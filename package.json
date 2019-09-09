@@ -32,7 +32,7 @@
     "bugs": {
         "url": "https://github.com/arturock/vscode-gitstash/issues"
     },
-    "main": "./out/src/extension",
+    "main": "./dist/extension",
     "activationEvents": [
         "*"
     ],
@@ -353,11 +353,12 @@
         }
     },
     "scripts": {
-        "build": "tsc -p ./",
         "lint": "tslint --project tsconfig.json --config tslint-prepublish.json",
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "vscode:prepublish": "npm run lint && npm run build",
-        "watch": "tsc -watch -p ./"
+        "vscode:prepublish": "npm run lint && webpack --mode development",
+        "webpack": "webpack --mode development",
+        "webpack-dev": "webpack --mode development --watch",
+        "test-compile": "tsc -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install"
     },
     "dependencies": {
         "tmp": "0.1.0"
@@ -366,8 +367,11 @@
         "@types/mocha": "5.2.6",
         "@types/node": "10.1.4",
         "@types/tmp": "0.1.0",
+        "ts-loader": "^6.0.4",
         "tslint": "5.19.0",
         "typescript": "3.3.3",
-        "vscode": "1.1.33"
+        "vscode": "1.1.33",
+        "webpack": "^4.39.3",
+        "webpack-cli": "^3.3.7"
     }
 }

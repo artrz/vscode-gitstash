@@ -184,8 +184,8 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
      */
     private getIcon(filename: string): { light: string; dark: string } {
         return {
-            light: path.join(__filename, '..', '..', '..', 'resources', 'icons', 'light', filename),
-            dark: path.join(__filename, '..', '..', '..', 'resources', 'icons', 'dark', filename)
+            light: path.join(__dirname, '..', 'resources', 'icons', 'light', filename),
+            dark: path.join(__dirname, '..', 'resources', 'icons', 'dark', filename)
         };
     }
 
