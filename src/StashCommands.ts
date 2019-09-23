@@ -167,13 +167,16 @@ export class StashCommands {
         this.stashGit.exec(params, cwd)
             .then(
                 (result: string) => {
-                    const conflictType = this.findResultIssues(result);
+                    const issueType = this.findResultIssues(result);
 
-                    if (conflictType === 'c') {
+                    if (issueType === 'conflict') {
                         this.logResult(params, 'warning', result, `${successMessage} with conflicts`, node);
                     }
+                    else if (issueType === 'empty') {
+                        this.logResult(params, 'message', result, 'No local changes to save', node);
+                    }
                     else {
-                        this.logResult(params, 'success', result, successMessage, node);
+                        this.logResult(params, 'message', result, successMessage, node);
                     }
                 },
                 (error) => {
@@ -194,7 +197,10 @@ export class StashCommands {
     private findResultIssues(result: string): string|null {
         for (const line of result.split('\n')) {
             if (line.startsWith('CONFLICT (content): ')) {
-                return 'c';
+                return 'conflict';
+            }
+            if (line.startsWith('No local changes to save')) {
+                return 'empty';
             }
         }
 

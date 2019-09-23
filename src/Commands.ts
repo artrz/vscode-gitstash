@@ -134,61 +134,55 @@ export class Commands {
      * @param repositoryNode the repository node
      */
     private stashPerform = (repositoryNode: StashNode) => {
-        this.stashGit.isStashable(repositoryNode.path).then((isStashable) => {
-            if (!isStashable) {
-                return vscode.window.showInformationMessage('There are no changes to stash.');
-            }
+        const repositoryLabel = this.stashLabels.getName(repositoryNode);
 
-            const repositoryLabel = this.stashLabels.getName(repositoryNode);
-
-            vscode.window
-                .showQuickPick([
-                    {
-                        label: 'Stash only',
-                        description: 'Crate a simple stash',
-                        type: StashCommands.StashType.Simple
-                    },
-                    {
-                        label: 'Keep index',
-                        description: 'Stash but keep all changes added to the index intact',
-                        type: StashCommands.StashType.KeepIndex
-                    },
-                    {
-                        label: 'Include untracked',
-                        description: 'Stash also untracked files',
-                        type: StashCommands.StashType.IncludeUntracked
-                    },
-                    {
-                        label: 'Include untracked + keep index',
-                        description: '',
-                        type: StashCommands.StashType.IncludeUntrackedKeepIndex
-                    },
-                    {
-                        label: 'All',
-                        description: 'Stash also untracked and ignored files',
-                        type: StashCommands.StashType.All
-                    },
-                    {
-                        label: 'All + keep index',
-                        description: '',
-                        type: StashCommands.StashType.AllKeepIndex
-                    }
-                ], { placeHolder: `${repositoryLabel}  Select actions` })
-                .then((option) => {
-                    if (typeof option !== 'undefined') {
-                        vscode.window
-                            .showInputBox({
-                                placeHolder: `${repositoryLabel}  Stash message`,
-                                prompt: 'Optionally provide a stash message'
-                            })
-                            .then((stashMessage) => {
-                                if (typeof stashMessage === 'string') {
-                                    this.stashCommands.stash(repositoryNode, option.type, stashMessage);
-                                }
-                            });
-                    }
-                });
-        });
+        vscode.window
+            .showQuickPick([
+                {
+                    label: 'Stash only',
+                    description: 'Crate a simple stash',
+                    type: StashCommands.StashType.Simple
+                },
+                {
+                    label: 'Keep index',
+                    description: 'Stash but keep all changes added to the index intact',
+                    type: StashCommands.StashType.KeepIndex
+                },
+                {
+                    label: 'Include untracked',
+                    description: 'Stash also untracked files',
+                    type: StashCommands.StashType.IncludeUntracked
+                },
+                {
+                    label: 'Include untracked + keep index',
+                    description: '',
+                    type: StashCommands.StashType.IncludeUntrackedKeepIndex
+                },
+                {
+                    label: 'All',
+                    description: 'Stash also untracked and ignored files',
+                    type: StashCommands.StashType.All
+                },
+                {
+                    label: 'All + keep index',
+                    description: '',
+                    type: StashCommands.StashType.AllKeepIndex
+                }
+            ], { placeHolder: `${repositoryLabel}  Select actions` })
+            .then((option) => {
+                if (typeof option !== 'undefined') {
+                    vscode.window
+                        .showInputBox({
+                            placeHolder: `${repositoryLabel}  Stash message`,
+                            prompt: 'Optionally provide a stash message'
+                        })
+                        .then((stashMessage) => {
+                            if (typeof stashMessage === 'string') {
+                                this.stashCommands.stash(repositoryNode, option.type, stashMessage);
+                            }
+                        });
+                }
+            });
     }
 
     /**
@@ -438,7 +432,7 @@ export class Commands {
             return;
         }
 
-        const editorPath = editor.document.uri.path;
+        const editorPath = editor.document.uri.fsPath;
         this.workspaceGit.getRepositories().then((repositories) => {
             let cwd = null;
             repositories.forEach((repository) => {

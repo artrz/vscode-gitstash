@@ -38,38 +38,6 @@ export default class StashGit extends Git {
     }
 
     /**
-     * Indicates if there's something able to be stashed.
-     *
-     * @param cwd the current working directory
-     */
-    public async isStashable(cwd: string): Promise<boolean> {
-        const paramsModifiedAndDeleted = [
-            'diff',
-            '--name-only'
-        ];
-
-        const paramsUntracked = [
-            'ls-files',
-            '--others',
-            '--exclude-standard'
-        ];
-
-        const paramsStaged = [
-            'diff',
-            '--cached',
-            '--name-only'
-        ];
-
-        const modifiedFiles = await this.exec(paramsModifiedAndDeleted, cwd);
-        const untrackedFiles = await this.exec(paramsUntracked, cwd);
-        const stagedFiles = await this.exec(paramsStaged, cwd);
-
-        return modifiedFiles.trim().length > 0
-            || untrackedFiles.trim().length > 0
-            || stagedFiles.trim().length > 0;
-    }
-
-    /**
      * Gets the stashes list.
      *
      * @param cwd the current working directory

@@ -64,7 +64,7 @@ Navigate on your stashes, and run basically all stash commands visually and revi
 | `gitstash.editor.diffTitleFormat`                     | `#${stashIndex}: ${filename}  ${hint} (${filepath})`  | Specifies the format for the diff editor title. Available tokens: `${filename}` - the file name, `${filepath}` - the file path, `${date}` - the stash date, `${description}` - the stash description, `${branch}` - the stash branch, `${stashIndex}` - the stash index, `${type}` - the change type on the file like 'Modified' or 'Deleted', `${hint}` - like `${type}` but indicates also the editor position of the change
 | `gitstash.dateFormat`                                 | `default`                                             | Specifies the date format for each stash. Available formats: `default`, `iso`, `local`, `raw`, `relative`, `rfc`, `short`
 | `gitstash.log.autoclear`                              | `false`                                               | Clears the log window before showing the action result.
-| `gitstash.advanced.repositorySearchDepth`             | `1`                                                   | Specifies the search depth for looking for repositories.
+| `gitstash.advanced.repositorySearchDepth`             | `1`                                                   | Specifies the search depth for looking for repositories, supports negative values to search on parent directories.
 
 
 ## Tips

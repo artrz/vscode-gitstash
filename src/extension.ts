@@ -6,10 +6,11 @@ import Config from './Config';
 import Model from './Model';
 import StashLabels from './StashLabels';
 import GitStashTreeDataProvider from './GitStashTreeDataProvider';
+import { DiffDisplayer } from './DiffDisplayer';
 import { DocumentContentProvider } from './documentContentProvider';
 import { EmptyDocumentContentProvider } from './EmptyDocumentContentProvider';
+import { FileSystemWatcherManager } from './fileSystemWatcherManager';
 import { StashCommands } from './StashCommands';
-import { DiffDisplayer } from './DiffDisplayer';
 import UriGenerator from './uriGenerator';
 import WorkspaceGit from './WorkspaceGit';
 
@@ -35,7 +36,10 @@ export function activate(context: ExtensionContext) {
     const workspaceGit = new WorkspaceGit(config);
     notifyHasRepository(workspaceGit);
 
-    const watcher = workspace.createFileSystemWatcher('**/refs/stash', false, false, false);
+    const watcherManager = new FileSystemWatcherManager(
+        workspaceGit.getRepositories(),
+        (projectDirectory: Uri) => treeProvider.reload('update', projectDirectory)
+    );
 
     context.subscriptions.push(
         window.registerTreeDataProvider('gitstash.explorer', treeProvider),
@@ -59,12 +63,9 @@ export function activate(context: ExtensionContext) {
         commands.registerCommand('gitstash.applySingle', stashCommands.applySingle),
         commands.registerCommand('gitstash.createSingle', stashCommands.createSingle),
 
-        watcher.onDidCreate((event: Uri) => treeProvider.reload('create', event)),
-        watcher.onDidChange((event: Uri) => treeProvider.reload('update', event)),
-        watcher.onDidDelete((event: Uri) => treeProvider.reload('delete', event)),
-
         workspace.onDidChangeWorkspaceFolders((e: WorkspaceFoldersChangeEvent) => {
             notifyHasRepository(workspaceGit);
+            watcherManager.configure(e);
             treeProvider.reload('settings');
         }),
 
@@ -73,7 +74,9 @@ export function activate(context: ExtensionContext) {
                 config.reload();
                 treeProvider.reload('settings');
             }
-        })
+        }),
+
+        watcherManager
     );
 
     treeProvider.toggle();
