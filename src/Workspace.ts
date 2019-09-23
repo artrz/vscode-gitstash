@@ -6,23 +6,68 @@ import { workspace, WorkspaceFolder } from 'vscode';
 
 export default class Workspace {
     /**
-     * Gets a list of directories and subDirectories paths starting from the workspace paths.
+     * Gets a list of directories starting from the workspace paths.
      *
-     * @param sublevels the number of sublevels to search for subdirectories.
+     * @param searchLevels the number of sub- or upper- levels to search for directories.
      */
-    public static getRootPaths(sublevels: number): string[] {
+    public static getRootPaths(searchLevels: number): string[] {
         const workspacePaths = this.getWorkspacePaths();
 
-        if (sublevels < 1) {
-            return workspacePaths;
+        if (searchLevels < 0) {
+            return Workspace.getUpperRootPaths(workspacePaths, searchLevels);
         }
 
+        if (searchLevels > 0) {
+            return Workspace.getSubRootPaths(workspacePaths, searchLevels);
+        }
+
+        return workspacePaths;
+    }
+
+    /**
+     * Gets a list of parent directories paths starting from the workspace paths.
+     *
+     * @param workspacePaths the base workspace paths.
+     * @param searchLevels   the number of upper-levels to search for parent directories.
+     */
+    private static getUpperRootPaths(workspacePaths: string[], searchLevels: number): string[] {
+        const roots = [];
+        workspacePaths.forEach((workspacePath) => {
+            const dirsList = [workspacePath];
+
+            for (let i = searchLevels; i < 0; i += 1) {
+                const parentPath = path.dirname(workspacePath);
+
+                if (parentPath === workspacePath) {
+                    break;
+                }
+
+                dirsList.unshift(parentPath);
+                workspacePath = parentPath;
+            }
+            dirsList.forEach((workspacePath) => {
+                if (roots.indexOf(workspacePath) === -1) {
+                    roots.push(workspacePath);
+                }
+            });
+        });
+
+        return roots;
+    }
+
+    /**
+     * Gets a list of subdirectories paths starting from the workspace paths.
+     *
+     * @param workspacePaths the base workspace paths.
+     * @param searchLevels   the number of sub-levels to search for subdirectories.
+     */
+    private static getSubRootPaths(workspacePaths: string[], searchLevels: number): string[] {
         const roots = [];
 
         workspacePaths.forEach((workspacePath) => {
             const subDirectories = Workspace.getSubdirectoriesTree(
                 workspacePath,
-                sublevels,
+                searchLevels,
                 [workspacePath]
             );
             roots.push(...subDirectories);

@@ -10,7 +10,7 @@ import {
     TreeItemCollapsibleState,
     Uri
 } from 'vscode';
-import * as path from 'path';
+import { join } from 'path';
 import Config from './Config';
 import Model from './Model';
 import StashLabels from './StashLabels';
@@ -86,34 +86,31 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     /**
      * Reloads the git stash tree view.
      *
-     * @param type the event type: settings, force, create, update, delete
-     * @param event The event file URI
+     * @param type        the event type: settings, force, create, update, delete
+     * @param projectPath the URI of the project with content changes
      */
-    public reload(type: string, event?: Uri): void {
+    public reload(type: string, projectPath?: Uri): void {
         if (this.loadTimeout) {
             clearTimeout(this.loadTimeout);
         }
 
-        this.loadTimeout = setTimeout((type: string, event?: Uri) => {
+        this.loadTimeout = setTimeout((type: string, pathUri?: Uri) => {
             if (['settings', 'force'].indexOf(type) !== -1) {
                 this._onDidChangeTreeData.fire();
             }
             else {
-                let cwd = event.path;
-                while (cwd.indexOf('/.git') > -1) {
-                    cwd = path.dirname(cwd);
-                }
+                const path = pathUri.fsPath;
 
-                this.model.getRawStashesList(cwd).then((rawStash: string) => {
-                    const currentRawStash = this.rawStashes[cwd] || null;
+                this.model.getRawStashesList(path).then((rawStash: string) => {
+                    const cachedRawStash = this.rawStashes[path];
 
-                    if (currentRawStash !== rawStash) {
-                        this.rawStashes[cwd] = rawStash;
+                    if (!cachedRawStash || cachedRawStash !== rawStash) {
+                        this.rawStashes[path] = rawStash;
                         this._onDidChangeTreeData.fire();
                     }
                 });
             }
-        }, type === 'force' ? 250 : 750, type, event);
+        }, type === 'force' ? 250 : 750, type, projectPath);
     }
 
     /**
@@ -184,8 +181,8 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
      */
     private getIcon(filename: string): { light: string; dark: string } {
         return {
-            light: path.join(__dirname, '..', 'resources', 'icons', 'light', filename),
-            dark: path.join(__dirname, '..', 'resources', 'icons', 'dark', filename)
+            light: join(__dirname, '..', 'resources', 'icons', 'light', filename),
+            dark: join(__dirname, '..', 'resources', 'icons', 'dark', filename)
         };
     }
 

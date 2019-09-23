@@ -1,5 +1,6 @@
 'use strict';
 
+import { Uri } from 'vscode';
 import Git from './Git';
 import Workspace from './Workspace';
 import Config from './Config';
@@ -37,11 +38,12 @@ export default class WorkspaceGit extends Git {
         const paths = [];
         for (const cwd of Workspace.getRootPaths(depth)) {
             try {
-                const gitPath = (await this.exec(params, cwd)).trim();
+                let gitPath = (await this.exec(params, cwd)).trim();
                 if (gitPath.length < 1) {
                     continue;
                 }
 
+                gitPath = Uri.file(gitPath).fsPath;
                 if (paths.indexOf(gitPath) === -1) {
                     paths.push(gitPath);
 
@@ -53,6 +55,8 @@ export default class WorkspaceGit extends Git {
                 continue;
             }
         }
+
+        paths.sort();
 
         return paths;
     }

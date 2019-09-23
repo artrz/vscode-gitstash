@@ -1,6 +1,7 @@
 'use strict';
 
 import { Uri, workspace } from 'vscode';
+import { basename } from 'path';
 import { Stash } from './StashGit';
 import StashNode, { NodeType } from './StashNode';
 
@@ -11,9 +12,13 @@ export default class {
      * @param path the repository path
      */
     public createRepositoryNode(path: string): StashNode {
+        // may be undefined if the directory is not part of the workspace
+        // this happens on upper directories by negative search depth setting
+        const workspaceFolder = workspace.getWorkspaceFolder(Uri.file(path));
+
         return new StashNode({
             type: NodeType.Repository,
-            name: workspace.getWorkspaceFolder(Uri.file(path)).name,
+            name: workspaceFolder ? workspaceFolder.name : basename(path),
             index: undefined,
             parent: undefined,
             date: undefined,
