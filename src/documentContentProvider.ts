@@ -1,9 +1,9 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import StashGit, { FileStage } from './StashGit';
+import StashGit, { FileStage } from './Git/StashGit';
 import { URLSearchParams } from 'url';
-import { NodeType } from './StashNode';
+import NodeType from './StashNode/NodeType';
 
 export class DocumentContentProvider implements vscode.TextDocumentContentProvider {
     private _onDidChange = new vscode.EventEmitter<vscode.Uri>();

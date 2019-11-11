@@ -2,8 +2,8 @@
 
 import { Uri } from 'vscode';
 import Git from './Git';
-import Workspace from './Workspace';
-import Config from './Config';
+import Workspace from '../Workspace';
+import Config from '../Config';
 
 export default class WorkspaceGit extends Git {
     private config: Config;
@@ -32,7 +32,7 @@ export default class WorkspaceGit extends Git {
 
         const params = [
             'rev-parse',
-            '--show-toplevel'
+            '--show-toplevel',
         ];
 
         const paths = [];

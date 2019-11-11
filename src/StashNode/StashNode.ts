@@ -1,26 +1,11 @@
 'use strict';
 
-interface Node {
-    type: NodeType;
-    name: string;
-    oldName?: string;
-    index?: number;
-    parent?: StashNode;
-    date?: string;
-    path?: string;
-}
-
-export const enum NodeType {
-    Repository = 'r',
-    Stash = 's',
-    Deleted = 'd',
-    IndexAdded = 'a',
-    Modified = 'm',
-    Renamed = 'n',
-    Untracked = 'u'
-}
+import NodeType from './NodeType';
+import Node from './Node';
 
 export default class StashNode {
+    public children: StashNode[] = [];
+
     constructor(private source: Node) {
     }
 
@@ -74,7 +59,7 @@ export default class StashNode {
             NodeType.Deleted,
             NodeType.IndexAdded,
             NodeType.Modified,
-            NodeType.Untracked
+            NodeType.Untracked,
         ].indexOf(this.type) > -1;
     }
 

@@ -2,7 +2,7 @@
     "name": "gitstash",
     "displayName": "Git Stash",
     "description": "Give extra stash abilities to Code. Visually browse stashes, review and extract changes. Get all stash commands and more.",
-    "version": "3.1.0",
+    "version": "3.2.0",
     "publisher": "arturock",
     "license": "MIT",
     "icon": "resources/logo.png",
@@ -59,11 +59,11 @@
                 "gitstash.explorer.labels.repositoryFormat": {
                     "type": "string",
                     "default": "${name}",
-                    "description": "Specifies the format for each repository\nAvailable tokens:\n${name} - the repository name\n${directory} - the repository directory base name\n${path} - the full directory path"
+                    "description": "Specifies the format for each repository\nAvailable tokens:\n${name} - the repository name\n${directory} - the repository directory base name\n${path} - the full directory path\n${stashesCount} - the number of stashes on the repository"
                 },
                 "gitstash.explorer.labels.repositoryTooltipFormat": {
                     "type": "string",
-                    "default": "${path}",
+                    "default": "${path}\n${stashesCount} stashes",
                     "description": "Specifies the format for each repository tooltip \nAvailable tokens:\nSame than repositoryFormat"
                 },
                 "gitstash.explorer.labels.stashFormat": {

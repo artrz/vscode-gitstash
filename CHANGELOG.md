@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [[3.2.0] 2019-11-10](https://github.com/arturock/vscode-gitstash/tree/v3.2.0)
+
+### Added
+
+- Allow configuration to show the number of stashes on the explorer repository label
+
 ## [[3.1.0] 2019-09-23](https://github.com/arturock/vscode-gitstash/tree/v3.1.0)
 
 ### Added

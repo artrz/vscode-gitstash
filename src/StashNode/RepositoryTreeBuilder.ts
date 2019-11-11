@@ -1,11 +1,12 @@
 'use strict';
 
-import StashGit, { FileStage, Stash, StashedFiles } from './StashGit';
-import StashNode, { NodeType } from './StashNode';
+import StashGit, { Stash, StashedFiles } from '../Git/StashGit';
+import StashNode from './StashNode';
+import NodeType from './NodeType';
 import StashNodeFactory from './StashNodeFactory';
-import WorkspaceGit from './WorkspaceGit';
+import WorkspaceGit from '../Git/WorkspaceGit';
 
-export default class Model {
+export default class RepositoryTreeBuilder {
     private stashGit: StashGit;
     private workspaceGit: WorkspaceGit;
     private stashNodeFactory: StashNodeFactory;
@@ -17,18 +18,35 @@ export default class Model {
     }
 
     /**
-     * Gets the raw git stashes list.
+     * Generates all the repository trees.
      */
-    public getRawStashesList(cwd: string): Thenable<string> {
-        return this.stashGit.getRawStash(cwd).then((rawData) => {
-            return rawData;
+    public async buildRepositoryTrees(): Promise<StashNode[]> {
+        const repositoryNodes = await this.getRepositories();
+
+        for (const repositoryNode of repositoryNodes) {
+            await this.buildRepositoryTree(repositoryNode);
+        }
+
+        return repositoryNodes;
+    }
+
+    /**
+     * Generates repository tree for the given node.
+     */
+    private async buildRepositoryTree(repositoryNode: StashNode): Promise<StashNode> {
+        repositoryNode.children = await this.getStashes(repositoryNode);
+
+        repositoryNode.children.forEach(async (stash) => {
+            stash.children = await this.getFiles(stash);
         });
+
+        return repositoryNode;
     }
 
     /**
      * Gets the repositories list.
      */
-    public getRepositories(): Thenable<StashNode[]> {
+    private async getRepositories(): Promise<StashNode[]> {
         return this.workspaceGit.getRepositories().then((rawList: string[]) => {
             const repositoryNodes = [];
             rawList.forEach((repositoryPath: string) => {
@@ -42,7 +60,7 @@ export default class Model {
     /**
      * Gets the stashes list.
      */
-    public getStashes(repositoryNode: StashNode): Thenable<StashNode[]> {
+    private async getStashes(repositoryNode: StashNode): Promise<StashNode[]> {
         return this.stashGit.getStashes(repositoryNode.path).then((rawList: Stash[]) => {
             const stashNodes = [];
             rawList.forEach((stash: Stash) => {
@@ -58,7 +76,7 @@ export default class Model {
      *
      * @param stashNode the parent stash
      */
-    public getFiles(stashNode: StashNode): Thenable<StashNode[]> {
+    private async getFiles(stashNode: StashNode): Promise<StashNode[]> {
         return this.stashGit.getStashedFiles(stashNode.path, stashNode.index).then((stashedFiles: StashedFiles) => {
 
             const fileNodes = [];
@@ -86,30 +104,5 @@ export default class Model {
 
             return fileNodes;
         });
-    }
-
-    /**
-     * Gets the file contents of the untracked file.
-     *
-     * @param fileNode the stashed node file
-     * @param stage    the file stash stage
-     */
-    public getFileContents(fileNode: StashNode, stage?: FileStage): Thenable<Buffer | string> {
-        switch (fileNode.type) {
-            case NodeType.Deleted:
-                return this.stashGit.getParentContents(fileNode.parent.path, fileNode.parent.index, fileNode.name);
-            case NodeType.IndexAdded:
-                return this.stashGit.getStashContents(fileNode.parent.path, fileNode.parent.index, fileNode.name);
-            case NodeType.Modified:
-                return stage === FileStage.Parent
-                    ? this.stashGit.getParentContents(fileNode.parent.path, fileNode.parent.index, fileNode.name)
-                    : this.stashGit.getStashContents(fileNode.parent.path, fileNode.parent.index, fileNode.name);
-            case NodeType.Renamed:
-                return stage === FileStage.Parent
-                    ? this.stashGit.getParentContents(fileNode.parent.path, fileNode.parent.index, fileNode.oldName)
-                    : this.stashGit.getStashContents(fileNode.parent.path, fileNode.parent.index, fileNode.name);
-            case NodeType.Untracked:
-                return this.stashGit.getThirdParentContents(fileNode.parent.path, fileNode.parent.index, fileNode.name);
-        }
     }
 }

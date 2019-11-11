@@ -3,7 +3,7 @@
 import { commands, ConfigurationChangeEvent, ExtensionContext, Uri, window, workspace, WorkspaceFoldersChangeEvent } from 'vscode';
 import { Commands } from './Commands';
 import Config from './Config';
-import Model from './Model';
+import GitBridge from './GitBridge';
 import StashLabels from './StashLabels';
 import GitStashTreeDataProvider from './GitStashTreeDataProvider';
 import { DiffDisplayer } from './DiffDisplayer';
@@ -12,25 +12,27 @@ import { EmptyDocumentContentProvider } from './EmptyDocumentContentProvider';
 import { FileSystemWatcherManager } from './fileSystemWatcherManager';
 import { StashCommands } from './StashCommands';
 import UriGenerator from './uriGenerator';
-import WorkspaceGit from './WorkspaceGit';
+import WorkspaceGit from './Git/WorkspaceGit';
+import RepositoriesTreeBuilder from './StashNode/RepositoryTreeBuilder';
 
 export function activate(context: ExtensionContext) {
     const channelName = 'GitStash';
 
     const config = new Config();
 
-    const model = new Model(new WorkspaceGit(config));
+    const gitBridge = new GitBridge();
+    const builder = new RepositoriesTreeBuilder(new WorkspaceGit(config));
     const stashLabels = new StashLabels(config);
 
-    const treeProvider = new GitStashTreeDataProvider(config, model, stashLabels);
+    const treeProvider = new GitStashTreeDataProvider(config, builder, gitBridge, stashLabels);
     const documentProvider = new DocumentContentProvider();
     const emptyDocumentProvider = new EmptyDocumentContentProvider();
 
     const stashCommands = new Commands(
         new WorkspaceGit(config),
         new StashCommands(config, window.createOutputChannel(channelName), stashLabels),
-        new DiffDisplayer(new UriGenerator(model), stashLabels),
-        stashLabels
+        new DiffDisplayer(new UriGenerator(gitBridge), stashLabels),
+        stashLabels,
     );
 
     const workspaceGit = new WorkspaceGit(config);
@@ -38,7 +40,7 @@ export function activate(context: ExtensionContext) {
 
     const watcherManager = new FileSystemWatcherManager(
         workspaceGit.getRepositories(),
-        (projectDirectory: Uri) => treeProvider.reload('update', projectDirectory)
+        (projectDirectory: Uri) => treeProvider.reload('update', projectDirectory),
     );
 
     context.subscriptions.push(
@@ -76,7 +78,7 @@ export function activate(context: ExtensionContext) {
             }
         }),
 
-        watcherManager
+        watcherManager,
     );
 
     treeProvider.toggle();

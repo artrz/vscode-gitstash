@@ -19,7 +19,7 @@ export interface StashedFiles {
 
 export const enum FileStage {
     Parent = 'p',
-    Change = 'c'
+    Change = 'c',
 }
 
 export default class StashGit extends Git {
@@ -31,7 +31,7 @@ export default class StashGit extends Git {
     public async getRawStash(cwd: string): Promise<string> {
         const params = [
             'stash',
-            'list'
+            'list',
         ];
 
         return (await this.exec(params, cwd)).trim();
@@ -48,7 +48,7 @@ export default class StashGit extends Git {
         const params = [
             'stash',
             'list',
-            '--date=' + (validFormats.indexOf(dateFormat) > -1 ? dateFormat : 'default')
+            '--date=' + (validFormats.indexOf(dateFormat) > -1 ? dateFormat : 'default'),
         ];
 
         const stashList = (await this.exec(params, cwd)).trim();
@@ -60,7 +60,7 @@ export default class StashGit extends Git {
                 list.push({
                     index: index,
                     description: stash.substring(stash.indexOf('}:') + 2).trim(),
-                    date: stash.substring(stash.indexOf('{') + 1, stash.indexOf('}'))
+                    date: stash.substring(stash.indexOf('{') + 1, stash.indexOf('}')),
                 });
             });
         }
@@ -80,14 +80,14 @@ export default class StashGit extends Git {
             indexAdded: [],
             modified: [],
             deleted: [],
-            renamed: []
+            renamed: [],
         };
 
         const params = [
             'stash',
             'show',
             '--name-status',
-            `stash@{${index}}`
+            `stash@{${index}}`,
         ];
 
         try {
@@ -112,7 +112,7 @@ export default class StashGit extends Git {
                         const fileNames = file.match(/^\d+\s+([^\t]+)\t(.+)$/);
                         files.renamed.push({
                             new: fileNames[2],
-                            old: fileNames[1]
+                            old: fileNames[1],
                         });
                     }
                 });
@@ -136,7 +136,7 @@ export default class StashGit extends Git {
             'ls-tree',
             '-r',
             '--name-only',
-            `stash@{${index}}^3`
+            `stash@{${index}}^3`,
         ];
 
         const list = [];
@@ -170,7 +170,7 @@ export default class StashGit extends Git {
     public async getStashContents(cwd: string, index: number, file: string): Promise<Buffer | string> {
         const params = [
             'show',
-            `stash@{${index}}:${file}`
+            `stash@{${index}}:${file}`,
         ];
 
         return await this.call(params, cwd);
@@ -191,7 +191,7 @@ export default class StashGit extends Git {
     public async getParentContents(cwd: string, index: number, file: string): Promise<Buffer | string> {
         const params = [
             'show',
-            `stash@{${index}}^1:${file}`
+            `stash@{${index}}^1:${file}`,
         ];
 
         return await this.call(params, cwd);
@@ -207,7 +207,7 @@ export default class StashGit extends Git {
     public async getThirdParentContents(cwd: string, index: number, file: string): Promise<Buffer | string> {
         const params = [
             'show',
-            `stash@{${index}}^3:${file}`
+            `stash@{${index}}^3:${file}`,
         ];
 
         return await this.call(params, cwd);
