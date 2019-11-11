@@ -2,8 +2,9 @@
 
 import { Uri, workspace } from 'vscode';
 import { basename } from 'path';
-import { Stash } from './StashGit';
-import StashNode, { NodeType } from './StashNode';
+import { Stash } from '../Git/StashGit';
+import StashNode from './StashNode';
+import NodeType from './NodeType';
 
 export default class {
     /**
@@ -22,7 +23,7 @@ export default class {
             index: undefined,
             parent: undefined,
             date: undefined,
-            path: path
+            path: path,
         });
     }
 
@@ -37,7 +38,7 @@ export default class {
             name: stash.description,
             index: stash.index,
             parent: parentNode,
-            date: stash.date
+            date: stash.date,
         });
     }
 
@@ -57,7 +58,7 @@ export default class {
             path: path,
             index: undefined,
             parent: parentNode,
-            date: parentNode.date
+            date: parentNode.date,
         });
     }
 }

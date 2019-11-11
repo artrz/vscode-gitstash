@@ -68,7 +68,7 @@ export default class Workspace {
             const subDirectories = Workspace.getSubdirectoriesTree(
                 workspacePath,
                 searchLevels,
-                [workspacePath]
+                [workspacePath],
             );
             roots.push(...subDirectories);
         });

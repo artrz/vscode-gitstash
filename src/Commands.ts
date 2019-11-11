@@ -2,13 +2,14 @@
 
 import * as fs from 'fs';
 import * as vscode from 'vscode';
-import StashGit, { Stash } from './StashGit';
+import StashGit, { Stash } from './Git/StashGit';
 import { StashCommands } from './StashCommands';
 import StashLabels from './StashLabels';
-import StashNode, { NodeType } from './StashNode';
-import StashNodeFactory from './StashNodeFactory';
+import StashNode from './StashNode/StashNode';
+import NodeType from './StashNode/NodeType';
+import StashNodeFactory from './StashNode/StashNodeFactory';
 import { DiffDisplayer } from './DiffDisplayer';
-import WorkspaceGit from './WorkspaceGit';
+import WorkspaceGit from './Git/WorkspaceGit';
 
 interface QuickPickRepositoryNodeItem extends vscode.QuickPickItem {
     node: StashNode;
@@ -60,7 +61,7 @@ export class Commands {
     public stash = (repositoryNode?: StashNode) => {
         this.runOnRepository(
             repositoryNode,
-            (repositoryNode: StashNode) => { this.stashPerform(repositoryNode); }
+            (repositoryNode: StashNode) => { this.stashPerform(repositoryNode); },
         );
     }
 
@@ -72,7 +73,7 @@ export class Commands {
     public clear = (repositoryNode?: StashNode) => {
         this.runOnRepository(
             repositoryNode,
-            (repositoryNode: StashNode) => { this.clearPerform(repositoryNode); }
+            (repositoryNode: StashNode) => { this.clearPerform(repositoryNode); },
         );
     }
 
@@ -85,7 +86,7 @@ export class Commands {
         this.runOnStash(
             stashNode,
             { placeHolder: 'Pick a stash to pop' },
-            (stashNode: StashNode) => { this.popPerform(stashNode); }
+            (stashNode: StashNode) => { this.popPerform(stashNode); },
         );
     }
 
@@ -98,7 +99,7 @@ export class Commands {
         this.runOnStash(
             stashNode,
             { placeHolder: 'Pick a stash to apply' },
-            (stashNode: StashNode) => { this.applyPerform(stashNode); }
+            (stashNode: StashNode) => { this.applyPerform(stashNode); },
         );
     }
 
@@ -111,7 +112,7 @@ export class Commands {
         this.runOnStash(
             stashNode,
             { placeHolder: 'Pick a stash to branch' },
-            (stashNode: StashNode) => { this.branchPerform(stashNode); }
+            (stashNode: StashNode) => { this.branchPerform(stashNode); },
         );
     }
 
@@ -124,7 +125,7 @@ export class Commands {
         this.runOnStash(
             stashNode,
             { placeHolder: 'Pick a stash to drop' },
-            (stashNode: StashNode) => { this.dropPerform(stashNode); }
+            (stashNode: StashNode) => { this.dropPerform(stashNode); },
         );
     }
 
@@ -141,40 +142,40 @@ export class Commands {
                 {
                     label: 'Stash only',
                     description: 'Crate a simple stash',
-                    type: StashCommands.StashType.Simple
+                    type: StashCommands.StashType.Simple,
                 },
                 {
                     label: 'Keep index',
                     description: 'Stash but keep all changes added to the index intact',
-                    type: StashCommands.StashType.KeepIndex
+                    type: StashCommands.StashType.KeepIndex,
                 },
                 {
                     label: 'Include untracked',
                     description: 'Stash also untracked files',
-                    type: StashCommands.StashType.IncludeUntracked
+                    type: StashCommands.StashType.IncludeUntracked,
                 },
                 {
                     label: 'Include untracked + keep index',
                     description: '',
-                    type: StashCommands.StashType.IncludeUntrackedKeepIndex
+                    type: StashCommands.StashType.IncludeUntrackedKeepIndex,
                 },
                 {
                     label: 'All',
                     description: 'Stash also untracked and ignored files',
-                    type: StashCommands.StashType.All
+                    type: StashCommands.StashType.All,
                 },
                 {
                     label: 'All + keep index',
                     description: '',
-                    type: StashCommands.StashType.AllKeepIndex
-                }
+                    type: StashCommands.StashType.AllKeepIndex,
+                },
             ], { placeHolder: `${repositoryLabel}  Select actions` })
             .then((option) => {
                 if (typeof option !== 'undefined') {
                     vscode.window
                         .showInputBox({
                             placeHolder: `${repositoryLabel}  Stash message`,
-                            prompt: 'Optionally provide a stash message'
+                            prompt: 'Optionally provide a stash message',
                         })
                         .then((stashMessage) => {
                             if (typeof stashMessage === 'string') {
@@ -197,7 +198,7 @@ export class Commands {
             .showWarningMessage<vscode.MessageItem>(
                 `Clear stashes on ${repositoryLabel}?`,
                 { modal: true },
-                { title: 'Proceed' }
+                { title: 'Proceed' },
             )
             .then(
                 (option) => {
@@ -205,7 +206,7 @@ export class Commands {
                         this.stashCommands.clear(repositoryNode);
                     }
                 },
-                (e) => console.error('failure', e)
+                (e) => console.error('failure', e),
             );
     }
 
@@ -220,15 +221,15 @@ export class Commands {
                 {
                     label: 'Pop only',
                     description: 'Perform a simple pop',
-                    withIndex: false
+                    withIndex: false,
                 },
                 {
                     label: 'Pop and reindex',
                     description: 'Pop and reinstate the files added to index',
-                    withIndex: true
-                }
+                    withIndex: true,
+                },
             ],
-            { placeHolder: `${this.stashLabels.getName(stashNode)}  Select action` }
+            { placeHolder: `${this.stashLabels.getName(stashNode)}  Select action` },
         )
         .then((option) => {
             if (typeof option !== 'undefined') {
@@ -248,15 +249,15 @@ export class Commands {
                 {
                     label: 'Apply only',
                     description: 'Perform a simple apply',
-                    withIndex: false
+                    withIndex: false,
                 },
                 {
                     label: 'Apply and reindex',
                     description: 'Apply and reinstate the files added to index',
-                    withIndex: true
-                }
+                    withIndex: true,
+                },
             ],
-            { placeHolder: `${this.stashLabels.getName(stashNode)}  Select action` }
+            { placeHolder: `${this.stashLabels.getName(stashNode)}  Select action` },
         )
         .then((option) => {
             if (typeof option !== 'undefined') {
@@ -293,7 +294,7 @@ export class Commands {
             .showWarningMessage<vscode.MessageItem>(
                 `${repositoryLabel}\n\nDrop ${stashLabel}?`,
                 { modal: true },
-                { title: 'Proceed' }
+                { title: 'Proceed' },
             )
             .then((option) => {
                 if (typeof option !== 'undefined') {
@@ -316,15 +317,15 @@ export class Commands {
                     {
                         label: 'Pop',
                         description: 'Pop the selected stash',
-                        action: 'pop'
+                        action: 'pop',
                     },
                     {
                         label: 'Apply',
                         description: 'Apply the selected stash',
-                        action: 'apply'
-                    }
+                        action: 'apply',
+                    },
                 ],
-                { placeHolder: `${this.stashLabels.getName(repositoryNode)}  ${this.stashLabels.getName(stashNode)}` }
+                { placeHolder: `${this.stashLabels.getName(repositoryNode)}  ${this.stashLabels.getName(stashNode)}` },
             )
             .then((option) => {
                 if (typeof option !== 'undefined') {
@@ -350,7 +351,7 @@ export class Commands {
             .showWarningMessage<vscode.MessageItem>(
                 `${parentLabel}\n\nApply changes on ${fileNode.name}?`,
                 { modal: true },
-                { title: 'Proceed' }
+                { title: 'Proceed' },
             )
             .then((option) => {
                 if (typeof option !== 'undefined') {
@@ -372,7 +373,7 @@ export class Commands {
             .showWarningMessage<vscode.MessageItem>(
                 `${parentLabel}\n\nCreate file ${fileNode.name}?${exists ? '\n\nThis will overwrite the current file' : ''}`,
                 { modal: true },
-                { title: 'Proceed' }
+                { title: 'Proceed' },
             )
             .then((option) => {
                 if (typeof option !== 'undefined') {
@@ -459,7 +460,7 @@ export class Commands {
     private showRepositories(callback) {
         const options: vscode.QuickPickOptions = {
             placeHolder: 'Select a repository',
-            canPickMany: false
+            canPickMany: false,
         };
 
         this.workspaceGit.getRepositories().then((repositories) => {
@@ -532,7 +533,7 @@ export class Commands {
 
             const option: QuickPickRepositoryNodeItem = {
                 label: this.stashLabels.getName(node),
-                node: node
+                node: node,
             };
 
             options.push(option);
@@ -555,7 +556,7 @@ export class Commands {
 
             options.push({
                 label: this.stashLabels.getName(node),
-                node: node
+                node: node,
             });
         }
 

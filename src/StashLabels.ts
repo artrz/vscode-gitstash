@@ -2,7 +2,8 @@
 
 import * as path from 'path';
 import Config from './Config';
-import StashNode, { NodeType } from './StashNode';
+import StashNode from './StashNode/StashNode';
+import NodeType from './StashNode/NodeType';
 
 export default class {
     private config: Config;
@@ -68,7 +69,8 @@ export default class {
         return template
             .replace('${name}', repositoryNode.name)
             .replace('${directory}', path.basename(repositoryNode.path))
-            .replace('${path}', repositoryNode.path);
+            .replace('${path}', repositoryNode.path)
+            .replace('${stashesCount}', repositoryNode.children.length.toString());
     }
 
     /**

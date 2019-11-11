@@ -8,28 +8,32 @@ import {
     TreeDataProvider,
     TreeItem,
     TreeItemCollapsibleState,
-    Uri
+    Uri,
 } from 'vscode';
 import { join } from 'path';
 import Config from './Config';
-import Model from './Model';
+import GitBridge from './GitBridge';
 import StashLabels from './StashLabels';
-import StashNode, { NodeType } from './StashNode';
+import StashNode from './StashNode/StashNode';
+import NodeType from './StashNode/NodeType';
+import RepositoryTreeBuilder from './StashNode/RepositoryTreeBuilder';
 
 export default class GitStashTreeDataProvider implements TreeDataProvider<StashNode> {
     private _onDidChangeTreeData: EventEmitter<any> = new EventEmitter<any>();
     readonly onDidChangeTreeData: Event<any> = this._onDidChangeTreeData.event;
 
     private config: Config;
+    private repositoryTreeBuilder: RepositoryTreeBuilder;
     private stashLabels: StashLabels;
-    private model: Model;
+    private gitBridge: GitBridge;
     private rawStashes = {};
     private loadTimeout: NodeJS.Timer;
     private showExplorer: boolean;
 
-    constructor(config: Config, model: Model, stashLabels: StashLabels) {
+    constructor(config: Config, repositoryTreeBuilder: RepositoryTreeBuilder, gitBridge: GitBridge, stashLabels: StashLabels) {
         this.config = config;
-        this.model = model;
+        this.repositoryTreeBuilder = repositoryTreeBuilder;
+        this.gitBridge = gitBridge;
         this.stashLabels = stashLabels;
     }
 
@@ -51,7 +55,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
         commands.executeCommand(
             'setContext',
             'gitstash.explorer.enabled',
-            this.showExplorer
+            this.showExplorer,
         );
     }
 
@@ -60,20 +64,16 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
      *
      * @param node the parent node for the requested children
      */
-    public getChildren(node?: StashNode): Thenable<StashNode[]> {
-        if (!node) {
-            return this.model.getRepositories();
-        }
-
-        return node.type === NodeType.Repository
-            ? this.model.getStashes(node)
-            : this.model.getFiles(node);
+    public getChildren(node?: StashNode): Thenable<StashNode[]> | StashNode[] {
+        return !node
+            ? this.repositoryTreeBuilder.buildRepositoryTrees()
+            : node.children;
     }
 
     /**
      * Generates a tree item for the specified node.
      *
-     * @param node The node to be used as base
+     * @param node the node to be used as base
      */
     public getTreeItem(node: StashNode): TreeItem {
         switch (node.type) {
@@ -101,7 +101,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
             else {
                 const path = pathUri.fsPath;
 
-                this.model.getRawStashesList(path).then((rawStash: string) => {
+                this.gitBridge.getRawStashesList(path).then((rawStash: string) => {
                     const cachedRawStash = this.rawStashes[path];
 
                     if (!cachedRawStash || cachedRawStash !== rawStash) {
@@ -116,39 +116,39 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     /**
      * Generates an repository tree item.
      *
-     * @param node The node to be used as base
+     * @param node the node to be used as base
      */
     private getRepositoryItem(node: StashNode): TreeItem {
         return {
+            id: `${node.type}.${node.path}`,
             label: this.stashLabels.getName(node),
             tooltip: this.stashLabels.getTooltip(node),
             iconPath: this.getIcon('repository.svg'),
             contextValue: 'repository',
             collapsibleState: TreeItemCollapsibleState.Collapsed,
-            command: void 0
         };
     }
 
     /**
      * Generates an stash tree item.
      *
-     * @param node The node to be used as base
+     * @param node the node to be used as base
      */
     private getStashItem(node: StashNode): TreeItem {
         return {
+            id: `${node.type}.${node.parent.path}.${node.index}`,
             label: this.stashLabels.getName(node),
             tooltip: this.stashLabels.getTooltip(node),
             iconPath: this.getIcon('chest.svg'),
             contextValue: 'stash',
             collapsibleState: TreeItemCollapsibleState.Collapsed,
-            command: void 0
         };
     }
 
     /**
      * Generates a stashed file tree item.
      *
-     * @param node The node to be used as base
+     * @param node the node to be used as base
      */
     private getFileItem(node: StashNode): TreeItem {
         let context = 'file';
@@ -161,35 +161,35 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
         }
 
         return {
+            id: `${node.type}.${node.parent.parent.path}.${node.parent.index}.${node.name}`,
             label: this.stashLabels.getName(node),
             tooltip: this.stashLabels.getTooltip(node),
             iconPath: this.getFileIcon(node.type),
             contextValue: context,
-            collapsibleState: void 0,
             command: {
                 title: 'Show stash diff',
                 command: 'gitstash.show',
-                arguments: [node]
-            }
+                arguments: [node],
+            },
         };
     }
 
     /**
      * Builds an icon path.
      *
-     * @param filename The filename of the icon
+     * @param filename the filename of the icon
      */
     private getIcon(filename: string): { light: string; dark: string } {
         return {
             light: join(__dirname, '..', 'resources', 'icons', 'light', filename),
-            dark: join(__dirname, '..', 'resources', 'icons', 'dark', filename)
+            dark: join(__dirname, '..', 'resources', 'icons', 'dark', filename),
         };
     }
 
     /**
      * Builds a file icon path.
      *
-     * @param filename The filename of the icon
+     * @param filename the filename of the icon
      */
     private getFileIcon(type: NodeType): { light: string; dark: string } | ThemeIcon {
         switch (type) {

@@ -2,9 +2,9 @@
 
 import * as vscode from 'vscode';
 import Config from './Config';
-import StashGit from './StashGit';
+import StashGit from './Git/StashGit';
 import StashLabels from './StashLabels';
-import StashNode from './StashNode';
+import StashNode from './StashNode/StashNode';
 
 enum StashType {
     'Simple',
@@ -12,7 +12,7 @@ enum StashType {
     'IncludeUntracked',
     'IncludeUntrackedKeepIndex',
     'All',
-    'AllKeepIndex'
+    'AllKeepIndex',
 }
 
 export class StashCommands {
@@ -110,7 +110,7 @@ export class StashCommands {
             'stash',
             'branch',
             name,
-            `stash@{${stashNode.index}}`
+            `stash@{${stashNode.index}}`,
         ];
 
         this.exec(stashNode.path, params, 'Stash branched', stashNode);
@@ -123,7 +123,7 @@ export class StashCommands {
         const params = [
             'stash',
             'drop',
-            `stash@{${stashNode.index}}`
+            `stash@{${stashNode.index}}`,
         ];
 
         this.exec(stashNode.path, params, 'Stash dropped', stashNode);
@@ -136,7 +136,7 @@ export class StashCommands {
         const params = [
             'checkout',
             `stash@{${fileNode.parent.index}}`,
-            fileNode.name
+            fileNode.name,
         ];
 
         this.exec(fileNode.parent.path, params, 'Changes from file applied', fileNode);
@@ -149,7 +149,7 @@ export class StashCommands {
         const params = [
             'checkout',
             `stash@{${fileNode.parent.index}}^3`,
-            fileNode.name
+            fileNode.name,
         ];
 
         this.exec(fileNode.parent.path, params, 'File created', fileNode);
@@ -182,7 +182,7 @@ export class StashCommands {
                 (error) => {
                     const excerpt = error.substring(error.indexOf(':') + 1).trim();
                     this.logResult(params, 'error', error, excerpt, node);
-                }
+                },
             )
             .catch((error) => {
                 this.logResult(params, 'error', error.toString());
@@ -248,7 +248,7 @@ export class StashCommands {
             const cwd = node.isFile ? node.parent.path : node.path;
             this.channel.appendLine(cwd
                 ? `  ${cwd} - ${this.stashLabels.getName(node)}`
-                : `  ${this.stashLabels.getName(node)}`
+                : `  ${this.stashLabels.getName(node)}`,
             );
         }
 

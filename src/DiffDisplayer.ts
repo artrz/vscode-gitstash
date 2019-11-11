@@ -3,9 +3,10 @@
 import * as fs from 'fs';
 import * as vscode from 'vscode';
 import StashLabels from './StashLabels';
-import StashNode, { NodeType } from './StashNode';
+import StashNode from './StashNode/StashNode';
+import NodeType from './StashNode/NodeType';
 import UriGenerator from './uriGenerator';
-import { FileStage } from './StashGit';
+import { FileStage } from './Git/StashGit';
 
 export class DiffDisplayer {
     private stashLabels: StashLabels;
@@ -27,7 +28,7 @@ export class DiffDisplayer {
                 await this.uriGenerator.create(fileNode, FileStage.Parent),
                 await this.uriGenerator.create(fileNode, FileStage.Change),
                 fileNode,
-                true
+                true,
             );
         }
         else if (fileNode.type === NodeType.Untracked) {
@@ -35,7 +36,7 @@ export class DiffDisplayer {
                 await this.uriGenerator.create(),
                 await this.uriGenerator.create(fileNode),
                 fileNode,
-                true
+                true,
             );
         }
         else if (fileNode.type === NodeType.IndexAdded) {
@@ -43,7 +44,7 @@ export class DiffDisplayer {
                 await this.uriGenerator.create(),
                 await this.uriGenerator.create(fileNode),
                 fileNode,
-                true
+                true,
             );
         }
         else if (fileNode.type === NodeType.Deleted) {
@@ -51,7 +52,7 @@ export class DiffDisplayer {
                 await this.uriGenerator.create(fileNode),
                 await this.uriGenerator.create(),
                 fileNode,
-                true
+                true,
             );
         }
     }
@@ -76,7 +77,7 @@ export class DiffDisplayer {
                 await this.uriGenerator.create(fileNode, FileStage.Change),
                 vscode.Uri.file(current),
                 fileNode,
-                false
+                false,
             );
         }
         else if (fileNode.type === NodeType.Untracked) {
@@ -84,7 +85,7 @@ export class DiffDisplayer {
                 await this.uriGenerator.create(fileNode),
                 vscode.Uri.file(current),
                 fileNode,
-                false
+                false,
             );
         }
         else if (fileNode.type === NodeType.IndexAdded) {
@@ -92,7 +93,7 @@ export class DiffDisplayer {
                 await this.uriGenerator.create(fileNode),
                 vscode.Uri.file(current),
                 fileNode,
-                false
+                false,
             );
         }
         else if (fileNode.type === NodeType.Deleted) {
@@ -100,7 +101,7 @@ export class DiffDisplayer {
                 await this.uriGenerator.create(fileNode),
                 vscode.Uri.file(current),
                 fileNode,
-                false
+                false,
             );
         }
     }
@@ -122,8 +123,8 @@ export class DiffDisplayer {
             {
                 preserveFocus: true,
                 preview: true,
-                viewColumn: vscode.ViewColumn.Active
-            } as vscode.TextDocumentShowOptions
+                viewColumn: vscode.ViewColumn.Active,
+            } as vscode.TextDocumentShowOptions,
         );
     }
 }

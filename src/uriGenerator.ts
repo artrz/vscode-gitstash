@@ -4,9 +4,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as tmp from 'tmp';
 import { Uri } from 'vscode';
-import Model from './Model';
-import StashNode from './StashNode';
-import { FileStage } from './StashGit';
+import GitBridge from './GitBridge';
+import StashNode from './StashNode/StashNode';
+import { FileStage } from './Git/StashGit';
 
 export default class UriGenerator {
     public static readonly emptyFileScheme = 'gitdiff-no-contents';
@@ -18,13 +18,13 @@ export default class UriGenerator {
         '.jpg',
         '.jpeg',
         '.png',
-        '.webp'
+        '.webp',
     ];
 
-    private model: Model;
+    private gitBridge: GitBridge;
 
-    constructor(model: Model) {
-        this.model = model;
+    constructor(gitBridge: GitBridge) {
+        this.gitBridge = gitBridge;
         tmp.setGracefulCleanup();
     }
 
@@ -42,9 +42,9 @@ export default class UriGenerator {
         if (this.supportedBinaryFiles.indexOf(path.extname(node.name)) > -1) {
             return Uri.file(
                 this.createTmpFile(
-                    await this.model.getFileContents(node, stage),
-                    node.name
-                ).name
+                    await this.gitBridge.getFileContents(node, stage),
+                    node.name,
+                ).name,
             );
         }
 
@@ -80,7 +80,7 @@ export default class UriGenerator {
     private createTmpFile(content: Buffer | string, filename: string): tmp.FileResult {
         const file = tmp.fileSync({
             prefix: 'vscode-gitstash-',
-            postfix: path.extname(filename)
+            postfix: path.extname(filename),
         });
 
         fs.writeFileSync(file.name, content);
