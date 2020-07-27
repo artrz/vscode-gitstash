@@ -1,10 +1,10 @@
-'use string';
+'use string'
 
-import * as vscode from 'vscode';
-import Config from './Config';
-import StashGit from './Git/StashGit';
-import StashLabels from './StashLabels';
-import StashNode from './StashNode/StashNode';
+import * as vscode from 'vscode'
+import Config from './Config'
+import StashGit from './Git/StashGit'
+import StashLabels from './StashLabels'
+import StashNode from './StashNode/StashNode'
 
 enum StashType {
     'Simple',
@@ -16,143 +16,143 @@ enum StashType {
 }
 
 export class StashCommands {
-    static StashType = StashType;
+    static StashType = StashType
 
-    private config: Config;
-    private channel: vscode.OutputChannel;
-    private stashGit: StashGit;
-    private stashLabels: StashLabels;
+    private config: Config
+    private channel: vscode.OutputChannel
+    private stashGit: StashGit
+    private stashLabels: StashLabels
 
     constructor(config: Config, channel: vscode.OutputChannel, stashLabels: StashLabels) {
-        this.config = config;
-        this.channel = channel;
-        this.stashLabels = stashLabels;
-        this.stashGit = new StashGit();
+        this.config = config
+        this.channel = channel
+        this.stashLabels = stashLabels
+        this.stashGit = new StashGit()
     }
 
     /**
      * Generates a stash.
      */
-    public stash = (repositoryNode: StashNode, type: StashType, message?: string) => {
-        const params = ['stash', 'save'];
+    public stash = (repositoryNode: StashNode, type: StashType, message?: string): void => {
+        const params = ['stash', 'save']
 
         switch (type) {
             case StashType.KeepIndex:
-                params.push('--keep-index');
-                break;
+                params.push('--keep-index')
+                break
             case StashType.IncludeUntracked:
-                params.push('--include-untracked');
-                break;
+                params.push('--include-untracked')
+                break
             case StashType.IncludeUntrackedKeepIndex:
-                params.push('--include-untracked');
-                params.push('--keep-index');
-                break;
+                params.push('--include-untracked')
+                params.push('--keep-index')
+                break
             case StashType.All:
-                params.push('--all');
-                break;
+                params.push('--all')
+                break
             case StashType.AllKeepIndex:
-                params.push('--all');
-                params.push('--keep-index');
-            break;
+                params.push('--all')
+                params.push('--keep-index')
+                break
         }
 
         if (message.length > 0) {
-            params.push(message);
+            params.push(message)
         }
 
-        this.exec(repositoryNode.path, params, 'Stash created', repositoryNode);
+        this.exec(repositoryNode.path, params, 'Stash created', repositoryNode)
     }
 
     /**
      * Removes the stashes list.
      */
-    public clear = (repositoryNode: StashNode) => {
-        const params = ['stash', 'clear'];
+    public clear = (repositoryNode: StashNode): void => {
+        const params = ['stash', 'clear']
 
-        this.exec(repositoryNode.path, params, 'Stash list cleared', repositoryNode);
+        this.exec(repositoryNode.path, params, 'Stash list cleared', repositoryNode)
     }
 
     /**
      * Pops a stash.
      */
-    public pop = (stashNode: StashNode, withIndex: boolean) => {
-        const params = ['stash', 'pop'];
+    public pop = (stashNode: StashNode, withIndex: boolean): void => {
+        const params = ['stash', 'pop']
 
         if (withIndex) {
-            params.push('--index');
+            params.push('--index')
         }
 
-        params.push(`stash@{${stashNode.index}}`);
+        params.push(`stash@{${stashNode.index}}`)
 
-        this.exec(stashNode.path, params, 'Stash popped', stashNode);
+        this.exec(stashNode.path, params, 'Stash popped', stashNode)
     }
 
     /**
      * Applies a stash.
      */
-    public apply = (stashNode: StashNode, withIndex: boolean) => {
-        const params = ['stash', 'apply'];
+    public apply = (stashNode: StashNode, withIndex: boolean): void => {
+        const params = ['stash', 'apply']
 
         if (withIndex) {
-            params.push('--index');
+            params.push('--index')
         }
 
-        params.push(`stash@{${stashNode.index}}`);
+        params.push(`stash@{${stashNode.index}}`)
 
-        this.exec(stashNode.path, params, 'Stash applied', stashNode);
+        this.exec(stashNode.path, params, 'Stash applied', stashNode)
     }
 
     /**
      * Branches a stash.
      */
-    public branch = (stashNode: StashNode, name: string) => {
+    public branch = (stashNode: StashNode, name: string): void => {
         const params = [
             'stash',
             'branch',
             name,
             `stash@{${stashNode.index}}`,
-        ];
+        ]
 
-        this.exec(stashNode.path, params, 'Stash branched', stashNode);
+        this.exec(stashNode.path, params, 'Stash branched', stashNode)
     }
 
     /**
      * Drops a stash.
      */
-    public drop = (stashNode: StashNode) => {
+    public drop = (stashNode: StashNode): void => {
         const params = [
             'stash',
             'drop',
             `stash@{${stashNode.index}}`,
-        ];
+        ]
 
-        this.exec(stashNode.path, params, 'Stash dropped', stashNode);
+        this.exec(stashNode.path, params, 'Stash dropped', stashNode)
     }
 
     /**
      * Applies changes from a file.
      */
-    public applySingle = (fileNode: StashNode) => {
+    public applySingle = (fileNode: StashNode): void => {
         const params = [
             'checkout',
             `stash@{${fileNode.parent.index}}`,
             fileNode.name,
-        ];
+        ]
 
-        this.exec(fileNode.parent.path, params, 'Changes from file applied', fileNode);
+        this.exec(fileNode.parent.path, params, 'Changes from file applied', fileNode)
     }
 
     /**
      * Applies changes from a file.
      */
-    public createSingle = (fileNode: StashNode) => {
+    public createSingle = (fileNode: StashNode): void => {
         const params = [
             'checkout',
             `stash@{${fileNode.parent.index}}^3`,
             fileNode.name,
-        ];
+        ]
 
-        this.exec(fileNode.parent.path, params, 'File created', fileNode);
+        this.exec(fileNode.parent.path, params, 'File created', fileNode)
     }
 
     /**
@@ -167,26 +167,26 @@ export class StashCommands {
         this.stashGit.exec(params, cwd)
             .then(
                 (result: string) => {
-                    const issueType = this.findResultIssues(result);
+                    const issueType = this.findResultIssues(result)
 
                     if (issueType === 'conflict') {
-                        this.logResult(params, 'warning', result, `${successMessage} with conflicts`, node);
+                        this.logResult(params, 'warning', result, `${successMessage} with conflicts`, node)
                     }
                     else if (issueType === 'empty') {
-                        this.logResult(params, 'message', result, 'No local changes to save', node);
+                        this.logResult(params, 'message', result, 'No local changes to save', node)
                     }
                     else {
-                        this.logResult(params, 'message', result, successMessage, node);
+                        this.logResult(params, 'message', result, successMessage, node)
                     }
                 },
-                (error) => {
-                    const excerpt = error.substring(error.indexOf(':') + 1).trim();
-                    this.logResult(params, 'error', error, excerpt, node);
+                (error: string) => {
+                    const excerpt = error.substring(error.indexOf(':') + 1).trim()
+                    this.logResult(params, 'error', error, excerpt, node)
                 },
             )
-            .catch((error) => {
-                this.logResult(params, 'error', error.toString());
-            });
+            .catch((error: Error) => {
+                this.logResult(params, 'error', error.toString())
+            })
     }
 
     /**
@@ -197,14 +197,14 @@ export class StashCommands {
     private findResultIssues(result: string): string|null {
         for (const line of result.split('\n')) {
             if (line.startsWith('CONFLICT (content): ')) {
-                return 'conflict';
+                return 'conflict'
             }
             if (line.startsWith('No local changes to save')) {
-                return 'empty';
+                return 'empty'
             }
         }
 
-        return null;
+        return null
     }
 
     /**
@@ -216,23 +216,23 @@ export class StashCommands {
      * @param notificationText the optional notification message
      */
     private logResult(params: string[], type: string, result: string, notificationText?: string, node?: StashNode): void {
-        this.prepareLogChannel();
+        this.prepareLogChannel()
 
-        this.performLogging(params, result, node);
+        this.performLogging(params, result, node)
 
-        this.showNotification(notificationText || result, type);
+        this.showNotification(notificationText || result, type)
     }
 
     /**
      * Prepares the log channel to before using it.
      */
     private prepareLogChannel() {
-        if (this.config.settings.log.autoclear) {
-            this.channel.clear();
+        if (this.config.settings.get('log.autoclear')) {
+            this.channel.clear()
         }
 
-        const currentTime = new Date();
-        this.channel.appendLine(`> ${currentTime.toLocaleString()}`);
+        const currentTime = new Date()
+        this.channel.appendLine(`> ${currentTime.toLocaleString()}`)
     }
 
     /**
@@ -245,15 +245,15 @@ export class StashCommands {
      */
     private performLogging(params: string[], result: string, node?: StashNode) {
         if (node) {
-            const cwd = node.isFile ? node.parent.path : node.path;
+            const cwd = node.isFile ? node.parent.path : node.path
             this.channel.appendLine(cwd
                 ? `  ${cwd} - ${this.stashLabels.getName(node)}`
                 : `  ${this.stashLabels.getName(node)}`,
-            );
+            )
         }
 
-        this.channel.appendLine(`  git ${params.join(' ')}`);
-        this.channel.appendLine(`${result.trim()}\n`);
+        this.channel.appendLine(`  git ${params.join(' ')}`)
+        this.channel.appendLine(`${result.trim()}\n`)
     }
 
     /**
@@ -263,23 +263,23 @@ export class StashCommands {
      * @param type        the the message type
      */
     private showNotification(information: string, type: string) {
-        const summary = information.substr(0, 300);
+        const summary = information.substr(0, 300)
 
-        const actions = [{ title: 'Show log' }];
+        const actions = [{ title: 'Show log' }]
         const callback = (value) => {
             if (typeof value !== 'undefined') {
-                this.channel.show(true);
+                this.channel.show(true)
             }
-        };
+        }
 
         if (type === 'warning') {
-            vscode.window.showWarningMessage(summary, ...actions).then(callback);
+            void vscode.window.showWarningMessage(summary, ...actions).then(callback)
         }
         else if (type === 'error') {
-            vscode.window.showErrorMessage(summary, ...actions).then(callback);
+            void vscode.window.showErrorMessage(summary, ...actions).then(callback)
         }
         else {
-            vscode.window.showInformationMessage(summary, ...actions).then(callback);
+            void vscode.window.showInformationMessage(summary, ...actions).then(callback)
         }
     }
 }

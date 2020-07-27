@@ -1,18 +1,22 @@
-'use strict';
+'use strict'
 
-import { workspace, WorkspaceConfiguration } from 'vscode';
+import { WorkspaceConfiguration, workspace } from 'vscode'
 
 export default class {
-    public settings: WorkspaceConfiguration;
+    public settings: WorkspaceConfiguration
 
     constructor() {
-        this.reload();
+        this.reload()
     }
 
     /**
      * Loads the plugin config.
      */
-    public reload() {
-        this.settings = workspace.getConfiguration('gitstash');
+    public reload(): void {
+        this.settings = workspace.getConfiguration('gitstash')
+    }
+
+    public get<T>(section: string, defaultValue?: T): T {
+        return this.settings.get(section, defaultValue)
     }
 }

@@ -8,4 +8,4 @@ enum NodeType {
     Untracked = 'u',
 }
 
-export default NodeType;
+export default NodeType

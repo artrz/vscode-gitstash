@@ -1,15 +1,15 @@
-'use strict';
+'use strict'
 
-import * as vscode from 'vscode';
+import * as vscode from 'vscode'
 
 export class EmptyDocumentContentProvider implements vscode.TextDocumentContentProvider {
-    private _onDidChange = new vscode.EventEmitter<vscode.Uri>();
+    private onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>()
 
     get onDidChange(): vscode.Event<vscode.Uri> {
-        return this._onDidChange.event;
+        return this.onDidChangeEmitter.event
     }
 
     provideTextDocumentContent(): vscode.ProviderResult<string> {
-        return '';
+        return ''
     }
 }

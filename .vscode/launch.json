@@ -7,9 +7,11 @@
             "request": "launch",
             "runtimeExecutable": "${execPath}",
             "args": [ "--extensionDevelopmentPath=${workspaceFolder}" ],
+            "cwd": "${workspaceFolder}",
             "outFiles": [ "${workspaceFolder}/dist/**/*.js" ],
-            "stopOnEntry": false,
-            "sourceMaps": true,
+            "skipFiles": ["<node_internals>/**", "**/node_modules/**", "**/resources/app/out/vs/**"],
+            "smartStep": true,
+            "sourceMaps": true
         },
         {
             "name": "Watch and Launch Git Stash",
@@ -17,7 +19,9 @@
             "request": "launch",
             "runtimeExecutable": "${execPath}",
             "args": [ "--extensionDevelopmentPath=${workspaceFolder}" ],
+            "cwd": "${workspaceFolder}",
             "outFiles": [ "${workspaceFolder}/dist/**/*.js" ],
+            "skipFiles": ["<node_internals>/**", "**/node_modules/**", "**/resources/app/out/vs/**"],
             "smartStep": true,
             "sourceMaps": true,
             "preLaunchTask": "npm: webpack-dev"
@@ -28,8 +32,9 @@
             "request": "launch",
             "runtimeExecutable": "${execPath}",
             "args": [
+                "--disable-extensions",
                 "--extensionDevelopmentPath=${workspaceFolder}",
-                "--extensionTestsPath=${workspaceFolder}/out/test"
+                "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
             ],
             "stopOnEntry": false,
             "sourceMaps": true,

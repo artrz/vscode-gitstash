@@ -1,13 +1,13 @@
-import { Disposable, Uri, window, WorkspaceFolder, WorkspaceFoldersChangeEvent } from 'vscode';
-import { existsSync, FSWatcher, watch } from 'fs';
-import { join } from 'path';
+import { Disposable, Uri, WorkspaceFolder, WorkspaceFoldersChangeEvent, window } from 'vscode'
+import { FSWatcher, existsSync, watch } from 'fs'
+import { join } from 'path'
 
-type CallbackFunction = (event: Uri) => void;
+type CallbackFunction = (event: Uri) => void
 
 // https://github.com/Microsoft/vscode/issues/3025
 export class FileSystemWatcherManager implements Disposable {
-    private callback: CallbackFunction;
-    private watchers: Map<string, FSWatcher> = new Map();
+    private callback: CallbackFunction
+    private watchers: Map<string, FSWatcher> = new Map() as Map<string, FSWatcher>
 
     /**
      * Creates a new watcher.
@@ -16,11 +16,11 @@ export class FileSystemWatcherManager implements Disposable {
      * @param callback     the callback to run when identifying changes
      */
     constructor(repositories: Promise<string[]>, callback: CallbackFunction) {
-        this.callback = callback;
+        this.callback = callback
 
-        repositories.then((directories) => {
-            directories.forEach((directory) => this.registerProjectWatcher(directory));
-        });
+        void repositories.then((directories) => {
+            directories.forEach((directory) => this.registerProjectWatcher(directory))
+        })
     }
 
     /**
@@ -30,22 +30,22 @@ export class FileSystemWatcherManager implements Disposable {
      */
     public configure(directoryChanges: WorkspaceFoldersChangeEvent): void {
         directoryChanges.added.forEach((changedDirectory: WorkspaceFolder) => {
-            const directory = changedDirectory.uri.fsPath;
-            this.registerProjectWatcher(directory);
-        });
+            const directory = changedDirectory.uri.fsPath
+            this.registerProjectWatcher(directory)
+        })
 
         directoryChanges.removed.forEach((changedDirectory: WorkspaceFolder) => {
-            const directory = changedDirectory.uri.fsPath;
-            this.removeProjectWatcher(directory);
-        });
+            const directory = changedDirectory.uri.fsPath
+            this.removeProjectWatcher(directory)
+        })
     }
 
     /**
      * Disposes this object.
      */
-    public dispose() {
+    public dispose(): void {
         for (const path of this.watchers.keys()) {
-            this.removeProjectWatcher(path);
+            this.removeProjectWatcher(path)
         }
     }
 
@@ -56,29 +56,29 @@ export class FileSystemWatcherManager implements Disposable {
      */
     private registerProjectWatcher(projectPath: string): void {
         if (this.watchers.has(projectPath)) {
-            return;
+            return
         }
 
-        const pathToMonitor = join(projectPath, '.git', 'refs');
+        const pathToMonitor = join(projectPath, '.git', 'refs')
 
         if (!existsSync(pathToMonitor)) {
-            return;
+            return
         }
 
         try {
             const watcher = watch(pathToMonitor, (event: string, filename) => {
                 if (filename.indexOf('stash') > -1) {
                     if (filename && filename.indexOf('stash') > -1) {
-                        this.callback(Uri.file(projectPath));
+                        this.callback(Uri.file(projectPath))
                     }
                 }
-            });
+            })
 
-            this.watchers.set(projectPath, watcher);
+            this.watchers.set(projectPath, watcher)
         }
         catch (error) {
-            window.showErrorMessage(`Unable to a create a stashes monitor for
-            ${projectPath}. This may happen on NFS or if the path is a link`);
+            void window.showErrorMessage(`Unable to a create a stashes monitor for
+            ${projectPath}. This may happen on NFS or if the path is a link`)
         }
     }
 
@@ -89,8 +89,8 @@ export class FileSystemWatcherManager implements Disposable {
      */
     private removeProjectWatcher(path: string): void {
         if (this.watchers.has(path)) {
-            this.watchers.get(path).close();
-            this.watchers.delete(path);
+            this.watchers.get(path).close()
+            this.watchers.delete(path)
         }
     }
 }

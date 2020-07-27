@@ -1,8 +1,8 @@
-//@ts-check
+// @ts-check
 
-'use strict';
+'use strict'
 
-const path = require('path');
+const path = require('path')
 
 /**@type {import('webpack').Configuration}*/
 const config = {
@@ -20,7 +20,7 @@ const config = {
     },
     devtool: 'source-map',
     externals: {
-        vscode: 'commonjs vscode'
+        vscode: 'commonjs vscode',
     },
     resolve: {
         extensions: ['.ts', '.js'],
@@ -30,9 +30,10 @@ const config = {
             {
                 test: /\.ts$/,
                 exclude: /node_modules/,
-                use: [ { loader: 'ts-loader' } ],
-            }
-        ]
-    }
-};
-module.exports = config;
+                use: [{ loader: 'ts-loader' }],
+            },
+        ],
+    },
+}
+
+module.exports = config

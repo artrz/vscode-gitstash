@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-import NodeType from './NodeType';
+import NodeType from './NodeType'
 
 export default interface Node {
     type: NodeType;

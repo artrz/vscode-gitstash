@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-import { workspace } from 'vscode';
-import Git from './Git';
+import Git from './Git'
+import { workspace } from 'vscode'
 
 export interface Stash {
     index: number;
@@ -9,10 +9,15 @@ export interface Stash {
     date: string;
 }
 
+export interface RenameStash {
+    new: string;
+    old: string;
+}
+
 export interface StashedFiles {
     indexAdded: string[];
     modified: string[];
-    renamed: any[];
+    renamed: RenameStash[];
     untracked: string[];
     deleted: string[];
 }
@@ -32,9 +37,9 @@ export default class StashGit extends Git {
         const params = [
             'stash',
             'list',
-        ];
+        ]
 
-        return (await this.exec(params, cwd)).trim();
+        return (await this.exec(params, cwd)).trim()
     }
 
     /**
@@ -43,17 +48,17 @@ export default class StashGit extends Git {
      * @param cwd the current working directory
      */
     public async getStashes(cwd: string): Promise<Stash[]> {
-        const validFormats = ['default', 'iso', 'local', 'raw', 'relative', 'rfc', 'short'];
-        const dateFormat = workspace.getConfiguration('gitstash').dateFormat;
+        const validFormats = ['default', 'iso', 'local', 'raw', 'relative', 'rfc', 'short']
+        const dateFormat = workspace.getConfiguration('gitstash').dateFormat as string
         const params = [
             'stash',
             'list',
-            '--date=' + (validFormats.indexOf(dateFormat) > -1 ? dateFormat : 'default'),
-        ];
+            `--date=${ validFormats.indexOf(dateFormat) > -1 ? dateFormat : 'default'}`,
+        ]
 
-        const stashList = (await this.exec(params, cwd)).trim();
+        const stashList = (await this.exec(params, cwd)).trim()
 
-        const list = [];
+        const list: Stash[] = []
 
         if (stashList.length > 0) {
             stashList.split(/\r?\n/g).forEach((stash, index) => {
@@ -61,11 +66,11 @@ export default class StashGit extends Git {
                     index: index,
                     description: stash.substring(stash.indexOf('}:') + 2).trim(),
                     date: stash.substring(stash.indexOf('{') + 1, stash.indexOf('}')),
-                });
-            });
+                })
+            })
         }
 
-        return list;
+        return list
     }
 
     /**
@@ -80,49 +85,50 @@ export default class StashGit extends Git {
             indexAdded: [],
             modified: [],
             deleted: [],
-            renamed: [],
-        };
+            renamed: [] as RenameStash[],
+        }
 
         const params = [
             'stash',
             'show',
             '--name-status',
             `stash@{${index}}`,
-        ];
+        ]
 
         try {
-            const stashData = (await this.exec(params, cwd)).trim();
+            const stashData = (await this.exec(params, cwd)).trim()
 
             if (stashData.length > 0) {
-                const stashedFiles = stashData.split(/\r?\n/g);
+                const stashedFiles = stashData.split(/\r?\n/g)
                 stashedFiles.forEach((line: string) => {
-                    const status = line.substring(0, 1);
-                    const file = line.substring(1).trim();
+                    const status = line.substring(0, 1)
+                    const file = line.substring(1).trim()
 
                     if (status === 'A') {
-                        files.indexAdded.push(file);
+                        files.indexAdded.push(file)
                     }
                     else if (status === 'D') {
-                        files.deleted.push(file);
+                        files.deleted.push(file)
                     }
                     else if (status === 'M') {
-                        files.modified.push(file);
+                        files.modified.push(file)
                     }
                     else if (status === 'R') {
-                        const fileNames = file.match(/^\d+\s+([^\t]+)\t(.+)$/);
+                        const fileNames = /^\d+\s+([^\t]+)\t(.+)$/.exec(file)
                         files.renamed.push({
                             new: fileNames[2],
                             old: fileNames[1],
-                        });
+                        })
                     }
-                });
+                })
             }
-        } catch (e) {
-            console.log('StashGit.getStashedFiles');
-            console.log(e);
+        }
+        catch (e) {
+            console.log('StashGit.getStashedFiles')
+            console.log(e)
         }
 
-        return files;
+        return files
     }
 
     /**
@@ -137,22 +143,23 @@ export default class StashGit extends Git {
             '-r',
             '--name-only',
             `stash@{${index}}^3`,
-        ];
+        ]
 
-        const list = [];
+        const list: string[] = []
 
         try {
-            const stashData = (await this.exec(params, cwd)).trim();
+            const stashData = (await this.exec(params, cwd)).trim()
 
             if (stashData.length > 0) {
-                const stashedFiles = stashData.split(/\r?\n/g);
+                const stashedFiles = stashData.split(/\r?\n/g)
                 stashedFiles.forEach((file: string) => {
-                    list.push(file);
-                });
+                    list.push(file)
+                })
             }
-        } catch (e) { /* we may get an error if there aren't untracked files */ }
+        }
+        catch (e) { /* we may get an error if there aren't untracked files */ }
 
-        return list;
+        return list
     }
 
     /**
@@ -171,9 +178,9 @@ export default class StashGit extends Git {
         const params = [
             'show',
             `stash@{${index}}:${file}`,
-        ];
+        ]
 
-        return await this.call(params, cwd);
+        return await this.call(params, cwd)
     }
 
     /**
@@ -192,9 +199,9 @@ export default class StashGit extends Git {
         const params = [
             'show',
             `stash@{${index}}^1:${file}`,
-        ];
+        ]
 
-        return await this.call(params, cwd);
+        return await this.call(params, cwd)
     }
 
     /**
@@ -208,8 +215,8 @@ export default class StashGit extends Git {
         const params = [
             'show',
             `stash@{${index}}^3:${file}`,
-        ];
+        ]
 
-        return await this.call(params, cwd);
+        return await this.call(params, cwd)
     }
 }

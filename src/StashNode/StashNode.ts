@@ -1,10 +1,10 @@
-'use strict';
+'use strict'
 
-import NodeType from './NodeType';
-import Node from './Node';
+import Node from './Node'
+import NodeType from './NodeType'
 
 export default class StashNode {
-    public children: StashNode[] = [];
+    public children: StashNode[] = []
 
     constructor(private source: Node) {
     }
@@ -13,42 +13,42 @@ export default class StashNode {
      * Gets the node type.
      */
     public get type(): NodeType {
-        return this.source.type;
+        return this.source.type
     }
 
     /**
      * Gets the node name.
      */
     public get name(): string {
-        return this.source.name;
+        return this.source.name
     }
 
     /**
      * Gets the node old name.
      */
     public get oldName(): string {
-        return this.source.oldName;
+        return this.source.oldName
     }
 
     /**
      * Gets the node index.
      */
     public get index(): number {
-        return this.source.index;
+        return this.source.index
     }
 
     /**
      * Gets the node parent index.
      */
     public get parent(): StashNode | null {
-        return this.source.parent as StashNode;
+        return this.source.parent as StashNode
     }
 
     /**
      * Gets the node generation date.
      */
     public get date(): string | null {
-        return this.source.date;
+        return this.source.date
     }
 
     /**
@@ -60,7 +60,7 @@ export default class StashNode {
             NodeType.IndexAdded,
             NodeType.Modified,
             NodeType.Untracked,
-        ].indexOf(this.type) > -1;
+        ].indexOf(this.type) > -1
     }
 
     /**
@@ -68,17 +68,17 @@ export default class StashNode {
      */
     public get path(): string | null {
         if (this.type === NodeType.Repository) {
-            return this.source.path;
+            return this.source.path
         }
 
         if (this.type === NodeType.Stash) {
-            return this.source.parent.path;
+            return this.source.parent.path
         }
 
         if (this.isFile) {
-            return `${this.source.path}/${this.name}`;
+            return `${this.source.path}/${this.name}`
         }
 
-        return null;
+        return null
     }
 }

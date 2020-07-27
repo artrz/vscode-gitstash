@@ -1,46 +1,50 @@
-'use strict';
+'use strict'
 
-import StashGit, { Stash, StashedFiles } from '../Git/StashGit';
-import StashNode from './StashNode';
-import NodeType from './NodeType';
-import StashNodeFactory from './StashNodeFactory';
-import WorkspaceGit from '../Git/WorkspaceGit';
+import StashGit, { RenameStash, Stash, StashedFiles } from '../Git/StashGit'
+import NodeType from './NodeType'
+import StashNode from './StashNode'
+import StashNodeFactory from './StashNodeFactory'
+import WorkspaceGit from '../Git/WorkspaceGit'
 
 export default class RepositoryTreeBuilder {
-    private stashGit: StashGit;
-    private workspaceGit: WorkspaceGit;
-    private stashNodeFactory: StashNodeFactory;
+    private stashGit: StashGit
+    private workspaceGit: WorkspaceGit
+    private stashNodeFactory: StashNodeFactory
 
     constructor(workspaceGit: WorkspaceGit) {
-        this.workspaceGit = workspaceGit;
-        this.stashGit = new StashGit();
-        this.stashNodeFactory = new StashNodeFactory();
+        this.workspaceGit = workspaceGit
+        this.stashGit = new StashGit()
+        this.stashNodeFactory = new StashNodeFactory()
     }
 
     /**
      * Generates all the repository trees.
      */
     public async buildRepositoryTrees(): Promise<StashNode[]> {
-        const repositoryNodes = await this.getRepositories();
+        const repositoryNodes = await this.getRepositories()
 
         for (const repositoryNode of repositoryNodes) {
-            await this.buildRepositoryTree(repositoryNode);
+            await this.buildRepositoryTree(repositoryNode)
         }
 
-        return repositoryNodes;
+        return repositoryNodes
     }
 
     /**
      * Generates repository tree for the given node.
      */
     private async buildRepositoryTree(repositoryNode: StashNode): Promise<StashNode> {
-        repositoryNode.children = await this.getStashes(repositoryNode);
+        repositoryNode.children = await this.getStashes(repositoryNode)
 
-        repositoryNode.children.forEach(async (stash) => {
-            stash.children = await this.getFiles(stash);
-        });
+        const getStash = async (stash: StashNode): Promise<void> => {
+            stash.children = await this.getFiles(stash)
+        }
 
-        return repositoryNode;
+        repositoryNode.children.forEach((stash) => {
+            void getStash(stash)
+        })
+
+        return repositoryNode
     }
 
     /**
@@ -48,13 +52,13 @@ export default class RepositoryTreeBuilder {
      */
     private async getRepositories(): Promise<StashNode[]> {
         return this.workspaceGit.getRepositories().then((rawList: string[]) => {
-            const repositoryNodes = [];
+            const repositoryNodes: StashNode[] = []
             rawList.forEach((repositoryPath: string) => {
-                repositoryNodes.push(this.stashNodeFactory.createRepositoryNode(repositoryPath));
-            });
+                repositoryNodes.push(this.stashNodeFactory.createRepositoryNode(repositoryPath))
+            })
 
-            return repositoryNodes;
-        });
+            return repositoryNodes
+        })
     }
 
     /**
@@ -62,13 +66,13 @@ export default class RepositoryTreeBuilder {
      */
     private async getStashes(repositoryNode: StashNode): Promise<StashNode[]> {
         return this.stashGit.getStashes(repositoryNode.path).then((rawList: Stash[]) => {
-            const stashNodes = [];
+            const stashNodes: StashNode[] = []
             rawList.forEach((stash: Stash) => {
-                stashNodes.push(this.stashNodeFactory.createStashNode(stash, repositoryNode));
-            });
+                stashNodes.push(this.stashNodeFactory.createStashNode(stash, repositoryNode))
+            })
 
-            return stashNodes;
-        });
+            return stashNodes
+        })
     }
 
     /**
@@ -79,30 +83,30 @@ export default class RepositoryTreeBuilder {
     private async getFiles(stashNode: StashNode): Promise<StashNode[]> {
         return this.stashGit.getStashedFiles(stashNode.path, stashNode.index).then((stashedFiles: StashedFiles) => {
 
-            const fileNodes = [];
-            const path = stashNode.path;
+            const fileNodes: StashNode[] = []
+            const path = stashNode.path
 
             stashedFiles.indexAdded.forEach((stashFile: string) => {
-                fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.IndexAdded));
-            });
+                fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.IndexAdded))
+            })
 
             stashedFiles.modified.forEach((stashFile: string) => {
-                fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.Modified));
-            });
+                fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.Modified))
+            })
 
-            stashedFiles.renamed.forEach((stashFile: any) => {
-                fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.Renamed));
-            });
+            stashedFiles.renamed.forEach((stashFile: RenameStash) => {
+                fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.Renamed))
+            })
 
             stashedFiles.untracked.forEach((stashFile: string) => {
-                fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.Untracked));
-            });
+                fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.Untracked))
+            })
 
             stashedFiles.deleted.forEach((stashFile: string) => {
-                fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.Deleted));
-            });
+                fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.Deleted))
+            })
 
-            return fileNodes;
-        });
+            return fileNodes
+        })
     }
 }
