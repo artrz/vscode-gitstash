@@ -1,20 +1,20 @@
-'use string';
+'use string'
 
-import * as fs from 'fs';
-import * as vscode from 'vscode';
-import StashLabels from './StashLabels';
-import StashNode from './StashNode/StashNode';
-import NodeType from './StashNode/NodeType';
-import UriGenerator from './uriGenerator';
-import { FileStage } from './Git/StashGit';
+import * as fs from 'fs'
+import * as vscode from 'vscode'
+import { FileStage } from './Git/StashGit'
+import NodeType from './StashNode/NodeType'
+import StashLabels from './StashLabels'
+import StashNode from './StashNode/StashNode'
+import UriGenerator from './uriGenerator'
 
 export class DiffDisplayer {
-    private stashLabels: StashLabels;
-    private uriGenerator: UriGenerator;
+    private stashLabels: StashLabels
+    private uriGenerator: UriGenerator
 
     constructor(uriGenerator: UriGenerator, stashLabels: StashLabels) {
-        this.stashLabels = stashLabels;
-        this.uriGenerator = uriGenerator;
+        this.stashLabels = stashLabels
+        this.uriGenerator = uriGenerator
     }
 
     /**
@@ -22,14 +22,14 @@ export class DiffDisplayer {
      *
      * @param fileNode
      */
-    public async showDiff(fileNode: StashNode) {
+    public async showDiff(fileNode: StashNode): Promise<void> {
         if (fileNode.type === NodeType.Modified || fileNode.type === NodeType.Renamed) {
             this.displayDiff(
                 await this.uriGenerator.create(fileNode, FileStage.Parent),
                 await this.uriGenerator.create(fileNode, FileStage.Change),
                 fileNode,
                 true,
-            );
+            )
         }
         else if (fileNode.type === NodeType.Untracked) {
             this.displayDiff(
@@ -37,7 +37,7 @@ export class DiffDisplayer {
                 await this.uriGenerator.create(fileNode),
                 fileNode,
                 true,
-            );
+            )
         }
         else if (fileNode.type === NodeType.IndexAdded) {
             this.displayDiff(
@@ -45,7 +45,7 @@ export class DiffDisplayer {
                 await this.uriGenerator.create(fileNode),
                 fileNode,
                 true,
-            );
+            )
         }
         else if (fileNode.type === NodeType.Deleted) {
             this.displayDiff(
@@ -53,7 +53,7 @@ export class DiffDisplayer {
                 await this.uriGenerator.create(),
                 fileNode,
                 true,
-            );
+            )
         }
     }
 
@@ -62,14 +62,14 @@ export class DiffDisplayer {
      *
      * @param fileNode
      */
-    public async showDiffCurrent(fileNode: StashNode) {
+    public async showDiffCurrent(fileNode: StashNode): Promise<void> {
         const current = fileNode.type === NodeType.Renamed
             ? `${fileNode.parent.path}/${fileNode.oldName}`
-            : fileNode.path;
+            : fileNode.path
 
         if (!fs.existsSync(current)) {
-            vscode.window.showErrorMessage('No file available to compare');
-            return;
+            void vscode.window.showErrorMessage('No file available to compare')
+            return
         }
 
         if (fileNode.type === NodeType.Modified || fileNode.type === NodeType.Renamed) {
@@ -78,7 +78,7 @@ export class DiffDisplayer {
                 vscode.Uri.file(current),
                 fileNode,
                 false,
-            );
+            )
         }
         else if (fileNode.type === NodeType.Untracked) {
             this.displayDiff(
@@ -86,7 +86,7 @@ export class DiffDisplayer {
                 vscode.Uri.file(current),
                 fileNode,
                 false,
-            );
+            )
         }
         else if (fileNode.type === NodeType.IndexAdded) {
             this.displayDiff(
@@ -94,7 +94,7 @@ export class DiffDisplayer {
                 vscode.Uri.file(current),
                 fileNode,
                 false,
-            );
+            )
         }
         else if (fileNode.type === NodeType.Deleted) {
             this.displayDiff(
@@ -102,7 +102,7 @@ export class DiffDisplayer {
                 vscode.Uri.file(current),
                 fileNode,
                 false,
-            );
+            )
         }
     }
 
@@ -115,7 +115,7 @@ export class DiffDisplayer {
      * @param hint     the hint reference to know file origin
      */
     private displayDiff(base: vscode.Uri, modified: vscode.Uri, fileNode: StashNode, hint: boolean) {
-        vscode.commands.executeCommand<void>(
+        void vscode.commands.executeCommand<void>(
             'vscode.diff',
             base,
             modified,
@@ -125,6 +125,6 @@ export class DiffDisplayer {
                 preview: true,
                 viewColumn: vscode.ViewColumn.Active,
             } as vscode.TextDocumentShowOptions,
-        );
+        )
     }
 }

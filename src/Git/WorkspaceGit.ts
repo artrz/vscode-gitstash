@@ -1,25 +1,25 @@
-'use strict';
+'use strict'
 
-import { Uri } from 'vscode';
-import Git from './Git';
-import Workspace from '../Workspace';
-import Config from '../Config';
+import Config from '../Config'
+import Git from './Git'
+import { Uri } from 'vscode'
+import Workspace from '../Workspace'
 
 export default class WorkspaceGit extends Git {
-    private config: Config;
+    private config: Config
 
     constructor(config: Config) {
-        super();
-        this.config = config;
+        super()
+        this.config = config
     }
 
     /**
      * Indicates if there's at least one repository available.
      */
     public async hasGitRepository(): Promise<boolean> {
-        const repository = await this.getRepositories(true);
+        const repository = await this.getRepositories(true)
 
-        return repository && repository.length > 0;
+        return repository && repository.length > 0
     }
 
     /**
@@ -28,36 +28,37 @@ export default class WorkspaceGit extends Git {
      * @param firstOnly indicates if return only the first repository
      */
     public async getRepositories(firstOnly?: boolean): Promise<string[]> {
-        const depth = this.config.settings.advanced.repositorySearchDepth;
+        const depth: number = this.config.get('dvanced.repositorySearchDepth')
 
         const params = [
             'rev-parse',
             '--show-toplevel',
-        ];
+        ]
 
-        const paths = [];
+        const paths: string[] = []
         for (const cwd of Workspace.getRootPaths(depth)) {
             try {
-                let gitPath = (await this.exec(params, cwd)).trim();
+                let gitPath = (await this.exec(params, cwd)).trim()
                 if (gitPath.length < 1) {
-                    continue;
+                    continue
                 }
 
-                gitPath = Uri.file(gitPath).fsPath;
+                gitPath = Uri.file(gitPath).fsPath
                 if (paths.indexOf(gitPath) === -1) {
-                    paths.push(gitPath);
+                    paths.push(gitPath)
 
                     if (firstOnly) {
-                        break;
+                        break
                     }
                 }
-            } catch (e) {
-                continue;
+            }
+            catch (e) {
+                continue
             }
         }
 
-        paths.sort();
+        paths.sort()
 
-        return paths;
+        return paths
     }
 }

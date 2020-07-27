@@ -1,10 +1,10 @@
-'use strict';
+'use strict'
 
-import { Uri, workspace } from 'vscode';
-import { basename } from 'path';
-import { Stash } from '../Git/StashGit';
-import StashNode from './StashNode';
-import NodeType from './NodeType';
+import { RenameStash, Stash } from '../Git/StashGit'
+import { Uri, workspace } from 'vscode'
+import NodeType from './NodeType'
+import StashNode from './StashNode'
+import { basename } from 'path'
 
 export default class {
     /**
@@ -15,7 +15,7 @@ export default class {
     public createRepositoryNode(path: string): StashNode {
         // may be undefined if the directory is not part of the workspace
         // this happens on upper directories by negative search depth setting
-        const workspaceFolder = workspace.getWorkspaceFolder(Uri.file(path));
+        const workspaceFolder = workspace.getWorkspaceFolder(Uri.file(path))
 
         return new StashNode({
             type: NodeType.Repository,
@@ -24,7 +24,7 @@ export default class {
             parent: undefined,
             date: undefined,
             path: path,
-        });
+        })
     }
 
     /**
@@ -39,7 +39,7 @@ export default class {
             index: stash.index,
             parent: parentNode,
             date: stash.date,
-        });
+        })
     }
 
     /**
@@ -50,15 +50,15 @@ export default class {
      * @param parentNode the parent node
      * @param type       the stash type
      */
-    public createFileNode(path: string, file: string|any, parentNode: StashNode, type: NodeType): StashNode {
+    public createFileNode(path: string, file: string|RenameStash, parentNode: StashNode, type: NodeType): StashNode {
         return new StashNode({
             type: type,
-            name: type === NodeType.Renamed ? file.new : file,
-            oldName: type === NodeType.Renamed ? file.old : undefined,
+            name: type === NodeType.Renamed ? (file as RenameStash).new : file as string,
+            oldName: type === NodeType.Renamed ? (file as RenameStash).old : undefined,
             path: path,
             index: undefined,
             parent: parentNode,
             date: parentNode.date,
-        });
+        })
     }
 }

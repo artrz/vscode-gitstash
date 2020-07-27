@@ -1,7 +1,6 @@
-'use strict';
+'use strict'
 
 import {
-    commands,
     Event,
     EventEmitter,
     ThemeIcon,
@@ -9,54 +8,55 @@ import {
     TreeItem,
     TreeItemCollapsibleState,
     Uri,
-} from 'vscode';
-import { join } from 'path';
-import Config from './Config';
-import GitBridge from './GitBridge';
-import StashLabels from './StashLabels';
-import StashNode from './StashNode/StashNode';
-import NodeType from './StashNode/NodeType';
-import RepositoryTreeBuilder from './StashNode/RepositoryTreeBuilder';
+    commands,
+} from 'vscode'
+import Config from './Config'
+import GitBridge from './GitBridge'
+import NodeType from './StashNode/NodeType'
+import RepositoryTreeBuilder from './StashNode/RepositoryTreeBuilder'
+import StashLabels from './StashLabels'
+import StashNode from './StashNode/StashNode'
+import { join } from 'path'
 
 export default class GitStashTreeDataProvider implements TreeDataProvider<StashNode> {
-    private _onDidChangeTreeData: EventEmitter<any> = new EventEmitter<any>();
-    readonly onDidChangeTreeData: Event<any> = this._onDidChangeTreeData.event;
+    private onDidChangeTreeDataEmitter: EventEmitter<never> = new EventEmitter<never>()
+    readonly onDidChangeTreeData: Event<never> = this.onDidChangeTreeDataEmitter.event
 
-    private config: Config;
-    private repositoryTreeBuilder: RepositoryTreeBuilder;
-    private stashLabels: StashLabels;
-    private gitBridge: GitBridge;
-    private rawStashes = {};
-    private loadTimeout: NodeJS.Timer;
-    private showExplorer: boolean;
+    private config: Config
+    private repositoryTreeBuilder: RepositoryTreeBuilder
+    private stashLabels: StashLabels
+    private gitBridge: GitBridge
+    private rawStashes = {}
+    private loadTimeout: NodeJS.Timer
+    private showExplorer: boolean
 
     constructor(config: Config, repositoryTreeBuilder: RepositoryTreeBuilder, gitBridge: GitBridge, stashLabels: StashLabels) {
-        this.config = config;
-        this.repositoryTreeBuilder = repositoryTreeBuilder;
-        this.gitBridge = gitBridge;
-        this.stashLabels = stashLabels;
+        this.config = config
+        this.repositoryTreeBuilder = repositoryTreeBuilder
+        this.gitBridge = gitBridge
+        this.stashLabels = stashLabels
     }
 
     /**
      * Reloads the explorer tree.
      */
-    public refresh = () => {
-        this.reload('force');
+    public refresh = (): void => {
+        this.reload('force')
     }
 
     /**
      * Toggles the explorer tree.
      */
-    public toggle = () => {
-        this.showExplorer = typeof this.showExplorer === 'undefined'
-            ? this.config.settings.explorer.enabled
-            : !this.showExplorer;
+    public toggle = (): void => {
+        this.showExplorer = this.showExplorer === undefined
+            ? this.config.get('explorer.enabled')
+            : !this.showExplorer
 
-        commands.executeCommand(
+        void commands.executeCommand(
             'setContext',
             'gitstash.explorer.enabled',
             this.showExplorer,
-        );
+        )
     }
 
     /**
@@ -67,7 +67,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     public getChildren(node?: StashNode): Thenable<StashNode[]> | StashNode[] {
         return !node
             ? this.repositoryTreeBuilder.buildRepositoryTrees()
-            : node.children;
+            : node.children
     }
 
     /**
@@ -77,9 +77,9 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
      */
     public getTreeItem(node: StashNode): TreeItem {
         switch (node.type) {
-            case NodeType.Repository: return this.getRepositoryItem(node);
-            case NodeType.Stash:      return this.getStashItem(node);
-            default:                  return this.getFileItem(node);
+            case NodeType.Repository: return this.getRepositoryItem(node)
+            case NodeType.Stash:      return this.getStashItem(node)
+            default:                  return this.getFileItem(node)
         }
     }
 
@@ -91,26 +91,26 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
      */
     public reload(type: string, projectPath?: Uri): void {
         if (this.loadTimeout) {
-            clearTimeout(this.loadTimeout);
+            clearTimeout(this.loadTimeout)
         }
 
         this.loadTimeout = setTimeout((type: string, pathUri?: Uri) => {
             if (['settings', 'force'].indexOf(type) !== -1) {
-                this._onDidChangeTreeData.fire();
+                this.onDidChangeTreeDataEmitter.fire()
             }
             else {
-                const path = pathUri.fsPath;
+                const path = pathUri.fsPath
 
-                this.gitBridge.getRawStashesList(path).then((rawStash: string) => {
-                    const cachedRawStash = this.rawStashes[path];
+                void this.gitBridge.getRawStashesList(path).then((rawStash: string) => {
+                    const cachedRawStash = this.rawStashes[path] as string
 
                     if (!cachedRawStash || cachedRawStash !== rawStash) {
-                        this.rawStashes[path] = rawStash;
-                        this._onDidChangeTreeData.fire();
+                        this.rawStashes[path] = rawStash
+                        this.onDidChangeTreeDataEmitter.fire()
                     }
-                });
+                })
             }
-        }, type === 'force' ? 250 : 750, type, projectPath);
+        }, type === 'force' ? 250 : 750, type, projectPath)
     }
 
     /**
@@ -126,7 +126,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
             iconPath: this.getIcon('repository.svg'),
             contextValue: 'repository',
             collapsibleState: TreeItemCollapsibleState.Collapsed,
-        };
+        }
     }
 
     /**
@@ -142,7 +142,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
             iconPath: this.getIcon('chest.svg'),
             contextValue: 'stash',
             collapsibleState: TreeItemCollapsibleState.Collapsed,
-        };
+        }
     }
 
     /**
@@ -151,13 +151,13 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
      * @param node the node to be used as base
      */
     private getFileItem(node: StashNode): TreeItem {
-        let context = 'file';
+        let context = 'file'
         switch (node.type) {
-            case (NodeType.Deleted): context += ':deleted'; break;
-            case (NodeType.IndexAdded): context += ':indexAdded'; break;
-            case (NodeType.Modified): context += ':modified'; break;
-            case (NodeType.Renamed): context += ':renamed'; break;
-            case (NodeType.Untracked): context += ':untracked'; break;
+            case (NodeType.Deleted): context += ':deleted'; break
+            case (NodeType.IndexAdded): context += ':indexAdded'; break
+            case (NodeType.Modified): context += ':modified'; break
+            case (NodeType.Renamed): context += ':renamed'; break
+            case (NodeType.Untracked): context += ':untracked'; break
         }
 
         return {
@@ -171,7 +171,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
                 command: 'gitstash.show',
                 arguments: [node],
             },
-        };
+        }
     }
 
     /**
@@ -183,7 +183,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
         return {
             light: join(__dirname, '..', 'resources', 'icons', 'light', filename),
             dark: join(__dirname, '..', 'resources', 'icons', 'dark', filename),
-        };
+        }
     }
 
     /**
@@ -193,12 +193,12 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
      */
     private getFileIcon(type: NodeType): { light: string; dark: string } | ThemeIcon {
         switch (type) {
-            case NodeType.Deleted: return this.getIcon('status-deleted.svg');
-            case NodeType.IndexAdded: return this.getIcon('status-added.svg');
-            case NodeType.Modified: return this.getIcon('status-modified.svg');
-            case NodeType.Renamed: return this.getIcon('status-renamed.svg');
-            case NodeType.Untracked: return this.getIcon('status-untracked.svg');
-            default: return ThemeIcon.File;
+            case NodeType.Deleted: return this.getIcon('status-deleted.svg')
+            case NodeType.IndexAdded: return this.getIcon('status-added.svg')
+            case NodeType.Modified: return this.getIcon('status-modified.svg')
+            case NodeType.Renamed: return this.getIcon('status-renamed.svg')
+            case NodeType.Untracked: return this.getIcon('status-untracked.svg')
+            default: return ThemeIcon.File
         }
     }
 }

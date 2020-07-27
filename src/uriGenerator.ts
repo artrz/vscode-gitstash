@@ -1,16 +1,16 @@
-'use strict';
+'use strict'
 
-import * as fs from 'fs';
-import * as path from 'path';
-import * as tmp from 'tmp';
-import { Uri } from 'vscode';
-import GitBridge from './GitBridge';
-import StashNode from './StashNode/StashNode';
-import { FileStage } from './Git/StashGit';
+import * as fs from 'fs'
+import * as path from 'path'
+import * as tmp from 'tmp'
+import { FileStage } from './Git/StashGit'
+import GitBridge from './GitBridge'
+import StashNode from './StashNode/StashNode'
+import { Uri } from 'vscode'
 
 export default class UriGenerator {
-    public static readonly emptyFileScheme = 'gitdiff-no-contents';
-    public static readonly fileScheme = 'gitdiff-stashed-contents';
+    public static readonly emptyFileScheme = 'gitdiff-no-contents'
+    public static readonly fileScheme = 'gitdiff-stashed-contents'
     private readonly supportedBinaryFiles = [
         '.bmp',
         '.gif',
@@ -19,13 +19,13 @@ export default class UriGenerator {
         '.jpeg',
         '.png',
         '.webp',
-    ];
+    ]
 
-    private gitBridge: GitBridge;
+    private gitBridge: GitBridge
 
     constructor(gitBridge: GitBridge) {
-        this.gitBridge = gitBridge;
-        tmp.setGracefulCleanup();
+        this.gitBridge = gitBridge
+        tmp.setGracefulCleanup()
     }
 
     /**
@@ -36,7 +36,7 @@ export default class UriGenerator {
      */
     public async create(node?: StashNode, stage?: FileStage): Promise<Uri> {
         if (!node) {
-            return Uri.parse(`${UriGenerator.emptyFileScheme}:`);
+            return Uri.parse(`${UriGenerator.emptyFileScheme}:`)
         }
 
         if (this.supportedBinaryFiles.indexOf(path.extname(node.name)) > -1) {
@@ -45,10 +45,10 @@ export default class UriGenerator {
                     await this.gitBridge.getFileContents(node, stage),
                     node.name,
                 ).name,
-            );
+            )
         }
 
-        return this.generateUri(node, stage);
+        return this.generateUri(node, stage)
     }
 
     /**
@@ -57,8 +57,8 @@ export default class UriGenerator {
      * @param node the node to be used as base for the URI
      * @param side the editor side
      */
-    private generateUri(node: StashNode, side?: String): Uri {
-        const timestamp = new Date().getTime();
+    private generateUri(node: StashNode, side?: string): Uri {
+        const timestamp = new Date().getTime()
 
         const query = `cwd=${node.parent.path}`
             + `&index=${node.parent.index}`
@@ -66,9 +66,9 @@ export default class UriGenerator {
             + `&oldPath=${node.oldName || ''}`
             + `&type=${node.type}`
             + `&side=${side || ''}`
-            + `&t=${timestamp}`;
+            + `&t=${timestamp}`
 
-        return Uri.parse(`${UriGenerator.fileScheme}:${node.path}?${query}`);
+        return Uri.parse(`${UriGenerator.fileScheme}:${node.path}?${query}`)
     }
 
     /**
@@ -81,10 +81,10 @@ export default class UriGenerator {
         const file = tmp.fileSync({
             prefix: 'vscode-gitstash-',
             postfix: path.extname(filename),
-        });
+        })
 
-        fs.writeFileSync(file.name, content);
+        fs.writeFileSync(file.name, content)
 
-        return file;
+        return file
     }
 }

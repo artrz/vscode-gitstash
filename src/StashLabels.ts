@@ -1,15 +1,15 @@
-'use strict';
+'use strict'
 
-import * as path from 'path';
-import Config from './Config';
-import StashNode from './StashNode/StashNode';
-import NodeType from './StashNode/NodeType';
+import * as path from 'path'
+import Config from './Config'
+import NodeType from './StashNode/NodeType'
+import StashNode from './StashNode/StashNode'
 
 export default class {
-    private config: Config;
+    private config: Config
 
     constructor(config: Config) {
-        this.config = config;
+        this.config = config
     }
 
     /**
@@ -20,19 +20,19 @@ export default class {
     public getName(node: StashNode): string {
         switch (node.type) {
             case NodeType.Repository:
-                return this.parseRepositoryLabel(node, this.config.settings.explorer.labels.repositoryFormat);
+                return this.parseRepositoryLabel(node, this.config.get('explorer.labels.repositoryFormat'))
             case NodeType.Stash:
-                return this.parseStashLabel(node, this.config.settings.explorer.labels.stashFormat);
+                return this.parseStashLabel(node, this.config.get('explorer.labels.stashFormat'))
             case NodeType.Deleted:
-                return this.parseFileLabel(node, this.config.settings.explorer.labels.deletedFileFormat);
+                return this.parseFileLabel(node, this.config.get('explorer.labels.deletedFileFormat'))
             case NodeType.IndexAdded:
-                return this.parseFileLabel(node, this.config.settings.explorer.labels.addedFileFormat);
+                return this.parseFileLabel(node, this.config.get('explorer.labels.addedFileFormat'))
             case NodeType.Modified:
-                return this.parseFileLabel(node, this.config.settings.explorer.labels.modifiedFileFormat);
+                return this.parseFileLabel(node, this.config.get('explorer.labels.modifiedFileFormat'))
             case NodeType.Renamed:
-                return this.parseFileLabel(node, this.config.settings.explorer.labels.renamedFileFormat);
+                return this.parseFileLabel(node, this.config.get('explorer.labels.renamedFileFormat'))
             case NodeType.Untracked:
-                return this.parseFileLabel(node, this.config.settings.explorer.labels.untrackedFileFormat);
+                return this.parseFileLabel(node, this.config.get('explorer.labels.untrackedFileFormat'))
         }
     }
 
@@ -44,19 +44,19 @@ export default class {
     public getTooltip(node: StashNode): string {
         switch (node.type) {
             case NodeType.Repository:
-                return this.parseRepositoryLabel(node, this.config.settings.explorer.labels.repositoryTooltipFormat);
+                return this.parseRepositoryLabel(node, this.config.get('explorer.labels.repositoryTooltipFormat'))
             case NodeType.Stash:
-                return this.parseStashLabel(node, this.config.settings.explorer.labels.stashTooltipFormat);
+                return this.parseStashLabel(node, this.config.get('explorer.labels.stashTooltipFormat'))
             case NodeType.Deleted:
-                return this.parseFileLabel(node, this.config.settings.explorer.labels.deletedFileTooltipFormat);
+                return this.parseFileLabel(node, this.config.get('explorer.labels.deletedFileTooltipFormat'))
             case NodeType.IndexAdded:
-                return this.parseFileLabel(node, this.config.settings.explorer.labels.addedFileTooltipFormat);
+                return this.parseFileLabel(node, this.config.get('explorer.labels.addedFileTooltipFormat'))
             case NodeType.Modified:
-                return this.parseFileLabel(node, this.config.settings.explorer.labels.modifiedFileTooltipFormat);
+                return this.parseFileLabel(node, this.config.get('explorer.labels.modifiedFileTooltipFormat'))
             case NodeType.Renamed:
-                return this.parseFileLabel(node, this.config.settings.explorer.labels.renamedFileTooltipFormat);
+                return this.parseFileLabel(node, this.config.get('explorer.labels.renamedFileTooltipFormat'))
             case NodeType.Untracked:
-                return this.parseFileLabel(node, this.config.settings.explorer.labels.untrackedFileTooltipFormat);
+                return this.parseFileLabel(node, this.config.get('explorer.labels.untrackedFileTooltipFormat'))
         }
     }
 
@@ -70,7 +70,7 @@ export default class {
             .replace('${name}', repositoryNode.name)
             .replace('${directory}', path.basename(repositoryNode.path))
             .replace('${path}', repositoryNode.path)
-            .replace('${stashesCount}', repositoryNode.children.length.toString());
+            .replace('${stashesCount}', repositoryNode.children.length.toString())
     }
 
     /**
@@ -83,7 +83,7 @@ export default class {
             .replace('${index}', stashNode.index.toString())
             .replace('${branch}', this.getStashBranch(stashNode))
             .replace('${description}', this.getStashDescription(stashNode))
-            .replace('${date}', stashNode.date);
+            .replace('${date}', stashNode.date)
     }
 
     /**
@@ -96,7 +96,7 @@ export default class {
             .replace('${filename}', path.basename(fileNode.name))
             .replace('${oldFilename}', fileNode.oldName ? path.basename(fileNode.oldName) : '')
             .replace('${filepath}', `${path.dirname(fileNode.name)}/`)
-            .replace('${type}', this.getTypeLabel(fileNode));
+            .replace('${type}', this.getTypeLabel(fileNode))
     }
 
     /**
@@ -106,15 +106,16 @@ export default class {
      * @param hint     the hint reference to know file origin
      */
     public getDiffTitle(fileNode: StashNode, hint: boolean): string {
-        return this.config.settings.editor.diffTitleFormat
+        return this.config.settings
+            .get('editor.diffTitleFormat', '')
             .replace('${filename}', path.basename(fileNode.name))
             .replace('${filepath}', `${path.dirname(fileNode.name)}/`)
             .replace('${date}', fileNode.date)
-            .replace('${stashIndex}', fileNode.parent.index)
+            .replace('${stashIndex}', `${fileNode.parent.index}`)
             .replace('${description}', this.getStashDescription(fileNode.parent))
             .replace('${branch}', this.getStashBranch(fileNode.parent))
             .replace('${type}', this.getTypeLabel(fileNode))
-            .replace('${hint}', this.getHint(fileNode, hint));
+            .replace('${hint}', this.getHint(fileNode, hint))
     }
 
     /**
@@ -123,7 +124,7 @@ export default class {
      * @param stashNode the source node
      */
     private getStashDescription(stashNode: StashNode): string {
-        return stashNode.name.substring(stashNode.name.indexOf(':') + 2);
+        return stashNode.name.substring(stashNode.name.indexOf(':') + 2)
     }
 
     /**
@@ -134,7 +135,7 @@ export default class {
     private getStashBranch(stashNode: StashNode): string {
         return stashNode.name.indexOf('WIP on ') === 0
             ? stashNode.name.substring(7, stashNode.name.indexOf(':'))
-            : stashNode.name.substring(3, stashNode.name.indexOf(':'));
+            : stashNode.name.substring(3, stashNode.name.indexOf(':'))
     }
 
     /**
@@ -144,12 +145,12 @@ export default class {
      */
     private getTypeLabel(fileNode: StashNode): string {
         switch (fileNode.type) {
-            case NodeType.Deleted: return 'Deleted';
-            case NodeType.IndexAdded: return 'Index Added';
-            case NodeType.Modified: return 'Modified';
-            case NodeType.Renamed: return 'Renamed';
-            case NodeType.Untracked: return 'Untracked';
-            default: return 'Other';
+            case NodeType.Deleted: return 'Deleted'
+            case NodeType.IndexAdded: return 'Index Added'
+            case NodeType.Modified: return 'Modified'
+            case NodeType.Renamed: return 'Renamed'
+            case NodeType.Untracked: return 'Untracked'
+            default: return 'Other'
         }
     }
 
@@ -159,13 +160,13 @@ export default class {
      * @param fileNode the source node
      */
     private getHint(fileNode: StashNode, fromStash: boolean): string {
-        const type = this.getTypeLabel(fileNode).toLowerCase();
-        const reference = fromStash ? 'original' : 'actual';
+        const type = this.getTypeLabel(fileNode).toLowerCase()
+        const reference = fromStash ? 'original' : 'actual'
 
         const values = fromStash
             ? {l: reference, r: type}
-            : {l: type, r: reference};
+            : {l: type, r: reference}
 
-        return `${values.l} ⟷ ${values.r}`;
+        return `${values.l} ⟷ ${values.r}`
     }
 }
