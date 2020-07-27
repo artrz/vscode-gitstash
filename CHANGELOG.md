@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [[3.2.1] 2020-07-26](https://github.com/arturock/vscode-gitstash/tree/v3.2.1)
+
+### Updated
+
+- Latest dependencies
+- New code style
+
 ## [[3.2.0] 2019-11-10](https://github.com/arturock/vscode-gitstash/tree/v3.2.0)
 
 ### Added
