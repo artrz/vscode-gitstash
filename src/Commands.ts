@@ -150,7 +150,7 @@ export class Commands {
             .showQuickPick([
                 {
                     label: 'Stash only',
-                    description: 'Crate a simple stash',
+                    description: 'Create a simple stash',
                     type: StashCommands.StashType.Simple,
                 },
                 {
