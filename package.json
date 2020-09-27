@@ -238,7 +238,7 @@
             },
             {
                 "command": "gitstash.createSingle",
-                "title": "Apply contents form this file",
+                "title": "Apply contents from this file",
                 "category": "GitStash",
                 "icon": {
                     "light": "resources/icons/light/check.svg",
