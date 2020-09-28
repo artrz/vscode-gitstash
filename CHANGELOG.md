@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [[3.3.0] 2020-09-27](https://github.com/arturock/vscode-gitstash/tree/v3.3.0)
+
+### Added
+
+- Allow to copy to clipboard stash information from tree view
+
 ## [[3.2.2] 2020-09-27](https://github.com/arturock/vscode-gitstash/tree/v3.2.2)
 
 ### Fixed
