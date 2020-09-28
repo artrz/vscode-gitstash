@@ -65,6 +65,8 @@ export function activate(context: ExtensionContext): void {
         commands.registerCommand('gitstash.applySingle', stashCommands.applySingle),
         commands.registerCommand('gitstash.createSingle', stashCommands.createSingle),
 
+        commands.registerCommand('gitstash.toClipboard', stashCommands.toClipboard),
+
         workspace.onDidChangeWorkspaceFolders((e: WorkspaceFoldersChangeEvent) => {
             notifyHasRepository(workspaceGit)
             watcherManager.configure(e)
