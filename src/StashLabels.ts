@@ -61,6 +61,26 @@ export default class {
     }
 
     /**
+     * Generates clipboard text for the stash node.
+     *
+     * @param stashNode The node to be used as base
+     */
+    public forClipboard(node: StashNode): string {
+        switch (node.type) {
+            case NodeType.Repository:
+                return this.parseRepositoryLabel(node, this.config.get('explorer.labels.repositoryToClipboardFormat'))
+            case NodeType.Stash:
+                return this.parseStashLabel(node, this.config.get('explorer.labels.stashToClipboardFormat'))
+            case NodeType.Deleted:
+            case NodeType.IndexAdded:
+            case NodeType.Modified:
+            case NodeType.Renamed:
+            case NodeType.Untracked:
+                return this.parseFileLabel(node, this.config.get('explorer.labels.fileToClipboardFormat'))
+        }
+    }
+
+    /**
      * Generates a repository label.
      *
      * @param repositoryNode The node to be used as base

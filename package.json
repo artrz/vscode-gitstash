@@ -2,7 +2,7 @@
     "name": "gitstash",
     "displayName": "Git Stash",
     "description": "Give extra stash abilities to Code. Visually browse stashes, review and extract changes. Get all stash commands and more.",
-    "version": "3.2.2",
+    "version": "3.3.0",
     "publisher": "arturock",
     "license": "MIT",
     "icon": "resources/logo.png",
@@ -11,7 +11,7 @@
         "theme": "dark"
     },
     "engines": {
-        "vscode": "^1.27.0"
+        "vscode": "^1.37.0"
     },
     "categories": [
         "Other"
@@ -125,6 +125,21 @@
                     "type": "string",
                     "default": "${filepath}${filename} • ${type}",
                     "description": "Specifies the format for each untracked file tooltip\nAvailable tokens:\nSame than fileFormat"
+                },
+                "gitstash.explorer.labels.repositoryToClipboardFormat": {
+                    "type": "string",
+                    "default": "${name} - ${path}",
+                    "description": "Specifies the format for the repository to be set on clipboard\nAvailable tokens:\nSame than RepositoryFormat"
+                },
+                "gitstash.explorer.labels.stashToClipboardFormat": {
+                    "type": "string",
+                    "default": "#${index} [${branch}] ${description}",
+                    "description": "Specifies the format for the stash to be set on clipboard\nAvailable tokens:\nSame than stashFormat"
+                },
+                "gitstash.explorer.labels.fileToClipboardFormat": {
+                    "type": "string",
+                    "default": "${filepath}${filename}",
+                    "description": "Specifies the format for the file to be set on clipboard\nAvailable tokens:\nSame than fileFormat"
                 },
                 "gitstash.editor.diffTitleFormat": {
                     "type": "string",
@@ -244,6 +259,11 @@
                     "light": "resources/icons/light/check.svg",
                     "dark": "resources/icons/dark/check.svg"
                 }
+            },
+            {
+                "command": "gitstash.toClipboard",
+                "title": "To clipboard",
+                "category": "GitStash"
             }
         ],
         "views": {
@@ -348,6 +368,10 @@
                     "command": "gitstash.createSingle",
                     "when": "view == gitstash.explorer && viewItem =~ /file:(untracked)/",
                     "group": "inline@2"
+                },
+                {
+                    "command": "gitstash.toClipboard",
+                    "when": "view == gitstash.explorer && viewItem =~ /(repository|stash)|file:/"
                 }
             ]
         }
@@ -368,7 +392,7 @@
         "@types/mocha": "7.0.2",
         "@types/node": "10.1.4",
         "@types/tmp": "0.2.0",
-        "@types/vscode": "1.27.0",
+        "@types/vscode": "1.37.0",
         "@typescript-eslint/eslint-plugin": "^3.7.0",
         "@typescript-eslint/eslint-plugin-tslint": "^3.7.0",
         "@typescript-eslint/parser": "^3.7.0",
