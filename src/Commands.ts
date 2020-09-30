@@ -397,7 +397,7 @@ export class Commands {
      * @param node the involved node
      */
     public toClipboard = (node: StashNode): void => {
-        vscode.env.clipboard.writeText(this.stashLabels.forClipboard(node))
+        void vscode.env.clipboard.writeText(this.stashLabels.forClipboard(node))
     }
 
     /**
