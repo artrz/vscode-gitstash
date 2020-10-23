@@ -2,7 +2,7 @@
     "name": "gitstash",
     "displayName": "Git Stash",
     "description": "Give extra stash abilities to Code. Visually browse stashes, review and extract changes. Get all stash commands and more.",
-    "version": "3.3.0",
+    "version": "3.3.1",
     "publisher": "arturock",
     "license": "MIT",
     "icon": "resources/logo.png",
@@ -64,7 +64,12 @@
                 "gitstash.explorer.labels.repositoryTooltipFormat": {
                     "type": "string",
                     "default": "${path}\n${stashesCount} stashes",
-                    "description": "Specifies the format for each repository tooltip \nAvailable tokens:\nSame than repositoryFormat"
+                    "description": "Specifies the format for each repository\nAvailable tokens:\n${name} - the repository name\n${directory} - the repository directory base name\n${path} - the full directory path\n${stashesCount} - the number of stashes on the repository"
+                },
+                "gitstash.explorer.labels.repositoryToClipboardFormat": {
+                    "type": "string",
+                    "default": "${name} - ${path}",
+                    "description": "Specifies the format for the repository to be set on clipboard\nAvailable tokens:\nSame than RepositoryFormat"
                 },
                 "gitstash.explorer.labels.stashFormat": {
                     "type": "string",
@@ -76,70 +81,65 @@
                     "default": "${branch}\n${date}\n${description}",
                     "description": "Specifies the format for each stash tooltip \nAvailable tokens:\nSame than stashFormat"
                 },
-                "gitstash.explorer.labels.addedFileFormat": {
-                    "type": "string",
-                    "default": "${filename}",
-                    "description": "Specifies the format for each added file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${index} - the file index\n${type} - the change type"
-                },
-                "gitstash.explorer.labels.deletedFileFormat": {
-                    "type": "string",
-                    "default": "${filename}",
-                    "description": "Specifies the format for each deleted file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${index} - the file index\n${type} - the change type"
-                },
-                "gitstash.explorer.labels.modifiedFileFormat": {
-                    "type": "string",
-                    "default": "${filename}",
-                    "description": "Specifies the format for each modified file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${index} - the file index\n${type} - the change type"
-                },
-                "gitstash.explorer.labels.renamedFileFormat": {
-                    "type": "string",
-                    "default": "${filename}",
-                    "description": "Specifies the format for each renamed file\nAvailable tokens:\n${filename} - the file name\n${oldFilename} - the previous file name\n${filepath} - the file path\n${index} - the file index\n${type} - the change type"
-                },
-                "gitstash.explorer.labels.untrackedFileFormat": {
-                    "type": "string",
-                    "default": "${filename}",
-                    "description": "Specifies the format for each untracked file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${index} - the file index\n${type} - the change type"
-                },
-                "gitstash.explorer.labels.addedFileTooltipFormat": {
-                    "type": "string",
-                    "default": "${filepath}${filename} • ${type}",
-                    "description": "Specifies the format for each added file tooltip\nAvailable tokens:\nSame than fileFormat"
-                },
-                "gitstash.explorer.labels.deletedFileTooltipFormat": {
-                    "type": "string",
-                    "default": "${filepath}${filename} • ${type}",
-                    "description": "Specifies the format for each deleted file tooltip\nAvailable tokens:\nSame than fileFormat"
-                },
-                "gitstash.explorer.labels.modifiedFileTooltipFormat": {
-                    "type": "string",
-                    "default": "${filepath}${filename} • ${type}",
-                    "description": "Specifies the format for each modified file tooltip\nAvailable tokens:\nSame than fileFormat"
-                },
-                "gitstash.explorer.labels.renamedFileTooltipFormat": {
-                    "type": "string",
-                    "default": "${filepath}${filename} ← ${oldFilename} • ${type}",
-                    "description": "Specifies the format for each renamed file tooltip\nAvailable tokens:\nSame than fileFormat"
-                },
-                "gitstash.explorer.labels.untrackedFileTooltipFormat": {
-                    "type": "string",
-                    "default": "${filepath}${filename} • ${type}",
-                    "description": "Specifies the format for each untracked file tooltip\nAvailable tokens:\nSame than fileFormat"
-                },
-                "gitstash.explorer.labels.repositoryToClipboardFormat": {
-                    "type": "string",
-                    "default": "${name} - ${path}",
-                    "description": "Specifies the format for the repository to be set on clipboard\nAvailable tokens:\nSame than RepositoryFormat"
-                },
                 "gitstash.explorer.labels.stashToClipboardFormat": {
                     "type": "string",
                     "default": "#${index} [${branch}] ${description}",
                     "description": "Specifies the format for the stash to be set on clipboard\nAvailable tokens:\nSame than stashFormat"
                 },
+                "gitstash.explorer.labels.addedFileFormat": {
+                    "type": "string",
+                    "default": "${filename}",
+                    "description": "Specifies the format for each added file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${type} - the change type"
+                },
+                "gitstash.explorer.labels.addedFileTooltipFormat": {
+                    "type": "string",
+                    "default": "${filepath}${filename} • ${type}",
+                    "description": "Specifies the format for each added file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${type} - the change type"
+                },
+                "gitstash.explorer.labels.deletedFileFormat": {
+                    "type": "string",
+                    "default": "${filename}",
+                    "description": "Specifies the format for each deleted file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${type} - the change type"
+                },
+                "gitstash.explorer.labels.deletedFileTooltipFormat": {
+                    "type": "string",
+                    "default": "${filepath}${filename} • ${type}",
+                    "description": "Specifies the format for each added file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${type} - the change type"
+                },
+                "gitstash.explorer.labels.modifiedFileFormat": {
+                    "type": "string",
+                    "default": "${filename}",
+                    "description": "Specifies the format for each modified file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${type} - the change type"
+                },
+                "gitstash.explorer.labels.modifiedFileTooltipFormat": {
+                    "type": "string",
+                    "default": "${filepath}${filename} • ${type}",
+                    "description": "Specifies the format for each added file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${type} - the change type"
+                },
+                "gitstash.explorer.labels.renamedFileFormat": {
+                    "type": "string",
+                    "default": "${filename}",
+                    "description": "Specifies the format for each renamed file\nAvailable tokens:\n${filename} - the file name\n${oldFilename} - the previous file name\n${filepath} - the file path\n${type} - the change type"
+                },
+                "gitstash.explorer.labels.renamedFileTooltipFormat": {
+                    "type": "string",
+                    "default": "${filepath}${filename} ← ${oldFilename} • ${type}",
+                    "description": "Specifies the format for each renamed file\nAvailable tokens:\n${filename} - the file name\n${oldFilename} - the previous file name\n${filepath} - the file path\n${type} - the change type"
+                },
+                "gitstash.explorer.labels.untrackedFileFormat": {
+                    "type": "string",
+                    "default": "${filename}",
+                    "description": "Specifies the format for each untracked file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${type} - the change type"
+                },
+                "gitstash.explorer.labels.untrackedFileTooltipFormat": {
+                    "type": "string",
+                    "default": "${filepath}${filename} • ${type}",
+                    "description": "Specifies the format for each added file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${type} - the change type"
+                },
                 "gitstash.explorer.labels.fileToClipboardFormat": {
                     "type": "string",
                     "default": "${filepath}${filename}",
-                    "description": "Specifies the format for the file to be set on clipboard\nAvailable tokens:\nSame than fileFormat"
+                    "description": "Specifies the format for each added file\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${type} - the change type"
                 },
                 "gitstash.editor.diffTitleFormat": {
                     "type": "string",
@@ -319,6 +319,10 @@
                 },
                 {
                     "command": "gitstash.createSingle",
+                    "when": "false"
+                },
+                {
+                    "command": "gitstash.toClipboard",
                     "when": "false"
                 },
                 {
