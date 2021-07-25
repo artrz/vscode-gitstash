@@ -179,36 +179,18 @@
                 "category": "GitStash"
             },
             {
-                "command": "gitstash.pop",
-                "title": "Pop...",
-                "category": "GitStash"
-            },
-            {
-                "command": "gitstash.apply",
-                "title": "Apply...",
-                "category": "GitStash"
-            },
-            {
-                "command": "gitstash.branch",
-                "title": "Branch...",
-                "category": "GitStash"
-            },
-            {
                 "command": "gitstash.explorer.refresh",
                 "title": "Refresh explorer",
                 "category": "GitStash",
-                "icon": {
-                    "light": "resources/icons/light/refresh.svg",
-                    "dark": "resources/icons/dark/refresh.svg"
-                }
+                "icon": "$(refresh)"
             },
             {
                 "command": "gitstash.stash",
                 "title": "Stash...",
                 "category": "GitStash",
                 "icon": {
-                    "light": "resources/icons/light/stash.svg",
-                    "dark": "resources/icons/dark/stash.svg"
+                    "light": "resources/icons/light/stash-push.svg",
+                    "dark": "resources/icons/dark/stash-push.svg"
                 }
             },
             {
@@ -221,49 +203,56 @@
                 }
             },
             {
+                "command": "gitstash.pop",
+                "title": "Pop...",
+                "category": "GitStash",
+                "icon": {
+                    "light": "resources/icons/light/stash-pop.svg",
+                    "dark": "resources/icons/dark/stash-pop.svg"
+                }
+            },
+            {
+                "command": "gitstash.apply",
+                "title": "Apply...",
+                "category": "GitStash"
+            },
+            {
                 "command": "gitstash.applyOrPop",
                 "title": "Apply/pop...",
                 "category": "GitStash",
                 "icon": {
-                    "light": "resources/icons/light/pop.svg",
-                    "dark": "resources/icons/dark/pop.svg"
+                    "light": "resources/icons/light/stash-pop.svg",
+                    "dark": "resources/icons/dark/stash-pop.svg"
                 }
             },
             {
                 "command": "gitstash.drop",
                 "title": "Drop...",
                 "category": "GitStash",
-                "icon": {
-                    "light": "resources/icons/light/close.svg",
-                    "dark": "resources/icons/dark/close.svg"
-                }
+                "icon": "$(trash)"
+            },
+            {
+                "command": "gitstash.branch",
+                "title": "Branch...",
+                "category": "GitStash"
             },
             {
                 "command": "gitstash.diffCurrent",
                 "title": "Compare with current",
                 "category": "GitStash",
-                "icon": {
-                    "light": "resources/icons/light/compare-changes.svg",
-                    "dark": "resources/icons/dark/compare-changes.svg"
-                }
+                "icon": "$(git-compare)"
             },
             {
                 "command": "gitstash.applySingle",
                 "title": "Apply changes from this file",
                 "category": "GitStash",
-                "icon": {
-                    "light": "resources/icons/light/check.svg",
-                    "dark": "resources/icons/dark/check.svg"
-                }
+                "icon": "$(check)"
             },
             {
                 "command": "gitstash.createSingle",
                 "title": "Apply contents from this file",
                 "category": "GitStash",
-                "icon": {
-                    "light": "resources/icons/light/check.svg",
-                    "dark": "resources/icons/dark/check.svg"
-                }
+                "icon": "$(check)"
             },
             {
                 "command": "gitstash.toClipboard",
