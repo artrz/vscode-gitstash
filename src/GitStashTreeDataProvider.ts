@@ -123,7 +123,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
             id: `${node.type}.${node.path}`,
             label: this.stashLabels.getName(node),
             tooltip: this.stashLabels.getTooltip(node),
-            iconPath: this.getIcon('repository.svg'),
+            iconPath: new ThemeIcon('repo'),
             contextValue: 'repository',
             collapsibleState: TreeItemCollapsibleState.Collapsed,
         }
@@ -139,7 +139,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
             id: `${node.type}.${node.parent.path}.${node.index}`,
             label: this.stashLabels.getName(node),
             tooltip: this.stashLabels.getTooltip(node),
-            iconPath: this.getIcon('chest.svg'),
+            iconPath: new ThemeIcon('archive'),
             contextValue: 'stash',
             collapsibleState: TreeItemCollapsibleState.Collapsed,
         }
@@ -166,23 +166,12 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
             tooltip: this.stashLabels.getTooltip(node),
             iconPath: this.getFileIcon(node.type),
             contextValue: context,
+            collapsibleState: TreeItemCollapsibleState.None,
             command: {
                 title: 'Show stash diff',
                 command: 'gitstash.show',
                 arguments: [node],
             },
-        }
-    }
-
-    /**
-     * Builds an icon path.
-     *
-     * @param filename the filename of the icon
-     */
-    private getIcon(filename: string): { light: string; dark: string } {
-        return {
-            light: join(__dirname, '..', 'resources', 'icons', 'light', filename),
-            dark: join(__dirname, '..', 'resources', 'icons', 'dark', filename),
         }
     }
 
@@ -199,6 +188,18 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
             case NodeType.Renamed: return this.getIcon('status-renamed.svg')
             case NodeType.Untracked: return this.getIcon('status-untracked.svg')
             default: return ThemeIcon.File
+        }
+    }
+
+    /**
+     * Builds an icon path.
+     *
+     * @param filename the filename of the icon
+     */
+    private getIcon(filename: string): { light: string; dark: string } {
+        return {
+            light: join(__dirname, '..', 'resources', 'icons', 'light', filename),
+            dark: join(__dirname, '..', 'resources', 'icons', 'dark', filename),
         }
     }
 }
