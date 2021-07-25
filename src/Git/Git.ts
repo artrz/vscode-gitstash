@@ -45,9 +45,9 @@ export default class Git {
      *
      * @param args     the string array with the argument list
      * @param cwd      the string with the current working directory
-     * @param encoding the string with the optional encoding to replace utf8
+     * @param encoding the BufferEncoding string with the optional encoding to replace utf8
      */
-    public async exec(args: string[], cwd: string, encoding?: string): Promise<string> {
+    public async exec(args: string[], cwd: string, encoding?: BufferEncoding): Promise<string> {
         return this
             .call(args, cwd)
             .then((data: Buffer | string) => data instanceof Buffer ? data.toString(encoding || 'utf8') : data)
