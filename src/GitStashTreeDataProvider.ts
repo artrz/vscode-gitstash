@@ -19,8 +19,8 @@ import StashNode from './StashNode/StashNode'
 import { join } from 'path'
 
 export default class GitStashTreeDataProvider implements TreeDataProvider<StashNode> {
-    private onDidChangeTreeDataEmitter: EventEmitter<never> = new EventEmitter<never>()
-    readonly onDidChangeTreeData: Event<never> = this.onDidChangeTreeDataEmitter.event
+    private onDidChangeTreeDataEmitter: EventEmitter<void> = new EventEmitter<void>()
+    readonly onDidChangeTreeData: Event<void> = this.onDidChangeTreeDataEmitter.event
 
     private config: Config
     private repositoryTreeBuilder: RepositoryTreeBuilder
