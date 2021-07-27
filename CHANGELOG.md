@@ -6,8 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- Tree items descriptions
+
 ### Updated
 
+- New settings and defaults for explorer items elements
 - Prefer codicons when possible (vscode [1.52](https://code.visualstudio.com/updates/v1_52#_support-for-codicons-for-view-containers-views))
 - Use latest major version dependencies
 

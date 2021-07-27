@@ -2,6 +2,7 @@
 
 import * as path from 'path'
 import Config from './Config'
+import DateFormat from './DateFormat'
 import NodeType from './StashNode/NodeType'
 import StashNode from './StashNode/StashNode'
 
@@ -13,27 +14,21 @@ export default class {
     }
 
     /**
-     * Generates a node name.
+     * Generates a node label.
      *
      * @param node The node to be used as base
      */
     public getName(node: StashNode): string {
-        switch (node.type) {
-            case NodeType.Repository:
-                return this.parseRepositoryLabel(node, this.config.get('explorer.labels.repositoryFormat'))
-            case NodeType.Stash:
-                return this.parseStashLabel(node, this.config.get('explorer.labels.stashFormat'))
-            case NodeType.Deleted:
-                return this.parseFileLabel(node, this.config.get('explorer.labels.deletedFileFormat'))
-            case NodeType.IndexAdded:
-                return this.parseFileLabel(node, this.config.get('explorer.labels.addedFileFormat'))
-            case NodeType.Modified:
-                return this.parseFileLabel(node, this.config.get('explorer.labels.modifiedFileFormat'))
-            case NodeType.Renamed:
-                return this.parseFileLabel(node, this.config.get('explorer.labels.renamedFileFormat'))
-            case NodeType.Untracked:
-                return this.parseFileLabel(node, this.config.get('explorer.labels.untrackedFileFormat'))
-        }
+        return this.getContent(node, 'label')
+    }
+
+    /**
+     * Generates a node description.
+     *
+     * @param node The node to be used as base
+     */
+    public getDescription(node: StashNode): string {
+        return this.getContent(node, 'description')
     }
 
     /**
@@ -42,41 +37,28 @@ export default class {
      * @param node The node to be used as base
      */
     public getTooltip(node: StashNode): string {
-        switch (node.type) {
-            case NodeType.Repository:
-                return this.parseRepositoryLabel(node, this.config.get('explorer.labels.repositoryTooltipFormat'))
-            case NodeType.Stash:
-                return this.parseStashLabel(node, this.config.get('explorer.labels.stashTooltipFormat'))
-            case NodeType.Deleted:
-                return this.parseFileLabel(node, this.config.get('explorer.labels.deletedFileTooltipFormat'))
-            case NodeType.IndexAdded:
-                return this.parseFileLabel(node, this.config.get('explorer.labels.addedFileTooltipFormat'))
-            case NodeType.Modified:
-                return this.parseFileLabel(node, this.config.get('explorer.labels.modifiedFileTooltipFormat'))
-            case NodeType.Renamed:
-                return this.parseFileLabel(node, this.config.get('explorer.labels.renamedFileTooltipFormat'))
-            case NodeType.Untracked:
-                return this.parseFileLabel(node, this.config.get('explorer.labels.untrackedFileTooltipFormat'))
-        }
+        return this.getContent(node, 'tooltip')
     }
 
     /**
-     * Generates clipboard text for the stash node.
+     * Generates a node label.
      *
-     * @param stashNode The node to be used as base
+     * @param node The node to be used as base
+     * @param property The string with the property prefix for setting keys
      */
-    public forClipboard(node: StashNode): string {
+    private getContent(node: StashNode, property: string): string {
         switch (node.type) {
             case NodeType.Repository:
-                return this.parseRepositoryLabel(node, this.config.get('explorer.labels.repositoryToClipboardFormat'))
+                return this.parseRepositoryLabel(node, this.config.get(`explorer.items.repository.${property}Content`))
             case NodeType.Stash:
-                return this.parseStashLabel(node, this.config.get('explorer.labels.stashToClipboardFormat'))
+                return this.parseStashLabel(node, this.config.get(`explorer.items.stash.${property}Content`))
             case NodeType.Deleted:
             case NodeType.IndexAdded:
             case NodeType.Modified:
-            case NodeType.Renamed:
             case NodeType.Untracked:
-                return this.parseFileLabel(node, this.config.get('explorer.labels.fileToClipboardFormat'))
+                return this.parseFileLabel(node, this.config.get(`explorer.items.file.${property}Content`))
+            case NodeType.Renamed:
+                return this.parseFileLabel(node, this.config.get(`explorer.items.renamedFile.${property}Content`))
         }
     }
 
@@ -87,9 +69,9 @@ export default class {
      */
     private parseRepositoryLabel(repositoryNode: StashNode, template: string): string {
         return template
-            .replace('${name}', repositoryNode.name)
+            .replace('${path}', path.dirname(repositoryNode.path))
             .replace('${directory}', path.basename(repositoryNode.path))
-            .replace('${path}', repositoryNode.path)
+            .replace('${name}', repositoryNode.name)
             .replace('${stashesCount}', repositoryNode.children.length.toString())
     }
 
@@ -103,7 +85,12 @@ export default class {
             .replace('${index}', stashNode.index.toString())
             .replace('${branch}', this.getStashBranch(stashNode))
             .replace('${description}', this.getStashDescription(stashNode))
-            .replace('${date}', stashNode.date)
+            .replace('${dateTimeLong}', DateFormat.toFullyReadable(new Date(Date.parse(stashNode.date))))
+            .replace('${dateTimeSmall}', DateFormat.toDateTimeSmall(new Date(Date.parse(stashNode.date))))
+            .replace('${dateSmall}', DateFormat.toDateSmall(new Date(Date.parse(stashNode.date))))
+            .replace('${dateTimeIso}', DateFormat.toDateTimeIso(new Date(Date.parse(stashNode.date))))
+            .replace('${dateIso}', DateFormat.toDateIso(new Date(Date.parse(stashNode.date))))
+            .replace('${ago}', DateFormat.ago(new Date(Date.parse(stashNode.date))))
     }
 
     /**
@@ -130,7 +117,12 @@ export default class {
             .get('editor.diffTitleFormat', '')
             .replace('${filename}', path.basename(fileNode.name))
             .replace('${filepath}', `${path.dirname(fileNode.name)}/`)
-            .replace('${date}', fileNode.date)
+            .replace('${dateTimeLong}', DateFormat.toFullyReadable(new Date(Date.parse(fileNode.date))))
+            .replace('${dateTimeSmall}', DateFormat.toDateTimeSmall(new Date(Date.parse(fileNode.date))))
+            .replace('${dateSmall}', DateFormat.toDateSmall(new Date(Date.parse(fileNode.date))))
+            .replace('${dateTimeIso}', DateFormat.toDateTimeIso(new Date(Date.parse(fileNode.date))))
+            .replace('${dateIso}', DateFormat.toDateIso(new Date(Date.parse(fileNode.date))))
+            .replace('${ago}', DateFormat.ago(new Date(Date.parse(fileNode.date))))
             .replace('${stashIndex}', `${fileNode.parent.index}`)
             .replace('${description}', this.getStashDescription(fileNode.parent))
             .replace('${branch}', this.getStashBranch(fileNode.parent))
