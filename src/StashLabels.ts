@@ -41,6 +41,35 @@ export default class {
     }
 
     /**
+     * Generates clipboard text for the stash node.
+     *
+     * @param stashNode The node to be used as base
+     */
+    public clipboardTemplate(node: StashNode): string {
+        return this.getContent(node, 'to-clipboard')
+    }
+
+    /**
+     * Generates clipboard text for the stash node.
+     *
+     * @param stashNode The node to be used as base
+     */
+    public clipboardNode(node: StashNode): string {
+        switch (node.type) {
+            case NodeType.Repository:
+                return node.path
+            case NodeType.Stash:
+                return node.name
+            case NodeType.Deleted:
+            case NodeType.IndexAdded:
+            case NodeType.Modified:
+            case NodeType.Untracked:
+            case NodeType.Renamed:
+                return node.path
+        }
+    }
+
+    /**
      * Generates a node label.
      *
      * @param node The node to be used as base
@@ -69,7 +98,7 @@ export default class {
      */
     private parseRepositoryLabel(repositoryNode: StashNode, template: string): string {
         return template
-            .replace('${path}', path.dirname(repositoryNode.path))
+            .replace('${path}', `${path.dirname(repositoryNode.path)}/`)
             .replace('${directory}', path.basename(repositoryNode.path))
             .replace('${name}', repositoryNode.name)
             .replace('${stashesCount}', repositoryNode.children.length.toString())

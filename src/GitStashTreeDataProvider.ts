@@ -38,13 +38,6 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     }
 
     /**
-     * Reloads the explorer tree.
-     */
-    public refresh = (): void => {
-        this.reload('force')
-    }
-
-    /**
      * Toggles the explorer tree.
      */
     public toggle = (): void => {
@@ -57,6 +50,13 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
             'gitstash.explorer.enabled',
             this.showExplorer,
         )
+    }
+
+    /**
+     * Reloads the explorer tree.
+     */
+    public refresh = (): void => {
+        this.reload('force')
     }
 
     /**

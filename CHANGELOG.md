@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - New settings and defaults for explorer items elements
 - Prefer codicons when possible (vscode [1.52](https://code.visualstudio.com/updates/v1_52#_support-for-codicons-for-view-containers-views))
+- Better copy to clipboard submenus (vscode [1.50](https://code.visualstudio.com/updates/v1_50#_submenus))
 - Use latest major version dependencies
 
 ## [[3.3.1] 2020-10-22](https://github.com/arturock/vscode-gitstash/tree/v3.3.1)

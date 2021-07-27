@@ -77,6 +77,11 @@
                     "description": "Specifies the format for each repository tooltip\nAvailable tokens:\nSame than repository.labelContent",
                     "editPresentation": "multilineText"
                 },
+                "gitstash.explorer.items.repository.to-clipboardContent": {
+                    "type": "string",
+                    "default": "${name} - ${path}${directory} (${stashesCount} stashes)",
+                    "description": "Specifies repository data to be set on clipboard\nAvailable tokens:\nSame than repository.labelContent"
+                },
                 "gitstash.explorer.items.stash.labelContent": {
                     "type": "string",
                     "default": "${description}",
@@ -92,6 +97,11 @@
                     "default": "#${index}  ${dateTimeLong}\n${branch}, ${ago}\n\n${description}",
                     "description": "Specifies the format for each stash tooltip \nAvailable tokens:\nSame than stash.labelContent",
                     "editPresentation": "multilineText"
+                },
+                "gitstash.explorer.items.stash.to-clipboardContent": {
+                    "type": "string",
+                    "default": "#${index} [${branch}] ${description}",
+                    "description": "Specifies stash data to be set on clipboard\nAvailable tokens:\nSame than stash.labelContent"
                 },
                 "gitstash.explorer.items.file.labelContent": {
                     "type": "string",
@@ -109,6 +119,11 @@
                     "description": "Specifies the format for each file tooltip \nAvailable tokens:\nSame than file.labelContent",
                     "editPresentation": "multilineText"
                 },
+                "gitstash.explorer.items.file.to-clipboardContent": {
+                    "type": "string",
+                    "default": "${filename} [${type}] - ${filepath}",
+                    "description": "Specifies file data to be set on clipboard\nAvailable tokens:\n${oldName} - the previous name\nSame than file.labelContent"
+                },
                 "gitstash.explorer.items.renamedFile.labelContent": {
                     "type": "string",
                     "default": "${filename}",
@@ -124,6 +139,11 @@
                     "default": "${filepath}\n└─ ${filename} ← ${oldFilename}\n\t› ${type}",
                     "description": "Specifies the format for each renamed file tooltip \nAvailable tokens:\nSame than renamedFile.labelContent",
                     "editPresentation": "multilineText"
+                },
+                "gitstash.explorer.items.renamedFile.to-clipboardContent": {
+                    "type": "string",
+                    "default": "${filename} [${type}:${oldName}] - ${filepath}",
+                    "description": "Specifies file data to be set on clipboard\nAvailable tokens:\nSame than renamedFile.labelContent"
                 },
                 "gitstash.editor.diffTitleFormat": {
                     "type": "string",
@@ -220,8 +240,24 @@
                 "icon": "$(check)"
             },
             {
-                "command": "gitstash.toClipboard",
-                "title": "To clipboard",
+            {
+                "command": "gitstash.clipboardRepositoryPath",
+                "title": "Repository path",
+                "category": "GitStash"
+            },
+            {
+                "command": "gitstash.clipboardStashMessage",
+                "title": "Stash message",
+                "category": "GitStash"
+            },
+            {
+                "command": "gitstash.clipboardFilePath",
+                "title": "File path",
+                "category": "GitStash"
+            },
+            {
+                "command": "gitstash.clipboardInfo",
+                "title": "Information",
                 "category": "GitStash"
             }
         ],
@@ -333,11 +369,44 @@
                     "group": "inline@2"
                 },
                 {
-                    "command": "gitstash.toClipboard",
-                    "when": "view == gitstash.explorer && viewItem =~ /(repository|stash)|file:/"
+                    "command": "gitstash.openCurrent",
+                    "when": "view == gitstash.explorer && viewItem =~ /file:(modified|indexAdded|renamed)/",
+                    "group": "menu@1"
+                },
+                {
+                    "when": "view == gitstash.explorer",
+                    "submenu": "node.clipboard",
+                    "group": "node_clipboard"
+                }
+            ],
+            "node.clipboard": [
+                {
+                    "command": "gitstash.clipboardRepositoryPath",
+                    "when": "view == gitstash.explorer && viewItem == repository",
+                    "group": "node_clipboard_copy@1"
+                },
+                {
+                    "command": "gitstash.clipboardStashMessage",
+                    "when": "view == gitstash.explorer && viewItem == stash",
+                    "group": "node_clipboard_copy@1"
+                },
+                {
+                    "command": "gitstash.clipboardFilePath",
+                    "when": "view == gitstash.explorer && viewItem =~ /file/",
+                    "group": "node_clipboard_copy@1"
+                },
+                {
+                    "command": "gitstash.clipboardInfo",
+                    "group": "node_clipboard_copy@2"
                 }
             ]
-        }
+        },
+        "submenus": [
+            {
+                "id": "node.clipboard",
+                "label": "Copy"
+            }
+        ]
     },
     "scripts": {
         "lint": "eslint -c .eslintrc.js --ext .ts ./src",
