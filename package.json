@@ -188,6 +188,11 @@
                 }
             },
             {
+                "command": "gitstash.openDir",
+                "title": "Open directory",
+                "category": "GitStash"
+            },
+            {
                 "command": "gitstash.pop",
                 "title": "Pop...",
                 "category": "GitStash",
@@ -240,6 +245,10 @@
                 "icon": "$(check)"
             },
             {
+                "command": "gitstash.openCurrent",
+                "title": "Open current copy",
+                "category": "GitStash"
+            },
             {
                 "command": "gitstash.clipboardRepositoryPath",
                 "title": "Repository path",
@@ -289,6 +298,10 @@
                     "when": "hasGitRepository"
                 },
                 {
+                    "command": "gitstash.openDir",
+                    "when": "false"
+                },
+                {
                     "command": "gitstash.pop",
                     "when": "hasGitRepository"
                 },
@@ -317,7 +330,7 @@
                     "when": "false"
                 },
                 {
-                    "command": "gitstash.toClipboard",
+                    "command": "gitstash.openCurrent",
                     "when": "false"
                 },
                 {
@@ -344,7 +357,12 @@
                     "group": "inline@2"
                 },
                 {
-                    "command": "gitstash.applyOrPop",
+                    "command": "gitstash.openDir",
+                    "when": "view == gitstash.explorer && viewItem == repository",
+                    "group": "menu@1"
+                },
+                {
+                    "command": "gitstash.pop",
                     "when": "view == gitstash.explorer && viewItem == stash",
                     "group": "inline@1"
                 },
@@ -352,6 +370,11 @@
                     "command": "gitstash.drop",
                     "when": "view == gitstash.explorer && viewItem == stash",
                     "group": "inline@2"
+                },
+                {
+                    "command": "gitstash.apply",
+                    "when": "view == gitstash.explorer && viewItem == stash",
+                    "group": "menu@1"
                 },
                 {
                     "command": "gitstash.diffCurrent",

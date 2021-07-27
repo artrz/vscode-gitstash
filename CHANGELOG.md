@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - Tree items descriptions
+- Open project directory from explorer
+- Open stashed file current copy from explorer
 
 ### Updated
 

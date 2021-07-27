@@ -78,6 +78,14 @@ export class Commands {
         )
     }
 
+    public openFile = (fileNode?: StashNode): void => {
+        void vscode.commands.executeCommand<void>('vscode.open', vscode.Uri.parse(fileNode.path))
+    }
+
+    public openDir = (repositoryNode?: StashNode): void => {
+        void vscode.env.openExternal(vscode.Uri.parse(repositoryNode.path))
+    }
+
     /**
      * Pops the selected stash or selects one and continue.
      *
