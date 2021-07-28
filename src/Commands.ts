@@ -78,6 +78,14 @@ export class Commands {
         )
     }
 
+    public openFile = (fileNode?: StashNode): void => {
+        void vscode.commands.executeCommand<void>('vscode.open', vscode.Uri.parse(fileNode.path))
+    }
+
+    public openDir = (repositoryNode?: StashNode): void => {
+        void vscode.env.openExternal(vscode.Uri.parse(repositoryNode.path))
+    }
+
     /**
      * Pops the selected stash or selects one and continue.
      *
@@ -392,12 +400,21 @@ export class Commands {
     }
 
     /**
+     * Puts the stash node text from a template to clipboard.
+     *
+     * @param node the involved node
+     */
+    public clipboardFromTemplate = (node: StashNode): void => {
+        void vscode.env.clipboard.writeText(this.stashLabels.clipboardTemplate(node))
+    }
+
+    /**
      * Puts the stash node text on clipboard.
      *
      * @param node the involved node
      */
-    public toClipboard = (node: StashNode): void => {
-        void vscode.env.clipboard.writeText(this.stashLabels.forClipboard(node))
+    public toClipboardFromObject = (node: StashNode): void => {
+        void vscode.env.clipboard.writeText(this.stashLabels.clipboardNode(node))
     }
 
     /**

@@ -1,7 +1,6 @@
 'use strict'
 
 import Git from './Git'
-import { workspace } from 'vscode'
 
 export interface Stash {
     index: number;
@@ -48,12 +47,10 @@ export default class StashGit extends Git {
      * @param cwd the current working directory
      */
     public async getStashes(cwd: string): Promise<Stash[]> {
-        const validFormats = ['default', 'iso', 'local', 'raw', 'relative', 'rfc', 'short']
-        const dateFormat = workspace.getConfiguration('gitstash').dateFormat as string
         const params = [
             'stash',
             'list',
-            `--date=${ validFormats.indexOf(dateFormat) > -1 ? dateFormat : 'default'}`,
+            '--date=iso',
         ]
 
         const stashList = (await this.exec(params, cwd)).trim()

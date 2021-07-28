@@ -38,13 +38,6 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
     }
 
     /**
-     * Reloads the explorer tree.
-     */
-    public refresh = (): void => {
-        this.reload('force')
-    }
-
-    /**
      * Toggles the explorer tree.
      */
     public toggle = (): void => {
@@ -57,6 +50,13 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
             'gitstash.explorer.enabled',
             this.showExplorer,
         )
+    }
+
+    /**
+     * Reloads the explorer tree.
+     */
+    public refresh = (): void => {
+        this.reload('force')
     }
 
     /**
@@ -122,6 +122,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
         return {
             id: `${node.type}.${node.path}`,
             label: this.stashLabels.getName(node),
+            description: this.stashLabels.getDescription(node),
             tooltip: this.stashLabels.getTooltip(node),
             iconPath: new ThemeIcon('repo'),
             contextValue: 'repository',
@@ -138,6 +139,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
         return {
             id: `${node.type}.${node.parent.path}.${node.index}`,
             label: this.stashLabels.getName(node),
+            description: this.stashLabels.getDescription(node),
             tooltip: this.stashLabels.getTooltip(node),
             iconPath: new ThemeIcon('archive'),
             contextValue: 'stash',
@@ -163,6 +165,7 @@ export default class GitStashTreeDataProvider implements TreeDataProvider<StashN
         return {
             id: `${node.type}.${node.parent.parent.path}.${node.parent.index}.${node.name}`,
             label: this.stashLabels.getName(node),
+            description: this.stashLabels.getDescription(node),
             tooltip: this.stashLabels.getTooltip(node),
             iconPath: this.getFileIcon(node.type),
             contextValue: context,

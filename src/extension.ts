@@ -53,6 +53,7 @@ export function activate(context: ExtensionContext): void {
 
         commands.registerCommand('gitstash.stash', stashCommands.stash),
         commands.registerCommand('gitstash.clear', stashCommands.clear),
+        commands.registerCommand('gitstash.openDir', stashCommands.openDir),
 
         commands.registerCommand('gitstash.show', stashCommands.show),
         commands.registerCommand('gitstash.pop', stashCommands.pop),
@@ -64,8 +65,12 @@ export function activate(context: ExtensionContext): void {
         commands.registerCommand('gitstash.diffCurrent', stashCommands.diffCurrent),
         commands.registerCommand('gitstash.applySingle', stashCommands.applySingle),
         commands.registerCommand('gitstash.createSingle', stashCommands.createSingle),
+        commands.registerCommand('gitstash.openCurrent', stashCommands.openFile),
 
-        commands.registerCommand('gitstash.toClipboard', stashCommands.toClipboard),
+        commands.registerCommand('gitstash.clipboardRepositoryPath', stashCommands.toClipboardFromObject),
+        commands.registerCommand('gitstash.clipboardStashMessage', stashCommands.toClipboardFromObject),
+        commands.registerCommand('gitstash.clipboardFilePath', stashCommands.toClipboardFromObject),
+        commands.registerCommand('gitstash.clipboardInfo', stashCommands.clipboardFromTemplate),
 
         workspace.onDidChangeWorkspaceFolders((e: WorkspaceFoldersChangeEvent) => {
             notifyHasRepository(workspaceGit)
