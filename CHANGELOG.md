@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [[4.0.0] 2021-07-27](https://github.com/arturock/vscode-gitstash/tree/v4.0.0)
+
 ### Added
 
 - Tree items descriptions
