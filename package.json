@@ -234,20 +234,21 @@
             },
             {
                 "command": "gitstash.applySingle",
-                "title": "Apply changes from this file",
+                "title": "Stage changes",
                 "category": "GitStash",
-                "icon": "$(check)"
+                "icon": "$(add)"
             },
             {
                 "command": "gitstash.createSingle",
-                "title": "Apply contents from this file",
+                "title": "Stage changes",
                 "category": "GitStash",
-                "icon": "$(check)"
+                "icon": "$(add)"
             },
             {
                 "command": "gitstash.openCurrent",
-                "title": "Open current copy",
-                "category": "GitStash"
+                "title": "Open file",
+                "category": "GitStash",
+                "icon": "$(go-to-file)"
             },
             {
                 "command": "gitstash.clipboardRepositoryPath",
@@ -377,24 +378,24 @@
                     "group": "menu@1"
                 },
                 {
+                    "command": "gitstash.openCurrent",
+                    "when": "view == gitstash.explorer && viewItem =~ /file:(modified|indexAdded|renamed)/",
+                    "group": "inline@1"
+                },
+                {
                     "command": "gitstash.diffCurrent",
                     "when": "view == gitstash.explorer && viewItem =~ /file/",
-                    "group": "inline@1"
+                    "group": "inline@2"
                 },
                 {
                     "command": "gitstash.applySingle",
                     "when": "view == gitstash.explorer && viewItem =~ /file:(modified|indexAdded)/",
-                    "group": "inline@2"
+                    "group": "inline@3"
                 },
                 {
                     "command": "gitstash.createSingle",
                     "when": "view == gitstash.explorer && viewItem =~ /file:(untracked)/",
-                    "group": "inline@2"
-                },
-                {
-                    "command": "gitstash.openCurrent",
-                    "when": "view == gitstash.explorer && viewItem =~ /file:(modified|indexAdded|renamed)/",
-                    "group": "menu@1"
+                    "group": "inline@3"
                 },
                 {
                     "when": "view == gitstash.explorer",
