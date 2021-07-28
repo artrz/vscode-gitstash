@@ -202,7 +202,7 @@ export default class {
      */
     private getHint(fileNode: StashNode, fromStash: boolean): string {
         const type = this.getTypeLabel(fileNode).toLowerCase()
-        const reference = fromStash ? 'original' : 'actual'
+        const reference = fromStash ? 'original' : 'current'
 
         const values = fromStash
             ? {l: reference, r: type}
