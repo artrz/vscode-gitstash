@@ -2,7 +2,7 @@
 
 import * as vscode from 'vscode'
 
-export class EmptyDocumentContentProvider implements vscode.TextDocumentContentProvider {
+export default class implements vscode.TextDocumentContentProvider {
     private onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>()
 
     get onDidChange(): vscode.Event<vscode.Uri> {

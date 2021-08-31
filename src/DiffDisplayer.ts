@@ -8,7 +8,7 @@ import StashLabels from './StashLabels'
 import StashNode from './StashNode/StashNode'
 import UriGenerator from './uriGenerator'
 
-export class DiffDisplayer {
+export default class {
     private stashLabels: StashLabels
     private uriGenerator: UriGenerator
 
@@ -25,32 +25,32 @@ export class DiffDisplayer {
     public async showDiff(fileNode: StashNode): Promise<void> {
         if (fileNode.type === NodeType.Modified || fileNode.type === NodeType.Renamed) {
             this.displayDiff(
-                await this.uriGenerator.create(fileNode, FileStage.Parent),
-                await this.uriGenerator.create(fileNode, FileStage.Change),
+                await this.uriGenerator.createForDiff(fileNode, FileStage.Parent),
+                await this.uriGenerator.createForDiff(fileNode, FileStage.Change),
                 fileNode,
                 true,
             )
         }
         else if (fileNode.type === NodeType.Untracked) {
             this.displayDiff(
-                await this.uriGenerator.create(),
-                await this.uriGenerator.create(fileNode),
+                await this.uriGenerator.createForDiff(),
+                await this.uriGenerator.createForDiff(fileNode),
                 fileNode,
                 true,
             )
         }
         else if (fileNode.type === NodeType.IndexAdded) {
             this.displayDiff(
-                await this.uriGenerator.create(),
-                await this.uriGenerator.create(fileNode),
+                await this.uriGenerator.createForDiff(),
+                await this.uriGenerator.createForDiff(fileNode),
                 fileNode,
                 true,
             )
         }
         else if (fileNode.type === NodeType.Deleted) {
             this.displayDiff(
-                await this.uriGenerator.create(fileNode),
-                await this.uriGenerator.create(),
+                await this.uriGenerator.createForDiff(fileNode),
+                await this.uriGenerator.createForDiff(),
                 fileNode,
                 true,
             )
@@ -74,7 +74,7 @@ export class DiffDisplayer {
 
         if (fileNode.type === NodeType.Modified || fileNode.type === NodeType.Renamed) {
             this.displayDiff(
-                await this.uriGenerator.create(fileNode, FileStage.Change),
+                await this.uriGenerator.createForDiff(fileNode, FileStage.Change),
                 vscode.Uri.file(current),
                 fileNode,
                 false,
@@ -82,7 +82,7 @@ export class DiffDisplayer {
         }
         else if (fileNode.type === NodeType.Untracked) {
             this.displayDiff(
-                await this.uriGenerator.create(fileNode),
+                await this.uriGenerator.createForDiff(fileNode),
                 vscode.Uri.file(current),
                 fileNode,
                 false,
@@ -90,7 +90,7 @@ export class DiffDisplayer {
         }
         else if (fileNode.type === NodeType.IndexAdded) {
             this.displayDiff(
-                await this.uriGenerator.create(fileNode),
+                await this.uriGenerator.createForDiff(fileNode),
                 vscode.Uri.file(current),
                 fileNode,
                 false,
@@ -98,7 +98,7 @@ export class DiffDisplayer {
         }
         else if (fileNode.type === NodeType.Deleted) {
             this.displayDiff(
-                await this.uriGenerator.create(fileNode),
+                await this.uriGenerator.createForDiff(fileNode),
                 vscode.Uri.file(current),
                 fileNode,
                 false,

@@ -34,7 +34,7 @@ export default class UriGenerator {
      * @param node  the node to be used as base for the URI
      * @param stage the file stash stage
      */
-    public async create(node?: StashNode, stage?: FileStage): Promise<Uri> {
+    public async createForDiff(node?: StashNode, stage?: FileStage): Promise<Uri> {
         if (!node) {
             return Uri.parse(`${UriGenerator.emptyFileScheme}:`)
         }

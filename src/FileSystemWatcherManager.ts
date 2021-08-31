@@ -5,7 +5,7 @@ import { join } from 'path'
 type CallbackFunction = (event: Uri) => void
 
 // https://github.com/Microsoft/vscode/issues/3025
-export class FileSystemWatcherManager implements Disposable {
+export default class implements Disposable {
     private callback: CallbackFunction
     private watchers: Map<string, FSWatcher> = new Map() as Map<string, FSWatcher>
 

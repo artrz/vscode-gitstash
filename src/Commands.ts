@@ -2,7 +2,7 @@
 
 import * as fs from 'fs'
 import * as vscode from 'vscode'
-import { DiffDisplayer } from './DiffDisplayer'
+import DiffDisplayer from './DiffDisplayer'
 import NodeType from './StashNode/NodeType'
 import { Stash } from './Git/StashGit'
 import { StashCommands } from './StashCommands'
