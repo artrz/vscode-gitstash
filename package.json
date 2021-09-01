@@ -337,6 +337,22 @@
                 {
                     "command": "gitstash.diffCurrent",
                     "when": "false"
+                },
+                {
+                    "command": "gitstash.clipboardRepositoryPath",
+                    "when": "false"
+                },
+                {
+                    "command": "gitstash.clipboardStashMessage",
+                    "when": "false"
+                },
+                {
+                    "command": "gitstash.clipboardFilePath",
+                    "when": "false"
+                },
+                {
+                    "command": "gitstash.clipboardInfo",
+                    "when": "false"
                 }
             ],
             "view/title": [
