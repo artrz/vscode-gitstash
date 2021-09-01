@@ -14,7 +14,7 @@ export default class GitBridge {
     /**
      * Gets the raw git stashes list.
      */
-    public async getRawStashesList(cwd: string): Promise<string> {
+    public async getRawStashesList(cwd: string): Promise<null | string> {
         return this.stashGit.getRawStash(cwd)
     }
 

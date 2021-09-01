@@ -113,7 +113,7 @@ export default class implements TreeDataProvider<StashNode> {
             else {
                 const path = pathUri.fsPath
 
-                void this.gitBridge.getRawStashesList(path).then((rawStash: string) => {
+                void this.gitBridge.getRawStashesList(path).then((rawStash: null | string) => {
                     const cachedRawStash = this.rawStashes[path] as null | string
 
                     if (!cachedRawStash || cachedRawStash !== rawStash) {
