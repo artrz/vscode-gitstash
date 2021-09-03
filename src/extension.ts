@@ -3,15 +3,15 @@
 import { ConfigurationChangeEvent, ExtensionContext, Uri, WorkspaceFoldersChangeEvent, commands, window, workspace } from 'vscode'
 import { Commands } from './Commands'
 import Config from './Config'
-import { DiffDisplayer } from './DiffDisplayer'
-import { DocumentContentProvider } from './documentContentProvider'
-import { EmptyDocumentContentProvider } from './EmptyDocumentContentProvider'
-import { FileSystemWatcherManager } from './fileSystemWatcherManager'
+import DiffDisplayer from './DiffDisplayer'
+import DocumentContentProvider from './Document/DocumentContentProvider'
+import EmptyDocumentContentProvider from './Document/EmptyDocumentContentProvider'
+import FileSystemWatcherManager from './FileSystemWatcherManager'
 import GitBridge from './GitBridge'
-import GitStashTreeDataProvider from './GitStashTreeDataProvider'
-import RepositoriesTreeBuilder from './StashNode/RepositoryTreeBuilder'
 import { StashCommands } from './StashCommands'
 import StashLabels from './StashLabels'
+import StashNodeRepository from './StashNode/StashNodeRepository'
+import TreeDataProvider from './Explorer/TreeDataProvider'
 import UriGenerator from './uriGenerator'
 import WorkspaceGit from './Git/WorkspaceGit'
 
@@ -21,12 +21,10 @@ export function activate(context: ExtensionContext): void {
     const config = new Config()
 
     const gitBridge = new GitBridge()
-    const builder = new RepositoriesTreeBuilder(new WorkspaceGit(config))
+    const nodeRepository = new StashNodeRepository(new WorkspaceGit(config))
     const stashLabels = new StashLabels(config)
 
-    const treeProvider = new GitStashTreeDataProvider(config, builder, gitBridge, stashLabels)
-    const documentProvider = new DocumentContentProvider()
-    const emptyDocumentProvider = new EmptyDocumentContentProvider()
+    const treeProvider = new TreeDataProvider(config, nodeRepository, gitBridge, stashLabels)
 
     const stashCommands = new Commands(
         new WorkspaceGit(config),
@@ -44,9 +42,10 @@ export function activate(context: ExtensionContext): void {
     )
 
     context.subscriptions.push(
-        window.registerTreeDataProvider('gitstash.explorer', treeProvider),
-        workspace.registerTextDocumentContentProvider(UriGenerator.fileScheme, documentProvider),
-        workspace.registerTextDocumentContentProvider(UriGenerator.emptyFileScheme, emptyDocumentProvider),
+        treeProvider.createTreeView(),
+
+        workspace.registerTextDocumentContentProvider(UriGenerator.fileScheme, new DocumentContentProvider()),
+        workspace.registerTextDocumentContentProvider(UriGenerator.emptyFileScheme, new EmptyDocumentContentProvider()),
 
         commands.registerCommand('gitstash.explorer.toggle', treeProvider.toggle),
         commands.registerCommand('gitstash.explorer.refresh', treeProvider.refresh),
