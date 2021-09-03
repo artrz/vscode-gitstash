@@ -4,7 +4,7 @@ import Node from './Node'
 import NodeType from './NodeType'
 
 export default class StashNode {
-    public children: StashNode[] = []
+    private childrenCache: StashNode[] = null
 
     constructor(private source: Node) {
     }
@@ -52,6 +52,13 @@ export default class StashNode {
     }
 
     /**
+     * Gets the loaded children.
+     */
+    public get children(): StashNode[] | null {
+        return this.childrenCache
+    }
+
+    /**
      * Indicates if the node represents a stashed file or not.
      */
     public get isFile(): boolean {
@@ -80,5 +87,22 @@ export default class StashNode {
         }
 
         return null
+    }
+
+    /**
+     * Gets the children count if available.
+     */
+    public get childrenCount(): number | undefined {
+        return this.childrenCache !== null
+            ? this.childrenCache.length
+            : undefined
+    }
+
+    /**
+     * Sets the node children.
+     */
+    public setChildren(children: StashNode[]): StashNode {
+        this.childrenCache = children
+        return this
     }
 }

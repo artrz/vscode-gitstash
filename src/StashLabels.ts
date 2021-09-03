@@ -101,7 +101,7 @@ export default class {
             .replace('${path}', `${path.dirname(repositoryNode.path)}/`)
             .replace('${directory}', path.basename(repositoryNode.path))
             .replace('${name}', repositoryNode.name)
-            .replace('${stashesCount}', repositoryNode.children.length.toString())
+            .replace('${stashesCount}', this.getChildrenCount(repositoryNode))
     }
 
     /**
@@ -180,6 +180,16 @@ export default class {
     }
 
     /**
+     * Gets the node children count.
+     *
+     * @param stashNode the source node
+     */
+    private getChildrenCount(repositoryNode: StashNode): string {
+        const count = repositoryNode.childrenCount
+        return !isNaN(count) ? count.toString() : '-'
+    }
+
+    /**
      * Gets a label for the file node type.
      *
      * @param fileNode the source node
@@ -187,7 +197,7 @@ export default class {
     private getTypeLabel(fileNode: StashNode): string {
         switch (fileNode.type) {
             case NodeType.Deleted: return 'Deleted'
-            case NodeType.IndexAdded: return 'Index Added'
+            case NodeType.IndexAdded: return 'Added'
             case NodeType.Modified: return 'Modified'
             case NodeType.Renamed: return 'Renamed'
             case NodeType.Untracked: return 'Untracked'

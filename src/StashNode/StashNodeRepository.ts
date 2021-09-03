@@ -1,8 +1,8 @@
 'use strict'
 
-import StashGit from '../Git/StashGit'
+import NodeType from './NodeType'
+import StashGit, { RenameStash, Stash, StashedFiles } from '../Git/StashGit'
 import StashNode from './StashNode'
-import StashNodeChildren from './StashNodeChildren'
 import StashNodeFactory from './StashNodeFactory'
 import WorkspaceGit from '../Git/WorkspaceGit'
 
@@ -20,35 +20,85 @@ export default class {
     /**
      * Gets the repositories list.
      */
-    public async getRepositories(): Promise<StashNode[]> {
+    public async getRepositories(preloadStashes: boolean): Promise<StashNode[]> {
         return this.workspaceGit.getRepositories().then(async (rawList: string[]) => {
             const repositoryNodes: StashNode[] = []
 
             for (const repositoryPath of rawList) {
-                let repositoryNode: StashNode = null
-                const hasData = await this.stashGit.getRawStash(repositoryPath)
-
-                repositoryNode = this.stashNodeFactory.createRepositoryNode(repositoryPath)
-
-                if (hasData) {
-                    const nodeChildren = new StashNodeChildren()
-
-                    repositoryNode.children = await nodeChildren.getChildren(repositoryNode)
-                        .then((children: StashNode[]) => {
-                            repositoryNode.children = children
-
-                            repositoryNode.children.forEach((stashNode: StashNode) => {
-                                void nodeChildren.getChildren(stashNode).then((childs) => stashNode.children = childs)
-                            })
-
-                            return repositoryNode.children
-                        })
-                }
-
+                const repositoryNode = this.stashNodeFactory.createRepositoryNode(repositoryPath)
                 repositoryNodes.push(repositoryNode)
+
+                if (preloadStashes) {
+                    const hasData = await this.stashGit.getRawStash(repositoryPath)
+                    repositoryNode.setChildren(hasData ? await this.getChildren(repositoryNode) : [])
+                }
             }
 
             return repositoryNodes
+        })
+    }
+
+    /**
+     * Gets the node's children.
+     */
+    public async getChildren(node: StashNode): null | Promise<StashNode[]> {
+        if (node.type === NodeType.Repository) {
+            return this.getStashes(node)
+        }
+
+        if (node.type === NodeType.Stash) {
+            return this.getFiles(node)
+        }
+
+        return Promise.resolve([] as StashNode[])
+    }
+
+    /**
+     * Gets the stashes list.
+     */
+    private async getStashes(repositoryNode: StashNode): Promise<StashNode[]> {
+        return this.stashGit.getStashes(repositoryNode.path).then((rawList: Stash[]) => {
+            const stashNodes: StashNode[] = []
+            rawList.forEach((stash: Stash) => {
+                stashNodes.push(this.stashNodeFactory.createStashNode(stash, repositoryNode))
+            })
+
+            return stashNodes
+        })
+    }
+
+    /**
+     * Gets the stash files.
+     *
+     * @param stashNode the parent stash
+     */
+    private async getFiles(stashNode: StashNode): Promise<StashNode[]> {
+        return this.stashGit.getStashedFiles(stashNode.path, stashNode.index).then((stashedFiles: StashedFiles) => {
+
+            const fileNodes: StashNode[] = []
+            const path = stashNode.path
+
+            stashedFiles.indexAdded.forEach((stashFile: string) => {
+                fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.IndexAdded))
+            })
+
+            stashedFiles.modified.forEach((stashFile: string) => {
+                fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.Modified))
+            })
+
+            stashedFiles.renamed.forEach((stashFile: RenameStash) => {
+                fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.Renamed))
+            })
+
+            stashedFiles.untracked.forEach((stashFile: string) => {
+                fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.Untracked))
+            })
+
+            stashedFiles.deleted.forEach((stashFile: string) => {
+                fileNodes.push(this.stashNodeFactory.createFileNode(path, stashFile, stashNode, NodeType.Deleted))
+            })
+
+            return fileNodes
         })
     }
 }

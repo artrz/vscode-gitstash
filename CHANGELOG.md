@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- Allow to lazy load children nodes
+
 ### Fixed
 
 - Remove wrong commands from palette
