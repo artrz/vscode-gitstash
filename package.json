@@ -145,6 +145,11 @@
                     "default": "${filename} [${type}:${oldName}] - ${filepath}",
                     "description": "Specifies file data to be set on clipboard\nAvailable tokens:\nSame than renamedFile.labelContent"
                 },
+                "gitstash.explorer.preloadStashes": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "If enabled, stashes will be preloaded instead of lazy loaded.\nThis is required to see the stashes count but may degrade performance if theres too much data"
+                },
                 "gitstash.editor.diffTitleFormat": {
                     "type": "string",
                     "default": "#${stashIndex}: ${filename}  ${hint} (${filepath})",

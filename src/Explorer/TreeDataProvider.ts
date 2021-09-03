@@ -30,12 +30,12 @@ export default class implements TreeDataProvider<StashNode> {
 
     constructor(
         config: Config,
-        repositoryTreeBuilder: StashNodeRepository,
+        stashNodeRepository: StashNodeRepository,
         gitBridge: GitBridge,
         stashLabels: StashLabels
     ) {
         this.config = config
-        this.stashNodeRepository = repositoryTreeBuilder
+        this.stashNodeRepository = stashNodeRepository
         this.gitBridge = gitBridge
         this.treeItemFactory = new TreeItemFactory(stashLabels)
     }
@@ -81,9 +81,17 @@ export default class implements TreeDataProvider<StashNode> {
      * @param node the parent node for the requested children
      */
     public getChildren(node?: StashNode): Thenable<StashNode[]> | StashNode[] {
-        return !node
-            ? this.stashNodeRepository.getRepositories()
-            : node.children
+        if (!node) {
+            return this.stashNodeRepository.getRepositories(this.config.get('explorer.preloadStashes'))
+        }
+
+        if (node.children) {
+            return node.children
+        }
+
+        return this.stashNodeRepository
+            .getChildren(node)
+            .then((children: StashNode[]) => node.setChildren(children).children)
     }
 
     /**
