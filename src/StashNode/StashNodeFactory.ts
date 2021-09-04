@@ -61,4 +61,21 @@ export default class {
             date: parentNode.date,
         })
     }
+
+    /**
+     * Generates a message node.
+     *
+     * @param message    the message to display
+     * @param parentNode the parent node
+     */
+    public createMessageNode(message: string, parentNode?: StashNode): StashNode {
+        return new StashNode({
+            type: NodeType.Message,
+            name: message,
+            oldName: undefined,
+            index: undefined,
+            parent: parentNode,
+            date: parentNode ? parentNode.date : undefined,
+        })
+    }
 }

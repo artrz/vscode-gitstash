@@ -81,17 +81,49 @@ export default class implements TreeDataProvider<StashNode> {
      * @param node the parent node for the requested children
      */
     public getChildren(node?: StashNode): Thenable<StashNode[]> | StashNode[] {
-        if (!node) {
-            return this.stashNodeRepository.getRepositories(this.config.get('explorer.preloadStashes'))
+        if (node && node.children) {
+            return this.prepareChildren(node, node.children)
         }
 
-        if (node.children) {
-            return node.children
+        const children = !node
+            ? this.stashNodeRepository.getRepositories(this.config.get('explorer.eagerLoadStashes'))
+            : this.stashNodeRepository.getChildren(node)
+
+        return children.then((children: StashNode[]) => {
+            node && node.setChildren(children)
+            return this.prepareChildren(node, children)
+        })
+    }
+
+    /**
+     * Prepares the children to be displayed, adding default items according user settings.
+     *
+     * @param parent   the children's parent node
+     * @param children the parent's children
+     */
+    private prepareChildren(parent: StashNode | null, children: StashNode[]): StashNode[] {
+        const itemDisplayMode = this.config.get('explorer.itemDisplayMode')
+
+        if (!parent) {
+            if (itemDisplayMode === 'hide-empty' && this.config.get('explorer.eagerLoadStashes')) {
+                children = children.filter((repositoryNode: StashNode) => repositoryNode.childrenCount)
+            }
         }
 
-        return this.stashNodeRepository
-            .getChildren(node)
-            .then((children: StashNode[]) => node.setChildren(children).children)
+        if (children.length) {
+            return children
+        }
+
+        if (itemDisplayMode === 'indicate-empty') {
+            if (!parent) {
+                return [this.stashNodeRepository.getMessageNode('No repositories found.')]
+            }
+            if (parent.type === 'r') {
+                return [this.stashNodeRepository.getMessageNode('No stashes found.')]
+            }
+        }
+
+        return []
     }
 
     /**

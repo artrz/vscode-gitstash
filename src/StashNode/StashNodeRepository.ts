@@ -19,8 +19,10 @@ export default class {
 
     /**
      * Gets the repositories list.
+     *
+     * @param eagerLoadStashes indicates if children should be preloaded
      */
-    public async getRepositories(preloadStashes: boolean): Promise<StashNode[]> {
+    public async getRepositories(eagerLoadStashes: boolean): Promise<StashNode[]> {
         return this.workspaceGit.getRepositories().then(async (rawList: string[]) => {
             const repositoryNodes: StashNode[] = []
 
@@ -28,9 +30,8 @@ export default class {
                 const repositoryNode = this.stashNodeFactory.createRepositoryNode(repositoryPath)
                 repositoryNodes.push(repositoryNode)
 
-                if (preloadStashes) {
-                    const hasData = await this.stashGit.getRawStash(repositoryPath)
-                    repositoryNode.setChildren(hasData ? await this.getChildren(repositoryNode) : [])
+                if (eagerLoadStashes) {
+                    repositoryNode.setChildren(await this.getChildren(repositoryNode))
                 }
             }
 
@@ -100,5 +101,12 @@ export default class {
 
             return fileNodes
         })
+    }
+
+    /**
+     * Creates a message node.
+     */
+    public getMessageNode(message: string): StashNode {
+        return this.stashNodeFactory.createMessageNode(message)
     }
 }

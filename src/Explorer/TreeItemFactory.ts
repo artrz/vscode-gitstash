@@ -26,6 +26,7 @@ export default class {
         switch (node.type) {
             case NodeType.Repository: return this.getRepositoryItem(node)
             case NodeType.Stash:      return this.getStashItem(node)
+            case NodeType.Message:    return this.getMessageItem(node)
             default:                  return this.getFileItem(node)
         }
     }
@@ -92,6 +93,18 @@ export default class {
                 command: 'gitstash.show',
                 arguments: [node],
             },
+        }
+    }
+
+    private getMessageItem(node: StashNode): TreeItem {
+        return {
+            id: `${node.type}.${node.name}`,
+            label: node.name,
+            description: undefined,
+            tooltip: undefined,
+            iconPath: undefined,
+            contextValue: 'message',
+            collapsibleState: TreeItemCollapsibleState.None,
         }
     }
 
