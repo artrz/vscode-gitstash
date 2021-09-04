@@ -5,6 +5,10 @@ Add extra git stash powers to VS Code.
 ## Features
 
  - Configurable explorer tree
+   - Labels, descriptions, tooltips
+   - Text to send to clipboard depending on item type
+   - Eager or lazy load items (performance related)
+ - Configurable repository searching depth
  - Practically all stash commands with most common options
  - Apply actions to stashed data from the tree view
     - Apply, pop, drop stashes
