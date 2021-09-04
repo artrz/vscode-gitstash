@@ -145,10 +145,21 @@
                     "default": "${filename} [${type}:${oldName}] - ${filepath}",
                     "description": "Specifies file data to be set on clipboard\nAvailable tokens:\nSame than renamedFile.labelContent"
                 },
-                "gitstash.explorer.preloadStashes": {
+                "gitstash.explorer.eagerLoadStashes": {
                     "type": "boolean",
                     "default": true,
                     "description": "If enabled, stashes will be preloaded instead of lazy loaded.\nThis is required to see the stashes count but may degrade performance if theres too much data"
+                },
+                "gitstash.explorer.itemDisplayMode": {
+                    "type": "string",
+                    "enum": ["show-empty", "hide-empty", "indicate-empty"],
+                    "enumDescriptions": [
+                        "Empty repositories will be listed",
+                        "Empty repositories will be hidden",
+                        "Empty repositories will show a message"
+                    ],
+                    "default": "indicate-empty",
+                    "description": "Configures if empty repositories should be listed, hidden or indicate its emptiness.\n* This setting only applies if stashes are configured to be preloaded"
                 },
                 "gitstash.editor.diffTitleFormat": {
                     "type": "string",
