@@ -51,6 +51,18 @@
                     "default": 1,
                     "description": "Search depth for finding repositories"
                 },
+                "gitstash.explorer.decorations": {
+                    "type": "string",
+                    "enum": ["none", "badge", "color", "badge-color"],
+                    "enumDescriptions": [
+                        "Do not add decorations",
+                        "Add badge",
+                        "Add colors",
+                        "Add badge and colors"
+                    ],
+                    "default": "color",
+                    "description": "Adds decorations to the tree items"
+                },
                 "gitstash.explorer.enabled": {
                     "type": "boolean",
                     "default": true,

@@ -8,12 +8,15 @@ import {
 import NodeType from '../StashNode/NodeType'
 import StashLabels from '../StashLabels'
 import StashNode from '../StashNode/StashNode'
+import UriGenerator from '../uriGenerator'
 import { join } from 'path'
 
 export default class {
+    private uriGenerator: UriGenerator
     private stashLabels: StashLabels
 
-    constructor(stashLabels: StashLabels) {
+    constructor(uriGenerator: UriGenerator, stashLabels: StashLabels) {
+        this.uriGenerator = uriGenerator
         this.stashLabels = stashLabels
     }
 
@@ -45,6 +48,7 @@ export default class {
             iconPath: new ThemeIcon('repo'),
             contextValue: 'repository',
             collapsibleState: TreeItemCollapsibleState.Collapsed,
+            resourceUri: this.uriGenerator.createForTreeItem(node),
         }
     }
 
@@ -62,6 +66,7 @@ export default class {
             iconPath: new ThemeIcon('archive'),
             contextValue: 'stash',
             collapsibleState: TreeItemCollapsibleState.Collapsed,
+            resourceUri: this.uriGenerator.createForTreeItem(node),
         }
     }
 
@@ -88,6 +93,7 @@ export default class {
             iconPath: this.getFileIcon(node.type),
             contextValue: context,
             collapsibleState: TreeItemCollapsibleState.None,
+            resourceUri: this.uriGenerator.createForTreeItem(node),
             command: {
                 title: 'Show stash diff',
                 command: 'gitstash.show',

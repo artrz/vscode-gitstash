@@ -29,7 +29,16 @@ export default class UriGenerator {
     }
 
     /**
-     * Creates an Uri for the given node.
+     * Creates a node Uri to be used on Tree items.
+     *
+     * @param node  the node to be used as base for the URI
+     */
+    public createForTreeItem(node: StashNode): Uri {
+        return Uri.parse(`${UriGenerator.fileScheme}:${node.path}?type=${node.type}&t=${new Date().getTime()}`)
+    }
+
+    /**
+     * Creates a node Uri to be used on the diff view.
      *
      * @param node  the node to be used as base for the URI
      * @param stage the file stash stage

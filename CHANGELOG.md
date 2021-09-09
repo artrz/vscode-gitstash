@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - Allow to lazy load explorer items to improve performance
-- Add setting to configure to if empty repositories should be listed or not
+- Setting to configure if empty repositories should be listed or not
+- Decorations on tree items
 
 ### Fixed
 

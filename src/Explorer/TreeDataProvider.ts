@@ -15,6 +15,7 @@ import StashLabels from '../StashLabels'
 import StashNode from '../StashNode/StashNode'
 import StashNodeRepository from '../StashNode/StashNodeRepository'
 import TreeItemFactory from './TreeItemFactory'
+import UriGenerator from '../uriGenerator'
 
 export default class implements TreeDataProvider<StashNode> {
     private readonly onDidChangeTreeDataEmitter = new EventEmitter<void>()
@@ -32,12 +33,13 @@ export default class implements TreeDataProvider<StashNode> {
         config: Config,
         stashNodeRepository: StashNodeRepository,
         gitBridge: GitBridge,
+        uriGenerator: UriGenerator,
         stashLabels: StashLabels
     ) {
         this.config = config
         this.stashNodeRepository = stashNodeRepository
         this.gitBridge = gitBridge
-        this.treeItemFactory = new TreeItemFactory(stashLabels)
+        this.treeItemFactory = new TreeItemFactory(uriGenerator, stashLabels)
     }
 
     /**
