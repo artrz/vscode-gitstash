@@ -12,6 +12,7 @@ import { StashCommands } from './StashCommands'
 import StashLabels from './StashLabels'
 import StashNodeRepository from './StashNode/StashNodeRepository'
 import TreeDataProvider from './Explorer/TreeDataProvider'
+import TreeDecorationProvider from './Explorer/TreeDecorationProvider'
 import UriGenerator from './uriGenerator'
 import WorkspaceGit from './Git/WorkspaceGit'
 
@@ -23,13 +24,14 @@ export function activate(context: ExtensionContext): void {
     const gitBridge = new GitBridge()
     const nodeRepository = new StashNodeRepository(new WorkspaceGit(config))
     const stashLabels = new StashLabels(config)
+    const uriGenerator = new UriGenerator(gitBridge)
 
-    const treeProvider = new TreeDataProvider(config, nodeRepository, gitBridge, stashLabels)
+    const treeProvider = new TreeDataProvider(config, nodeRepository, gitBridge, uriGenerator, stashLabels)
 
     const stashCommands = new Commands(
         new WorkspaceGit(config),
         new StashCommands(config, window.createOutputChannel(channelName), stashLabels),
-        new DiffDisplayer(new UriGenerator(gitBridge), stashLabels),
+        new DiffDisplayer(uriGenerator, stashLabels),
         stashLabels,
     )
 
@@ -42,6 +44,7 @@ export function activate(context: ExtensionContext): void {
     )
 
     context.subscriptions.push(
+        new TreeDecorationProvider(config),
         treeProvider.createTreeView(),
 
         workspace.registerTextDocumentContentProvider(UriGenerator.fileScheme, new DocumentContentProvider()),
