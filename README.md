@@ -5,7 +5,7 @@ Add extra git stash powers to VS Code.
 ## Features
 
  - Configurable explorer tree
-   - Labels, descriptions, tooltips
+   - Labels, descriptions, icons, tooltips, decorations
    - Text to send to clipboard depending on item type
    - Eager or lazy load items (performance related)
  - Configurable repository searching depth
@@ -52,7 +52,6 @@ Navigate on your stashes, and run basically all stash commands visually and revi
 |-----------------------------------------------------------|---------------------------------------------------------------------|-------------|
 | `gitstash.explorer.enabled`                               | `true`                                                              | Shows or hides the explorer on startup |
 | `gitstash.explorer.buttons`                               | `true`                                                              | Shows or hides the explorer tree buttons |
-| `gitstash.explorer.decorations`                           | `color`                                                             | Adds decorations to the tree items |
 | `gitstash.explorer.eagerLoadStashes`                      | `true`                                                              | If enabled, stashes will be preloaded instead of lazy loaded. This is required to see the stashes count but may degrade performance if theres too much data |
 | `gitstash.explorer.itemDisplayMode`                       | `indicate-empty`                                                    | Configures if empty repositories should be listed, hidden or indicate its emptiness. **This setting only applies if stashes are configured to be preloaded** |
 | `gitstash.explorer.items.repository.labelContent`         | `"${name}"`                                                         | Specifies the format for each repository label. Available tokens: `${name}` - the repository name. `${directory}` - the repository directory base name. `${path}` - the repository directory path. `${stashesCount}` - the number of stashes on the repository |
@@ -63,13 +62,15 @@ Navigate on your stashes, and run basically all stash commands visually and revi
 | `gitstash.explorer.items.stash.descriptionContent`        | `"${branch}, ${dateSmall}"`                                         | Specifies the format for each stash description . Available tokens: Same than stash.labelContent |
 | `gitstash.explorer.items.stash.tooltipContent`            | `"#${index} ${dateTimeLong}\n${branch}, ${ago}\n\n${description}"`  | Specifies the format for each stash tooltip . Available tokens: Same than stash.labelContent |
 | `gitstash.explorer.items.stash.to-clipboardContent`       | `"#${index} [${branch}] ${description}"`                            | Specifies stash data to be set on clipboard. Available tokens: nSame than stash.labelContent |
+| `gitstash.explorer.items.file.decoration`                 | `color`                                                             | Adds decorations to the tree items |
+| `gitstash.explorer.items.file.icons`                      | `file`                                                              | Defines the icon to show on files |
 | `gitstash.explorer.items.file.labelContent`               | `"${filename}"`                                                     | Specifies the format for each file label. Available tokens: `${filename}` - the file name. `${filepath}` - the file path. `${type}` - the change type |
 | `gitstash.explorer.items.file.descriptionContent`         | `"${filepath}"`                                                     | Specifies the format for each file description . Available tokens: Same than file.labelContent |
-| `gitstash.explorer.items.file.tooltipContent`             | `"${filepath}\n└─ ${filename}\n\t› ${type}"`                        | Specifies the format for each file tooltip . Available tokens: Same than file.labelContent |
+| `gitstash.explorer.items.file.tooltipContent`             | `"${filepath}\n└─ ${filename}\n\t• ${type}"`                        | Specifies the format for each file tooltip . Available tokens: Same than file.labelContent |
 | `gitstash.explorer.items.file.to-clipboardContent`        | `"${filename} [${type}] - ${filepath}"`                             | Specifies file data to be set on clipboard. Available tokens: Same than file.labelContent. `${oldName}` - the previous name |
 | `gitstash.explorer.items.renamedFile.labelContent`        | `"${filename}"`                                                     | Specifies the format for each renamed file label. Available tokens: `${filename}` - the file name. `${oldFilename}` - the previous file name. `${filepath}` - the file path. `${type}` - the change type |
 | `gitstash.explorer.items.renamedFile.descriptionContent`  | `"${filepath}"`                                                     | Specifies the format for each renamed file description . Available tokens: Same than renamedFile.labelContent |
-| `gitstash.explorer.items.renamedFile.tooltipContent`      | `"${filepath}\n└─ ${filename} ← ${oldFilename}\n\t› ${type}"`       | Specifies the format for each renamed file tooltip . Available tokens: Same than renamedFile.labelContent |
+| `gitstash.explorer.items.renamedFile.tooltipContent`      | `"${filepath}\n└─ ${filename} ← ${oldFilename}\n\t• ${type}"`       | Specifies the format for each renamed file tooltip . Available tokens: Same than renamedFile.labelContent |
 | `gitstash.explorer.items.renamedFile.to-clipboardContent` | `"${filename} [${type}:${oldName}] - ${filepath}"`                  | Specifies file data to be set on clipboard. Available tokens: Same than renamedFile.labelContent |
 | `gitstash.editor.diffTitleFormat`                         | `"#${stashIndex}: ${filename}  ${hint} (${filepath})"`              | Specifies the format for the diff editor title. Available tokens: `${filename}` - the file name. `${filepath}` - the file path. `${fileIndex}` - the file index. `${dateTimeLong}` - the stash date & time, long format. `${dateTimeSmall}` - the stash date & time, medium format. `${dateSmall}` - the stash date, small format. `${dateTimeIso}` - the stash date & time, ISO format. `${dateIso}` - the stash date, ISO format. `${ago}` - the stash date, ago format. `${description}` - the stash description. `${branch}` - the stash branch. `${stashIndex}` - the stash index. `${type}` - the change type on the file like 'Modified' or 'Deleted'. `${hint}` - like `${type}` but indicates also the editor position of the change |
 | `gitstash.log.autoclear`                                  | `false`                                                             | Clears the log window before showing the action result |

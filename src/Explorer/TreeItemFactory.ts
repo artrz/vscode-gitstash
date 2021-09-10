@@ -5,6 +5,7 @@ import {
     TreeItem,
     TreeItemCollapsibleState,
 } from 'vscode'
+import Config from '../Config'
 import NodeType from '../StashNode/NodeType'
 import StashLabels from '../StashLabels'
 import StashNode from '../StashNode/StashNode'
@@ -12,10 +13,12 @@ import UriGenerator from '../uriGenerator'
 import { join } from 'path'
 
 export default class {
+    private config: Config
     private uriGenerator: UriGenerator
     private stashLabels: StashLabels
 
-    constructor(uriGenerator: UriGenerator, stashLabels: StashLabels) {
+    constructor(config: Config, uriGenerator: UriGenerator, stashLabels: StashLabels) {
+        this.config = config
         this.uriGenerator = uriGenerator
         this.stashLabels = stashLabels
     }
@@ -120,13 +123,17 @@ export default class {
      * @param filename the filename of the icon
      */
     private getFileIcon(type: NodeType): { light: string; dark: string } | ThemeIcon {
+        if (this.config.get('explorer.items.file.icons') === 'file') {
+            return ThemeIcon.File
+        }
+
         switch (type) {
             case NodeType.Deleted: return this.getIcon('status-deleted.svg')
             case NodeType.IndexAdded: return this.getIcon('status-added.svg')
             case NodeType.Modified: return this.getIcon('status-modified.svg')
             case NodeType.Renamed: return this.getIcon('status-renamed.svg')
             case NodeType.Untracked: return this.getIcon('status-untracked.svg')
-            default: return ThemeIcon.File
+            default: return new ThemeIcon('file-text')
         }
     }
 
@@ -137,9 +144,8 @@ export default class {
      */
     private getIcon(filename: string): { light: string; dark: string } {
         return {
-            // TODO: config
-            light: join(__dirname, '..', 'resources', 'icons', 'light', filename),
-            dark: join(__dirname, '..', 'resources', 'icons', 'dark', filename),
+            light: join(__dirname, '..', 'resources', 'icons', 'light', 'files', this.config.get('explorer.items.file.icons'), filename),
+            dark: join(__dirname, '..', 'resources', 'icons', 'dark', 'files', this.config.get('explorer.items.file.icons'), filename),
         }
     }
 }

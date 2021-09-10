@@ -29,7 +29,7 @@ export default class implements FileDecorationProvider, Disposable {
     }
 
     provideFileDecoration(uri: Uri): FileDecoration | undefined {
-        if (this.config.get<string>('explorer.decorations') === 'none') {
+        if (this.config.get<string>('explorer.items.file.decoration') === 'none') {
             return undefined
         }
 
@@ -41,28 +41,34 @@ export default class implements FileDecorationProvider, Disposable {
 
         switch (nodeType) {
             case NodeType.Untracked:
-                return this.makeDecorator('U', 'gitDecoration.untrackedResourceForeground')
+                return this.getDecorator('U', 'gitDecoration.untrackedResourceForeground')
 
             case NodeType.IndexAdded:
-                return this.makeDecorator('A', 'gitDecoration.addedResourceForeground')
+                return this.getDecorator('A', 'gitDecoration.addedResourceForeground')
 
             case NodeType.Deleted:
-                return this.makeDecorator('D', 'gitDecoration.deletedResourceForeground')
+                return this.getDecorator('D', 'gitDecoration.deletedResourceForeground')
 
             case NodeType.Modified:
-                return this.makeDecorator('M', 'gitDecoration.modifiedResourceForeground')
+                return this.getDecorator('M', 'gitDecoration.modifiedResourceForeground')
 
             case NodeType.Renamed:
-                return this.makeDecorator('R', 'gitDecoration.renamedResourceForeground')
+                return this.getDecorator('R', 'gitDecoration.renamedResourceForeground')
         }
 
         return undefined
     }
 
-    private makeDecorator(badge: string, color: string): FileDecoration {
+    /**
+     * Create a decorator.
+     *
+     * @param badge the string with the badge content
+     * @param color the string with the theme color key
+     */
+    private getDecorator(badge: string, color: string): FileDecoration {
         return {
-            badge: this.config.get<string>('explorer.decorations').indexOf('badge') > -1 ? badge : undefined,
-            color: this.config.get<string>('explorer.decorations').indexOf('color') > -1 ? new ThemeColor(color) : undefined,
+            badge: this.config.get<string>('explorer.items.file.decoration').indexOf('badge') > -1 ? badge : undefined,
+            color: this.config.get<string>('explorer.items.file.decoration').indexOf('color') > -1 ? new ThemeColor(color) : undefined,
             propagate: false,
         }
     }

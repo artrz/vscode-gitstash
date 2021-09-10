@@ -51,18 +51,6 @@
                     "default": 1,
                     "description": "Search depth for finding repositories"
                 },
-                "gitstash.explorer.decorations": {
-                    "type": "string",
-                    "enum": ["none", "badge", "color", "badge-color"],
-                    "enumDescriptions": [
-                        "Do not add decorations",
-                        "Add badge",
-                        "Add colors",
-                        "Add badge and colors"
-                    ],
-                    "default": "color",
-                    "description": "Adds decorations to the tree items"
-                },
                 "gitstash.explorer.enabled": {
                     "type": "boolean",
                     "default": true,
@@ -115,6 +103,29 @@
                     "default": "#${index} [${branch}] ${description}",
                     "description": "Specifies stash data to be set on clipboard\nAvailable tokens:\nSame than stash.labelContent"
                 },
+                "gitstash.explorer.items.file.icons": {
+                    "type": "string",
+                    "enum": ["file", "letter", "dot"],
+                    "enumDescriptions": [
+                        "Show the icon corresponding the file type",
+                        "Show the classic letter icon",
+                        "Show a dot indicator"
+                    ],
+                    "default": "file",
+                    "description": "Defines the icon to show on files"
+                },
+                "gitstash.explorer.items.file.decoration": {
+                    "type": "string",
+                    "enum": ["none", "badge", "color", "badge-color"],
+                    "enumDescriptions": [
+                        "Do not add decorations",
+                        "Add badge",
+                        "Add colors",
+                        "Add badge and colors"
+                    ],
+                    "default": "badge-color",
+                    "description": "Adds decorations to the tree items"
+                },
                 "gitstash.explorer.items.file.labelContent": {
                     "type": "string",
                     "default": "${filename}",
@@ -127,7 +138,7 @@
                 },
                 "gitstash.explorer.items.file.tooltipContent": {
                     "type": "string",
-                    "default": "${filepath}\n└─ ${filename}\n\t› ${type}",
+                    "default": "${filepath}\n└─ ${filename}\n\t• ${type}",
                     "description": "Specifies the format for each file tooltip \nAvailable tokens:\nSame than file.labelContent",
                     "editPresentation": "multilineText"
                 },
@@ -148,7 +159,7 @@
                 },
                 "gitstash.explorer.items.renamedFile.tooltipContent": {
                     "type": "string",
-                    "default": "${filepath}\n└─ ${filename} ← ${oldFilename}\n\t› ${type}",
+                    "default": "${filepath}\n└─ ${filename} ← ${oldFilename}\n\t• ${type}",
                     "description": "Specifies the format for each renamed file tooltip \nAvailable tokens:\nSame than renamedFile.labelContent",
                     "editPresentation": "multilineText"
                 },

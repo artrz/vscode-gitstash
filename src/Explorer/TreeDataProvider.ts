@@ -39,7 +39,7 @@ export default class implements TreeDataProvider<StashNode> {
         this.config = config
         this.stashNodeRepository = stashNodeRepository
         this.gitBridge = gitBridge
-        this.treeItemFactory = new TreeItemFactory(uriGenerator, stashLabels)
+        this.treeItemFactory = new TreeItemFactory(config, uriGenerator, stashLabels)
     }
 
     /**
