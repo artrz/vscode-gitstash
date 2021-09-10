@@ -6,10 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [[5.0.0] 2021-09-10](https://github.com/arturock/vscode-gitstash/tree/v5.0.0)
+
 ### Added
 
 - Allow to lazy load explorer items to improve performance
 - Setting to configure if empty repositories should be listed or not
+- Configurable file icons on tree items
 - Decorations on tree items
 
 ### Fixed
@@ -30,6 +33,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Prefer codicons when possible (vscode [1.52](https://code.visualstudio.com/updates/v1_52#_support-for-codicons-for-view-containers-views))
 - Better copy to clipboard submenus (vscode [1.50](https://code.visualstudio.com/updates/v1_50#_submenus))
 - Use latest major version dependencies
+
+### Fixed
+
+- Files on expanded stashes disappeared when reloading tree
 
 ## [[3.3.1] 2020-10-22](https://github.com/arturock/vscode-gitstash/tree/v3.3.1)
 
