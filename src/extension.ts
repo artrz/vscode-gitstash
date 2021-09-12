@@ -28,9 +28,10 @@ export function activate(context: ExtensionContext): void {
 
     const treeProvider = new TreeDataProvider(config, nodeRepository, gitBridge, uriGenerator, stashLabels)
 
+    const wsGit = new WorkspaceGit(config)
     const stashCommands = new Commands(
-        new WorkspaceGit(config),
-        new StashCommands(config, window.createOutputChannel(channelName), stashLabels),
+        wsGit,
+        new StashCommands(config, wsGit, window.createOutputChannel(channelName), stashLabels),
         new DiffDisplayer(uriGenerator, stashLabels),
         stashLabels,
     )
@@ -68,6 +69,8 @@ export function activate(context: ExtensionContext): void {
         commands.registerCommand('gitstash.applySingle', stashCommands.applySingle),
         commands.registerCommand('gitstash.createSingle', stashCommands.createSingle),
         commands.registerCommand('gitstash.openCurrent', stashCommands.openFile),
+
+        commands.registerCommand('gitstash.stashSelected', stashCommands.stashSelected),
 
         commands.registerCommand('gitstash.clipboardRepositoryPath', stashCommands.toClipboardFromObject),
         commands.registerCommand('gitstash.clipboardStashMessage', stashCommands.toClipboardFromObject),

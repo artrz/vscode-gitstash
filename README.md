@@ -11,13 +11,14 @@ Add extra git stash powers to VS Code.
  - Configurable repository searching depth
  - Practically all stash commands with most common options
  - Apply actions to stashed data from the explorer tree
-    - Apply, pop, drop stashes (buttons / right click)
+    - Apply, pop, drop stashes (buttons / context menu)
     - Diff stashed file changes or compare with current file state
     - Apply changes from single stashed file
-    - Copy to clipboard (right click)
+    - Copy to clipboard (context menu)
+    - Stash selected files from the source control view (context menu)
 
 This extension allows to comfortably create, apply, delete and inspect stashes. It results helpful when working on different features, switching to branches for modifications or creating sets of local experimental features.
-Navigate on your stashes and run basically all stash commands visually. The executed git commands are logged along with their results in case you need to review what happened.
+Navigate on your stashes and run basically all stash commands visually. The executed git commands output is logged in case you need to review what happened.
 For big stashes performance can be improved by disabling items eager loading (stashes count wont be available as side effect).
 
 ![GitStash preview](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/docs/screencast.gif)

@@ -5,6 +5,7 @@ import Config from './Config'
 import StashGit from './Git/StashGit'
 import StashLabels from './StashLabels'
 import StashNode from './StashNode/StashNode'
+import WorkspaceGit from './Git/WorkspaceGit'
 
 enum StashType {
     'Simple',
@@ -19,12 +20,14 @@ export class StashCommands {
     static StashType = StashType
 
     private config: Config
+    private workspaceGit: WorkspaceGit
     private channel: vscode.OutputChannel
     private stashGit: StashGit
     private stashLabels: StashLabels
 
-    constructor(config: Config, channel: vscode.OutputChannel, stashLabels: StashLabels) {
+    constructor(config: Config, workspaceGit: WorkspaceGit, channel: vscode.OutputChannel, stashLabels: StashLabels) {
         this.config = config
+        this.workspaceGit = workspaceGit
         this.channel = channel
         this.stashLabels = stashLabels
         this.stashGit = new StashGit()
@@ -61,6 +64,40 @@ export class StashCommands {
         }
 
         this.exec(repositoryNode.path, params, 'Stash created', repositoryNode)
+    }
+
+    /**
+     * Creates stashes for the given files across multiple repositories.
+     *
+     * @param filePaths    an array with the list of the file paths to stash
+     * @param stashMessage an optional message to set on the stash
+     */
+    public push = (filePaths: string[], stashMessage?: string): void => {
+        const params = ['stash', 'push']
+
+        if (stashMessage) {
+            params.push('-m', stashMessage)
+        }
+
+        void this.workspaceGit.getRepositories().then((repositoryPaths: string[]) => {
+            const rps = {}
+            repositoryPaths
+                .sort()
+                .reverse()
+                .forEach((repoPath) => {
+                    for (let i = 0; i < filePaths.length; i += 1) {
+                        const filePath = filePaths[i]
+                        if (filePath && filePath.indexOf(repoPath) === 0) {
+                            rps[repoPath] = [filePath].concat(rps[repoPath] || [])
+                            filePaths[i] = null
+                        }
+                    }
+                })
+
+            Object.keys(rps).forEach((repoPath) => {
+                this.exec(repoPath, params.concat(rps[repoPath]), 'Selected files stashed')
+            })
+        })
     }
 
     /**

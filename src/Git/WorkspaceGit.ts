@@ -28,7 +28,7 @@ export default class WorkspaceGit extends Git {
      * @param firstOnly indicates if return only the first repository
      */
     public async getRepositories(firstOnly?: boolean): Promise<string[]> {
-        const depth: number = this.config.get('dvanced.repositorySearchDepth')
+        const depth: number = this.config.get('advanced.repositorySearchDepth')
 
         const params = [
             'rev-parse',
