@@ -67,7 +67,7 @@ export class Commands {
     }
 
     /**
-     * Clears all the stashes active repository or selects a repository and continues.
+     * Clears all the stashes on the active repository or selects a repository and continues.
      *
      * @param repositoryNode the involved node
      */
@@ -82,8 +82,35 @@ export class Commands {
         void vscode.commands.executeCommand<void>('vscode.open', vscode.Uri.parse(fileNode.path))
     }
 
+    /**
+     * Opens the directory pointed by repository node.
+     *
+     * @param repositoryNode the node with the directory to be opened
+     */
     public openDir = (repositoryNode?: StashNode): void => {
         void vscode.env.openExternal(vscode.Uri.parse(repositoryNode.path))
+    }
+
+    /**
+     * Creates a stash with the given resources.
+     *
+     * @param resourceStates the list of the resources to stash
+     */
+    public stashSelected = (...resourceStates: vscode.SourceControlResourceState[]): void => {
+        const paths = resourceStates.map(
+            (resourceState: vscode.SourceControlResourceState) => resourceState.resourceUri.fsPath
+        )
+
+        void vscode.window
+            .showInputBox({
+                placeHolder: 'Stash message',
+                prompt: 'Optionally provide a stash message',
+            })
+            .then((stashMessage) => {
+                if (typeof stashMessage === 'string') {
+                    this.stashCommands.push(this.workspaceGit, paths, stashMessage)
+                }
+            })
     }
 
     /**

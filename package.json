@@ -2,7 +2,7 @@
     "name": "gitstash",
     "displayName": "Git Stash",
     "description": "Give extra stash abilities to Code. Visually browse stashes, review and extract changes. Get all stash commands and more.",
-    "version": "5.0.0",
+    "version": "5.1.0",
     "publisher": "arturock",
     "license": "MIT",
     "icon": "resources/logo.png",
@@ -290,6 +290,11 @@
                 "icon": "$(go-to-file)"
             },
             {
+                "command": "gitstash.stashSelected",
+                "title": "Stash selected files...",
+                "category": "GitStash"
+            },
+            {
                 "command": "gitstash.clipboardRepositoryPath",
                 "title": "Repository path",
                 "category": "GitStash"
@@ -332,6 +337,10 @@
                 {
                     "command": "gitstash.stash",
                     "when": "hasGitRepository"
+                },
+                {
+                    "command": "gitstash.stashSelected",
+                    "when": "false"
                 },
                 {
                     "command": "gitstash.clear",
@@ -456,6 +465,12 @@
                     "when": "view == gitstash.explorer",
                     "submenu": "node.clipboard",
                     "group": "node_clipboard"
+                }
+            ],
+            "scm/resourceState/context": [
+                {
+                    "command": "gitstash.stashSelected",
+                    "when": "scmProvider == git && scmResourceGroup =~ /^workingTree|index$/"
                 }
             ],
             "node.clipboard": [

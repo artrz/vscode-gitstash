@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [[5.1.0] 2021-09-12](https://github.com/arturock/vscode-gitstash/tree/v5.1.0)
+
+### Added
+
+- Allow to stash selected files from the source control view via context menu
+
+### Fixed
+
+- Typo in config key
+
 ## [[5.0.0] 2021-09-10](https://github.com/arturock/vscode-gitstash/tree/v5.0.0)
 
 ### Added

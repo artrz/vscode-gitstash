@@ -5,6 +5,7 @@ import Config from './Config'
 import StashGit from './Git/StashGit'
 import StashLabels from './StashLabels'
 import StashNode from './StashNode/StashNode'
+import WorkspaceGit from './Git/WorkspaceGit'
 
 enum StashType {
     'Simple',
@@ -61,6 +62,39 @@ export class StashCommands {
         }
 
         this.exec(repositoryNode.path, params, 'Stash created', repositoryNode)
+    }
+
+    /**
+     * Creates stashes for the given files.
+     *
+     * @param filePaths an array with the list of the file paths to stash
+     */
+    public push = (wsGit: WorkspaceGit, filePaths: string[], stashMessage?: string): void => {
+        const params = ['stash', 'push']
+
+        if (stashMessage) {
+            params.push('-m', stashMessage)
+        }
+
+        void wsGit.getRepositories().then((repositoryPaths: string[]) => {
+            const rps = {}
+            repositoryPaths
+                .sort()
+                .reverse()
+                .forEach((repoPath) => {
+                    for (let i = 0; i < filePaths.length; i += 1) {
+                        const filePath = filePaths[i]
+                        if (filePath && filePath.indexOf(repoPath) === 0) {
+                            rps[repoPath] = [filePath].concat(rps[repoPath] || [])
+                            filePaths[i] = null
+                        }
+                    }
+                })
+
+            Object.keys(rps).forEach((repoPath) => {
+                this.exec(repoPath, params.concat(rps[repoPath]), 'Selected files stashed')
+            })
+        })
     }
 
     /**
