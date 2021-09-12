@@ -20,12 +20,14 @@ export class StashCommands {
     static StashType = StashType
 
     private config: Config
+    private workspaceGit: WorkspaceGit
     private channel: vscode.OutputChannel
     private stashGit: StashGit
     private stashLabels: StashLabels
 
-    constructor(config: Config, channel: vscode.OutputChannel, stashLabels: StashLabels) {
+    constructor(config: Config, workspaceGit: WorkspaceGit, channel: vscode.OutputChannel, stashLabels: StashLabels) {
         this.config = config
+        this.workspaceGit = workspaceGit
         this.channel = channel
         this.stashLabels = stashLabels
         this.stashGit = new StashGit()
@@ -67,18 +69,17 @@ export class StashCommands {
     /**
      * Creates stashes for the given files across multiple repositories.
      *
-     * @param wsGit        instance to get the available repositories
      * @param filePaths    an array with the list of the file paths to stash
      * @param stashMessage an optional message to set on the stash
      */
-    public push = (wsGit: WorkspaceGit, filePaths: string[], stashMessage?: string): void => {
+    public push = (filePaths: string[], stashMessage?: string): void => {
         const params = ['stash', 'push']
 
         if (stashMessage) {
             params.push('-m', stashMessage)
         }
 
-        void wsGit.getRepositories().then((repositoryPaths: string[]) => {
+        void this.workspaceGit.getRepositories().then((repositoryPaths: string[]) => {
             const rps = {}
             repositoryPaths
                 .sort()

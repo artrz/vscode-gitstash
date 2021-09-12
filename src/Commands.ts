@@ -108,7 +108,7 @@ export class Commands {
             })
             .then((stashMessage) => {
                 if (typeof stashMessage === 'string') {
-                    this.stashCommands.push(this.workspaceGit, paths, stashMessage)
+                    this.stashCommands.push(paths, stashMessage)
                 }
             })
     }
