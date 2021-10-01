@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+ - Allow to configure if pop or apply will available as main on secondary stash item action
  - Branch command on stash context menu
 
 ### Updated
