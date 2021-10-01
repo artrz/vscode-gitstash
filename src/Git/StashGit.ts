@@ -50,7 +50,7 @@ export default class StashGit extends Git {
         const params = [
             'stash',
             'list',
-            '--date=iso',
+            '--format="%ci %s"',
         ]
 
         const stashList = (await this.exec(params, cwd)).trim()
@@ -58,11 +58,12 @@ export default class StashGit extends Git {
         const list: Stash[] = []
 
         if (stashList.length > 0) {
+            const sep1 = 26 // date length
             stashList.split(/\r?\n/g).forEach((stash, index) => {
                 list.push({
-                    index: index,
-                    description: stash.substring(stash.indexOf('}:') + 2).trim(),
-                    date: stash.substring(stash.indexOf('{') + 1, stash.indexOf('}')),
+                    index,
+                    date: stash.substring(1, sep1),
+                    description: stash.substring(sep1 + 1).slice(0, -1).trim(),
                 })
             })
         }

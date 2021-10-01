@@ -49,7 +49,7 @@
                 "gitstash.advanced.repositorySearchDepth": {
                     "type": "integer",
                     "default": 1,
-                    "description": "Search depth for finding repositories"
+                    "description": "Search depth for finding repositories on subdirectories. If value is negative parent directory repositories will be searched"
                 },
                 "gitstash.explorer.enabled": {
                     "type": "boolean",
@@ -246,15 +246,6 @@
                 "category": "GitStash"
             },
             {
-                "command": "gitstash.applyOrPop",
-                "title": "Apply/pop...",
-                "category": "GitStash",
-                "icon": {
-                    "light": "resources/icons/light/stash-pop.svg",
-                    "dark": "resources/icons/dark/stash-pop.svg"
-                }
-            },
-            {
                 "command": "gitstash.drop",
                 "title": "Drop...",
                 "category": "GitStash",
@@ -363,10 +354,6 @@
                     "when": "hasGitRepository"
                 },
                 {
-                    "command": "gitstash.applyOrPop",
-                    "when": "false"
-                },
-                {
                     "command": "gitstash.drop",
                     "when": "hasGitRepository"
                 },
@@ -403,6 +390,12 @@
                     "when": "false"
                 }
             ],
+            "scm/resourceState/context": [
+                {
+                    "command": "gitstash.stashSelected",
+                    "when": "scmProvider == git && scmResourceGroup =~ /^workingTree|index$/"
+                }
+            ],
             "view/title": [
                 {
                     "command": "gitstash.explorer.refresh",
@@ -436,11 +429,18 @@
                     "when": "view == gitstash.explorer && viewItem == stash",
                     "group": "inline@2"
                 },
+
                 {
                     "command": "gitstash.apply",
                     "when": "view == gitstash.explorer && viewItem == stash",
                     "group": "menu@1"
                 },
+                {
+                    "command": "gitstash.branch",
+                    "when": "view == gitstash.explorer && viewItem == stash",
+                    "group": "menu@2"
+                },
+
                 {
                     "command": "gitstash.openCurrent",
                     "when": "view == gitstash.explorer && viewItem =~ /file:(modified|indexAdded|renamed)/",
@@ -461,16 +461,11 @@
                     "when": "view == gitstash.explorer && viewItem =~ /file:(untracked)/",
                     "group": "inline@3"
                 },
+
                 {
                     "when": "view == gitstash.explorer",
                     "submenu": "node.clipboard",
                     "group": "node_clipboard"
-                }
-            ],
-            "scm/resourceState/context": [
-                {
-                    "command": "gitstash.stashSelected",
-                    "when": "scmProvider == git && scmResourceGroup =~ /^workingTree|index$/"
                 }
             ],
             "node.clipboard": [
