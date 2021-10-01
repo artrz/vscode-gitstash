@@ -4,7 +4,6 @@ import * as fs from 'fs'
 import * as vscode from 'vscode'
 import DiffDisplayer from './DiffDisplayer'
 import NodeType from './StashNode/NodeType'
-import { Stash } from './Git/StashGit'
 import { StashCommands } from './StashCommands'
 import StashGit from './Git/StashGit'
 import StashLabels from './StashLabels'
@@ -37,62 +36,7 @@ export class Commands {
     }
 
     /**
-     * Shows a stashed file diff document.
-     *
-     * @param fileNode the involved node
-     */
-    public show = (fileNode: StashNode): void => {
-        void this.displayer.showDiff(fileNode)
-    }
-
-    /**
-     * Shows a stashed file diff document compared with the HEAD version.
-     *
-     * @param fileNode the involved node
-     */
-    public diffCurrent = (fileNode: StashNode): void => {
-        void this.displayer.showDiffCurrent(fileNode)
-    }
-
-    /**
-     * Generate a stash on the active repository or selects a repository and continues.
-     *
-     * @param repositoryNode the involved node
-     */
-    public stash = (repositoryNode?: StashNode): void => {
-        this.runOnRepository(
-            repositoryNode,
-            (repositoryNode: StashNode) => this.stashPerform(repositoryNode),
-        )
-    }
-
-    /**
-     * Clears all the stashes on the active repository or selects a repository and continues.
-     *
-     * @param repositoryNode the involved node
-     */
-    public clear = (repositoryNode?: StashNode): void => {
-        this.runOnRepository(
-            repositoryNode,
-            (repositoryNode: StashNode) => this.clearPerform(repositoryNode),
-        )
-    }
-
-    public openFile = (fileNode?: StashNode): void => {
-        void vscode.commands.executeCommand<void>('vscode.open', vscode.Uri.parse(fileNode.path))
-    }
-
-    /**
-     * Opens the directory pointed by repository node.
-     *
-     * @param repositoryNode the node with the directory to be opened
-     */
-    public openDir = (repositoryNode?: StashNode): void => {
-        void vscode.env.openExternal(vscode.Uri.parse(repositoryNode.path))
-    }
-
-    /**
-     * Creates a stash with the given resources.
+     * Creates a stash with the given resources from the scm changes list.
      *
      * @param resourceStates the list of the resources to stash
      */
@@ -114,6 +58,62 @@ export class Commands {
     }
 
     /**
+     * Shows a stashed file diff document.
+     *
+     * @param fileNode the involved node
+     */
+    public show = (fileNode: StashNode): void => void this.displayer.showDiff(fileNode)
+
+    /**
+     * Shows a stashed file diff document compared with the HEAD version.
+     *
+     * @param fileNode the involved node
+     */
+    public diffCurrent = (fileNode: StashNode): void => void this.displayer.showDiffCurrent(fileNode)
+
+    /**
+     * Opens the file inside an editor.
+     *
+     * @param repositoryNode the node with the directory to be opened
+     */
+    public openFile = (fileNode?: StashNode): void => void vscode.commands
+        .executeCommand<void>('vscode.open', vscode.Uri.parse(fileNode.path))
+
+    /**
+     * Opens the directory pointed by repository node.
+     *
+     * @param repositoryNode the node with the directory to be opened
+     */
+    public openDir = (repositoryNode?: StashNode): void => void vscode.env
+        .openExternal(vscode.Uri.parse(repositoryNode.path))
+
+    /**
+     * Generate a stash on the active repository or selects a repository and continues.
+     *
+     * @param repositoryNode the involved node
+     */
+    public stash = (repositoryNode?: StashNode): void => {
+        void this.runOnRepository(
+            repositoryNode,
+            (repositoryNode: StashNode) => this.stashPerform(repositoryNode),
+            'Create stash'
+        )
+    }
+
+    /**
+     * Clears all the stashes on the active repository or selects a repository and continues.
+     *
+     * @param repositoryNode the involved node
+     */
+    public clear = (repositoryNode?: StashNode): void => {
+        void this.runOnRepository(
+            repositoryNode,
+            (repositoryNode: StashNode) => this.clearPerform(repositoryNode),
+            'Clear stashes'
+        )
+    }
+
+    /**
      * Pops the selected stash or selects one and continue.
      *
      * @param stashNode the involved node
@@ -121,10 +121,8 @@ export class Commands {
     public pop = (stashNode?: StashNode): void => {
         this.runOnStash(
             stashNode,
-            { placeHolder: 'Pick a stash to pop' },
-            (stashNode: StashNode) => {
-                this.popPerform(stashNode)
-            },
+            (stashNode: StashNode) => this.popPerform(stashNode),
+            'Stash pop',
         )
     }
 
@@ -136,10 +134,8 @@ export class Commands {
     public apply = (stashNode?: StashNode): void => {
         this.runOnStash(
             stashNode,
-            { placeHolder: 'Pick a stash to apply' },
-            (stashNode: StashNode) => {
-                this.applyPerform(stashNode)
-            },
+            (stashNode: StashNode) => this.applyPerform(stashNode),
+            'Stash apply',
         )
     }
 
@@ -151,10 +147,8 @@ export class Commands {
     public branch = (stashNode?: StashNode): void => {
         this.runOnStash(
             stashNode,
-            { placeHolder: 'Pick a stash to branch' },
-            (stashNode: StashNode) => {
-                this.branchPerform(stashNode)
-            },
+            (stashNode: StashNode) => this.branchPerform(stashNode),
+            'Stash branch',
         )
     }
 
@@ -166,10 +160,8 @@ export class Commands {
     public drop = (stashNode?: StashNode): void => {
         this.runOnStash(
             stashNode,
-            { placeHolder: 'Pick a stash to drop' },
-            (stashNode: StashNode) => {
-                this.dropPerform(stashNode)
-            },
+            (stashNode: StashNode) => this.dropPerform(stashNode),
+            'Stash drop',
         )
     }
 
@@ -181,44 +173,46 @@ export class Commands {
     private stashPerform = (repositoryNode: StashNode): void => {
         const repositoryLabel = this.stashLabels.getName(repositoryNode)
 
+        const opts = [
+            {
+                label: 'Stash only',
+                description: 'Create a simple stash',
+                type: StashCommands.StashType.Simple,
+            },
+            {
+                label: 'Keep index',
+                description: 'Stash but keep all changes added to the index intact',
+                type: StashCommands.StashType.KeepIndex,
+            },
+            {
+                label: 'Include untracked',
+                description: 'Stash also untracked files',
+                type: StashCommands.StashType.IncludeUntracked,
+            },
+            {
+                label: 'Include untracked + keep index',
+                description: '',
+                type: StashCommands.StashType.IncludeUntrackedKeepIndex,
+            },
+            {
+                label: 'All',
+                description: 'Stash also untracked and ignored files',
+                type: StashCommands.StashType.All,
+            },
+            {
+                label: 'All + keep index',
+                description: '',
+                type: StashCommands.StashType.AllKeepIndex,
+            },
+        ]
+
         void vscode.window
-            .showQuickPick([
-                {
-                    label: 'Stash only',
-                    description: 'Create a simple stash',
-                    type: StashCommands.StashType.Simple,
-                },
-                {
-                    label: 'Keep index',
-                    description: 'Stash but keep all changes added to the index intact',
-                    type: StashCommands.StashType.KeepIndex,
-                },
-                {
-                    label: 'Include untracked',
-                    description: 'Stash also untracked files',
-                    type: StashCommands.StashType.IncludeUntracked,
-                },
-                {
-                    label: 'Include untracked + keep index',
-                    description: '',
-                    type: StashCommands.StashType.IncludeUntrackedKeepIndex,
-                },
-                {
-                    label: 'All',
-                    description: 'Stash also untracked and ignored files',
-                    type: StashCommands.StashType.All,
-                },
-                {
-                    label: 'All + keep index',
-                    description: '',
-                    type: StashCommands.StashType.AllKeepIndex,
-                },
-            ], { placeHolder: `${repositoryLabel}  Select actions` })
+            .showQuickPick(opts, { placeHolder: `Create stash › ${repositoryLabel} › ...` })
             .then((option) => {
                 if (typeof option !== 'undefined') {
                     void vscode.window
                         .showInputBox({
-                            placeHolder: `${repositoryLabel}  Stash message`,
+                            placeHolder: `Create stash › ${repositoryLabel} › ${option.label} › ...`,
                             prompt: 'Optionally provide a stash message',
                         })
                         .then((stashMessage) => {
@@ -240,7 +234,7 @@ export class Commands {
 
         vscode.window
             .showWarningMessage<vscode.MessageItem>(
-            `Clear stashes on ${repositoryLabel}?`,
+            `Clear all stashes on ${repositoryLabel}?`,
             { modal: true },
             { title: 'Proceed' },
         )
@@ -260,6 +254,8 @@ export class Commands {
      * @param stashNode the involved node
      */
     private popPerform = (stashNode: StashNode): void => {
+        const stashLabel = this.stashLabels.getName(stashNode)
+        const repositoryLabel = this.stashLabels.getName(stashNode.parent)
         void vscode.window.showQuickPick(
             [
                 {
@@ -273,7 +269,7 @@ export class Commands {
                     withIndex: true,
                 },
             ],
-            { placeHolder: `${this.stashLabels.getName(stashNode)}  Select action` },
+            { placeHolder: `Stash pop › ${repositoryLabel} › ${stashLabel} › ...` },
         )
             .then((option) => {
                 if (typeof option !== 'undefined') {
@@ -288,6 +284,8 @@ export class Commands {
      * @param stashNode the involved node
      */
     private applyPerform = (stashNode: StashNode): void => {
+        const stashLabel = this.stashLabels.getName(stashNode)
+        const repositoryLabel = this.stashLabels.getName(stashNode.parent)
         void vscode.window.showQuickPick(
             [
                 {
@@ -301,7 +299,7 @@ export class Commands {
                     withIndex: true,
                 },
             ],
-            { placeHolder: `${this.stashLabels.getName(stashNode)}  Select action` },
+            { placeHolder: `Stash apply › ${repositoryLabel} › ${stashLabel} › ...` },
         )
             .then((option) => {
                 if (typeof option !== 'undefined') {
@@ -316,11 +314,18 @@ export class Commands {
      * @param stashNode the involved node
      */
     public branchPerform = (stashNode: StashNode): void => {
+        const stashLabel = this.stashLabels.getName(stashNode)
+        const repositoryLabel = this.stashLabels.getName(stashNode.parent)
         void vscode.window
-            .showInputBox({ placeHolder: 'Branch name' })
+            .showInputBox({
+                placeHolder: `Stash apply › ${repositoryLabel} › ${stashLabel} › ...`,
+                prompt: 'Write a name',
+            })
             .then((branchName) => {
-                if (typeof branchName === 'string' && branchName.length > 0) {
-                    this.stashCommands.branch(stashNode, branchName)
+                if (typeof branchName === 'string') {
+                    !branchName.length
+                        ? void vscode.window.showErrorMessage('A branch name is required.')
+                        : this.stashCommands.branch(stashNode, branchName)
                 }
             })
     }
@@ -334,53 +339,15 @@ export class Commands {
         const repositoryLabel = this.stashLabels.getName(stashNode.parent)
         const stashLabel = this.stashLabels.getName(stashNode)
 
-        void vscode.window
-            .showWarningMessage<vscode.MessageItem>(
+        void vscode.window.showWarningMessage<vscode.MessageItem>(
             `${repositoryLabel}\n\nDrop ${stashLabel}?`,
             { modal: true },
             { title: 'Proceed' },
-        )
-            .then((option) => {
-                if (typeof option !== 'undefined') {
-                    this.stashCommands.drop(stashNode)
-                }
-            })
-    }
-
-    /**
-     * Shows a selector to perform an apply / pop action.
-     *
-     * @param stashNode the involved node
-     */
-    public applyOrPop = (stashNode: StashNode): void => {
-        const repositoryNode = this.stashNodeFactory.createRepositoryNode(stashNode.parent.path)
-
-        void vscode.window
-            .showQuickPick(
-                [
-                    {
-                        label: 'Pop',
-                        description: 'Pop the selected stash',
-                        action: 'pop',
-                    },
-                    {
-                        label: 'Apply',
-                        description: 'Apply the selected stash',
-                        action: 'apply',
-                    },
-                ],
-                { placeHolder: `${this.stashLabels.getName(repositoryNode)}  ${this.stashLabels.getName(stashNode)}` },
-            )
-            .then((option) => {
-                if (typeof option !== 'undefined') {
-                    if (option.action === 'pop') {
-                        this.popPerform(stashNode)
-                    }
-                    else if (option.action === 'apply') {
-                        this.applyPerform(stashNode)
-                    }
-                }
-            })
+        ).then((option) => {
+            if (typeof option !== 'undefined') {
+                this.stashCommands.drop(stashNode)
+            }
+        })
     }
 
     /**
@@ -391,8 +358,7 @@ export class Commands {
     public applySingle = (fileNode: StashNode): void => {
         const parentLabel = this.stashLabels.getName(fileNode.parent)
 
-        void vscode.window
-            .showWarningMessage<vscode.MessageItem>(
+        void vscode.window.showWarningMessage<vscode.MessageItem>(
             `${parentLabel}\n\nApply changes on ${fileNode.name}?`,
             { modal: true },
             { title: 'Proceed' },
@@ -447,184 +413,127 @@ export class Commands {
     /**
      * Executes a callback on a repository.
      *
-     * @param repositoryOrStashNode the involved node
-     * @param placeHolder           the placeholder for the picker
-     * @param callback              the callback to execute with the node
+     * @param repositoryNode    the involved node
+     * @param callback          the callback to execute with the node
+     * @param pickerPlaceholder a string to prepend in the place holder
      */
-    private runOnRepository = (repositoryOrStashNode: StashNode, callback: (stashNode: StashNode) => void): void => {
-        if (repositoryOrStashNode) {
-            callback(repositoryOrStashNode)
+    private runOnRepository = async (
+        repositoryNode: StashNode | undefined,
+        callback: (stashNode: StashNode) => unknown,
+        pickerPlaceholder: string
+    ) => {
+        if (repositoryNode) {
+            return callback(repositoryNode)
         }
-        else {
-            this.executeOnRepository((repositoryNode: StashNode) => {
-                callback(repositoryNode)
-            })
+
+        const nodes: StashNode[] = (await this.workspaceGit.getRepositories())
+            .map((path) => this.stashNodeFactory.createRepositoryNode(path))
+
+        if (nodes.length === 0) {
+            void vscode.window.showInformationMessage('There are no git repositories.')
+            return undefined
         }
+
+        if (nodes.length === 1) {
+            return callback(nodes[0])
+        }
+
+        const editorPath = vscode.window.activeTextEditor
+            ? vscode.window.activeTextEditor.document.uri.fsPath
+            : null
+
+        const node = editorPath
+            ? nodes.sort().reverse().find((node) => editorPath.indexOf(node.path) !== -1)
+            : null
+
+        if (node) {
+            return callback(node)
+        }
+
+        const selection = await vscode.window.showQuickPick<QuickPickRepositoryNodeItem>(
+            nodes.map((node) => ({ node, label: this.stashLabels.getName(node) })),
+            { placeHolder: `${pickerPlaceholder} › ...`, canPickMany: false },
+        )
+
+        return selection ? callback(selection.node) : undefined
     }
 
     /**
      * Executes a callback on a stash.
      *
      * @param repositoryOrStashNode the involved node
-     * @param options               the picker options
      * @param callback              the callback to execute with the node
+     * @param placeholder           a string to append to the placeholder as first segment
+     * @param canPickMany           indicate if multi-selection will be available
      */
-    private runOnStash = (repositoryOrStashNode: StashNode, options: vscode.QuickPickOptions, callback: (stashNode: StashNode|StashNode[]) => void) => {
-        if (repositoryOrStashNode && repositoryOrStashNode.type === NodeType.Stash) {
-            callback(repositoryOrStashNode)
+    private runOnStash = (
+        repositoryOrStashNode: StashNode | StashNode[] | undefined,
+        callback: (...x: unknown[]) => unknown,
+        placeholder: string,
+        canPickMany?: boolean,
+    ) => {
+        if (Array.isArray(repositoryOrStashNode)) {
+            return repositoryOrStashNode.find((stashNode) => stashNode.type !== NodeType.Stash)
+                ? vscode.window.showErrorMessage('Selection contains invalid items.')
+                : callback(repositoryOrStashNode)
         }
-        else if (repositoryOrStashNode && repositoryOrStashNode.type === NodeType.Repository) {
-            this.showStashes(repositoryOrStashNode.path, options, callback)
+
+        if (!repositoryOrStashNode || repositoryOrStashNode.type === NodeType.Repository) {
+            return this.runOnRepository(
+                repositoryOrStashNode,
+                (repositoryNode: StashNode) => this.showStashes(repositoryNode, callback, placeholder, canPickMany || false),
+                placeholder
+            )
         }
-        else {
-            this.runOnRepository(repositoryOrStashNode, (repositoryNode: StashNode) => {
-                this.showStashes(repositoryNode.path, options, callback)
-            })
-        }
+
+        return repositoryOrStashNode.type !== NodeType.Stash
+            ? vscode.window.showErrorMessage(`Invalid item ${repositoryOrStashNode.name}.`)
+            : callback(repositoryOrStashNode)
     }
 
     /**
-     * Executes a callback on the current active repository or show a pick selector to choose a repository.
+     * List the available stashes from a repository and executes a callback on the selected one(s).
      *
-     * @param callback the callback to execute
+     * @param repositoryNode the parent repository
+     * @param callback       the callback to execute with the selected stash(es)
+     * @param placeholder    a string to append to the placeholder as first segment
+     * @param canPickMany    indicate if multi-selection will be available
      */
-    private executeOnRepository(callback) {
-        const editor = vscode.window.activeTextEditor
-        if (!editor) {
-            this.showRepositories(callback)
-            return
-        }
-
-        const editorPath = editor.document.uri.fsPath
-        void this.workspaceGit.getRepositories().then((repositories) => {
-            let cwd = null
-            repositories.forEach((repository) => {
-                if (editorPath.indexOf(repository) !== -1) {
-                    cwd = repository
-                    return false
-                }
-            })
-
-            if (!cwd) {
-                this.showRepositories(callback)
-                return
-            }
-
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-            callback(this.stashNodeFactory.createRepositoryNode(cwd))
-        })
-    }
-
-    /**
-     * Show a quick pick with the repositories list and executes a callback on it.
-     *
-     * @param callback the callback to execute
-     */
-    private showRepositories(callback: (stashNode: StashNode) => void) {
-        const options: vscode.QuickPickOptions = {
-            placeHolder: 'Select a repository',
-            canPickMany: false,
-        }
-
-        void this.workspaceGit.getRepositories().then((repositories) => {
-            if (repositories.length === 0) {
-                void vscode.window.showInformationMessage('There are no git repositories.')
-            }
-            else if (repositories.length === 1) {
-                callback(this.stashNodeFactory.createRepositoryNode(repositories[0]))
-            }
-            else {
-                void vscode.window
-                    .showQuickPick<QuickPickRepositoryNodeItem>(this.makeRepositoriesList(repositories), options)
-                    .then((selection) => {
-                        if (typeof selection !== 'undefined') {
-                            callback(selection.node)
-                        }
-                    })
-            }
-        })
-    }
-
-    /**
-     * Gets the stashes list for the given current working directory.
-     *
-     * @param cwd      the current working directory
-     * @param options  the object containing the quick pick options
-     * @param callback the callback to execute
-     */
-    private showStashes(cwd: string, options: vscode.QuickPickOptions, callback) {
-        const repositoryNode = this.stashNodeFactory.createRepositoryNode(cwd)
+    private async showStashes(
+        repositoryNode: StashNode,
+        callback: (...args: unknown[]) => unknown,
+        placeholder: string,
+        canPickMany: boolean,
+    ): Promise<unknown> | null {
         const repositoryLabel = this.stashLabels.getName(repositoryNode)
-        options.placeHolder = `${repositoryLabel}  ${options.placeHolder}`
 
-        void this.stashGit.getStashes(cwd).then((list) => {
-            if (list.length > 0) {
-                void vscode.window
-                    .showQuickPick<QuickPickStashNodeItem>(this.makeStashOptionsList(repositoryNode, list), options)
-                    .then((selection) => {
-                        if (typeof selection !== 'undefined') {
-                            let nodeOrNodes: StashNode | StashNode[] = null
+        const list = await this.stashGit.getStashes(repositoryNode.path)
 
-                            if (Array.isArray(selection)) {
-                                const nodes: StashNode[] = []
-                                selection.forEach((value: QuickPickStashNodeItem) => nodes.push(value.node))
-                                nodeOrNodes = nodes
-                            }
-                            else {
-                                nodeOrNodes = selection.node
-                            }
-
-                            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                            callback(nodeOrNodes)
-                        }
-                    })
-            }
-            else {
-                void vscode.window.showInformationMessage(`There are no stashed changes on ${repositoryLabel}.`)
-            }
-        })
-    }
-
-    /**
-     * Generates a an options list with the existent repositories.
-     *
-     * @param repositories an array of repository paths
-     */
-    private makeRepositoriesList(repositories: string[]): QuickPickRepositoryNodeItem[] {
-        const options: QuickPickRepositoryNodeItem[] = []
-
-        for (const repositoryPath of repositories) {
-            const node = this.stashNodeFactory.createRepositoryNode(repositoryPath)
-
-            const option: QuickPickRepositoryNodeItem = {
-                label: this.stashLabels.getName(node),
-                node: node,
-            }
-
-            options.push(option)
+        if (!list.length) {
+            return vscode.window.showInformationMessage(`There are no stashed changes on ${repositoryLabel}.`)
         }
 
-        return options
-    }
-
-    /**
-     * Generates an options list with the stashes.
-     *
-     * @param repositoryNode the repository node to use as base
-     * @param stashes        an array of Stash objects
-     */
-    private makeStashOptionsList(repositoryNode: StashNode, stashList: Stash[]): QuickPickStashNodeItem[] {
-        const options: QuickPickStashNodeItem[] = []
-
-        for (const stash of stashList) {
-            const node = this.stashNodeFactory.createStashNode(stash, repositoryNode)
-
-            options.push({
-                label: this.stashLabels.getName(node),
-                node: node,
-            })
+        const options = {
+            placeHolder: `${placeholder} › ${repositoryLabel} › ...`,
+            canPickMany,
         }
 
-        return options
+        const items: QuickPickStashNodeItem[] = list
+            .map((stash) => this.stashNodeFactory.createStashNode(stash, repositoryNode))
+            .map((node) => ({
+                node,
+                label: this.stashLabels.getName(node),
+                description: this.stashLabels.getDescription(node),
+            }))
+
+        const selection: QuickPickStashNodeItem | QuickPickStashNodeItem[] = await vscode.window.showQuickPick(items, options)
+
+        if (selection) {
+            const nodeOrNodes: StashNode | StashNode[] = Array.isArray(selection)
+                ? selection.map((item: QuickPickStashNodeItem) => item.node)
+                : selection.node
+
+            return callback(nodeOrNodes)
+        }
     }
 }

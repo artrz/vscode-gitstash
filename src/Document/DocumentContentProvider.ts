@@ -43,10 +43,10 @@ export default class implements vscode.TextDocumentContentProvider {
             }
         }
         catch (e) {
+            console.log(`provideTextDocumentContent type[${type}] side[${side}]`)
+            console.log(uri.query)
             console.log(e)
         }
-        console.log(`provideTextDocumentContent type[${type}] side[${side}]`)
-        console.log(uri.query)
 
         return (await contents).toString()
     }

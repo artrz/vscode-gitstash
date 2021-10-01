@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+ - Branch command on stash context menu
+
+### Updated
+
+ - Breadcrumbs like text on commands' selection placeholders
+
 ## [[5.1.0] 2021-09-12](https://github.com/arturock/vscode-gitstash/tree/v5.1.0)
 
 ### Added
