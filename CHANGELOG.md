@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
- - Allow to configure if pop or apply will available as main on secondary stash item action
+ - Allow to configure if pop or apply will available as main or secondary stash item action
+ - Allow to configure the alternative diff action for the stashed file compare button
+ - Other comparison modes for diffing changes
  - Branch command on stash context menu
 
 ### Updated

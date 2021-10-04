@@ -108,6 +108,18 @@
                     "default": "pop",
                     "description": "Defines if pop or apply will be set as item button (and the secondary action as context menu option)"
                 },
+                "gitstash.explorer.items.stash.diffButton": {
+                    "type": "string",
+                    "enum": ["changes-current", "current-changes", "source-current", "current-source"],
+                    "enumDescriptions": [
+                        "Stash changes ⟷ Current",
+                        "Current ⟷ Stash changes",
+                        "Stash source ⟷ Current",
+                        "Current ⟷ Stash source"
+                    ],
+                    "default": "changes-current",
+                    "description": "Defines which comparison to display from a file diff button"
+                },
                 "gitstash.explorer.items.stash.to-clipboardContent": {
                     "type": "string",
                     "default": "#${index} [${branch}] ${description}",
@@ -271,8 +283,26 @@
                 "category": "GitStash"
             },
             {
-                "command": "gitstash.diffCurrent",
-                "title": "Compare with current",
+                "command": "gitstash.diffChangesCurrent",
+                "title": "Compare Stash changes ⟷ Current",
+                "category": "GitStash",
+                "icon": "$(git-compare)"
+            },
+            {
+                "command": "gitstash.diffCurrentChanges",
+                "title": "Compare Current ⟷ Stash changes",
+                "category": "GitStash",
+                "icon": "$(git-compare)"
+            },
+           {
+                "command": "gitstash.diffSourceCurrent",
+                "title": "Compare Stash source ⟷ Current",
+                "category": "GitStash",
+                "icon": "$(git-compare)"
+            },
+            {
+                "command": "gitstash.diffCurrentSource",
+                "title": "Compare Current ⟷ Stash source",
                 "category": "GitStash",
                 "icon": "$(git-compare)"
             },
@@ -384,7 +414,19 @@
                     "when": "false"
                 },
                 {
-                    "command": "gitstash.diffCurrent",
+                    "command": "gitstash.diffChangesCurrent",
+                    "when": "false"
+                },
+                {
+                    "command": "gitstash.diffCurrentChanges",
+                    "when": "false"
+                },
+                {
+                    "command": "gitstash.diffSourceCurrent",
+                    "when": "false"
+                },
+                {
+                    "command": "gitstash.diffCurrentSource",
                     "when": "false"
                 },
                 {
@@ -473,8 +515,23 @@
                     "group": "inline@1"
                 },
                 {
-                    "command": "gitstash.diffCurrent",
-                    "when": "view == gitstash.explorer && viewItem =~ /file/",
+                    "command": "gitstash.diffChangesCurrent",
+                    "when": "view == gitstash.explorer && viewItem =~ /file/ && config.gitstash.explorer.items.stash.diffButton == changes-current",
+                    "group": "inline@2"
+                },
+                {
+                    "command": "gitstash.diffCurrentChanges",
+                    "when": "view == gitstash.explorer && viewItem =~ /file/ && config.gitstash.explorer.items.stash.diffButton == current-changes",
+                    "group": "inline@2"
+                },
+                {
+                    "command": "gitstash.diffSourceCurrent",
+                    "when": "view == gitstash.explorer && viewItem =~ /file/ && config.gitstash.explorer.items.stash.diffButton == source-current",
+                    "group": "inline@2"
+                },
+                {
+                    "command": "gitstash.diffCurrentSource",
+                    "when": "view == gitstash.explorer && viewItem =~ /file/ && config.gitstash.explorer.items.stash.diffButton == current-source",
                     "group": "inline@2"
                 },
                 {
@@ -489,9 +546,36 @@
                 },
 
                 {
-                    "when": "view == gitstash.explorer",
+                    "submenu": "file.compare",
+                    "when": "view == gitstash.explorer && viewItem =~ /file/",
+                    "group": "file_compare"
+                },
+                {
                     "submenu": "node.clipboard",
+                    "when": "view == gitstash.explorer",
                     "group": "node_clipboard"
+                }
+            ],
+            "file.compare": [
+                {
+                    "command": "gitstash.diffChangesCurrent",
+                    "when": "viewItem =~ /modified|indexAdded|renamed/ && config.gitstash.explorer.items.stash.diffButton != changes-current",
+                    "group": "file_compare@1"
+                },
+                {
+                    "command": "gitstash.diffCurrentChanges",
+                    "when": "viewItem =~ /modified|indexAdded|renamed/ && config.gitstash.explorer.items.stash.diffButton != current-changes",
+                    "group": "file_compare@2"
+                },
+                {
+                    "command": "gitstash.diffSourceCurrent",
+                    "when": "viewItem =~ /modified|renamed|deleted/ && config.gitstash.explorer.items.stash.diffButton != source-current",
+                    "group": "file_compare@3"
+                },
+                {
+                    "command": "gitstash.diffCurrentSource",
+                    "when": "viewItem =~ /modified|renamed|deleted/ && config.gitstash.explorer.items.stash.diffButton != current-source",
+                    "group": "file_compare@4"
                 }
             ],
             "node.clipboard": [
@@ -517,6 +601,10 @@
             ]
         },
         "submenus": [
+            {
+                "id": "file.compare",
+                "label": "Compare"
+            },
             {
                 "id": "node.clipboard",
                 "label": "Copy"

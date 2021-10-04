@@ -65,11 +65,20 @@ export class Commands {
     public show = (fileNode: StashNode): void => void this.displayer.showDiff(fileNode)
 
     /**
-     * Shows a stashed file diff document compared with the HEAD version.
+     * Shows a diff document comparing the modified stashed file and the current version.
      *
      * @param fileNode the involved node
      */
-    public diffCurrent = (fileNode: StashNode): void => void this.displayer.showDiffCurrent(fileNode)
+    public diffChangesCurrent = (fileNode: StashNode): void => void this.displayer.showDiffCurrent(fileNode, true, false)
+    public diffCurrentChanges = (fileNode: StashNode): void => void this.displayer.showDiffCurrent(fileNode, true, true)
+
+    /**
+     * Shows a diff document comparing the stashed file parent and the current version.
+     *
+     * @param fileNode the involved node
+     */
+    public diffSourceCurrent = (fileNode: StashNode): void => void this.displayer.showDiffCurrent(fileNode, false, false)
+    public diffCurrentSource = (fileNode: StashNode): void => void this.displayer.showDiffCurrent(fileNode, false, true)
 
     /**
      * Opens the file inside an editor.

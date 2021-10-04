@@ -24,31 +24,34 @@ export default class {
      */
     public async showDiff(fileNode: StashNode): Promise<void> {
         if (fileNode.type === NodeType.Modified || fileNode.type === NodeType.Renamed) {
-            this.displayDiff(
+            return this.displayDiff(
                 await this.uriGenerator.createForDiff(fileNode, FileStage.Parent),
                 await this.uriGenerator.createForDiff(fileNode, FileStage.Change),
                 fileNode,
                 true,
             )
         }
-        else if (fileNode.type === NodeType.Untracked) {
-            this.displayDiff(
+
+        if (fileNode.type === NodeType.Untracked) {
+            return this.displayDiff(
                 await this.uriGenerator.createForDiff(),
                 await this.uriGenerator.createForDiff(fileNode),
                 fileNode,
                 true,
             )
         }
-        else if (fileNode.type === NodeType.IndexAdded) {
-            this.displayDiff(
+
+        if (fileNode.type === NodeType.IndexAdded) {
+            return this.displayDiff(
                 await this.uriGenerator.createForDiff(),
                 await this.uriGenerator.createForDiff(fileNode),
                 fileNode,
                 true,
             )
         }
-        else if (fileNode.type === NodeType.Deleted) {
-            this.displayDiff(
+
+        if (fileNode.type === NodeType.Deleted) {
+            return this.displayDiff(
                 await this.uriGenerator.createForDiff(fileNode),
                 await this.uriGenerator.createForDiff(),
                 fileNode,
@@ -60,50 +63,28 @@ export default class {
     /**
      * Shows a stashed file diff document.
      *
-     * @param fileNode
+     * @param fileNode        the node fot the stashed file
+     * @param compareChanges  compare changes or the changes' parent
+     * @param currentAsParent show current file on the left side
      */
-    public async showDiffCurrent(fileNode: StashNode): Promise<void> {
+    public async showDiffCurrent(fileNode: StashNode, compareChanges: boolean, currentAsParent: boolean): Promise<unknown> {
         const current = fileNode.type === NodeType.Renamed
             ? `${fileNode.parent.path}/${fileNode.oldName}`
             : fileNode.path
 
         if (!fs.existsSync(current)) {
-            void vscode.window.showErrorMessage('No file available to compare')
-            return
+            return vscode.window.showErrorMessage(`File ${current} not found`)
         }
 
-        if (fileNode.type === NodeType.Modified || fileNode.type === NodeType.Renamed) {
-            this.displayDiff(
-                await this.uriGenerator.createForDiff(fileNode, FileStage.Change),
-                vscode.Uri.file(current),
-                fileNode,
-                false,
-            )
-        }
-        else if (fileNode.type === NodeType.Untracked) {
-            this.displayDiff(
-                await this.uriGenerator.createForDiff(fileNode),
-                vscode.Uri.file(current),
-                fileNode,
-                false,
-            )
-        }
-        else if (fileNode.type === NodeType.IndexAdded) {
-            this.displayDiff(
-                await this.uriGenerator.createForDiff(fileNode),
-                vscode.Uri.file(current),
-                fileNode,
-                false,
-            )
-        }
-        else if (fileNode.type === NodeType.Deleted) {
-            this.displayDiff(
-                await this.uriGenerator.createForDiff(fileNode),
-                vscode.Uri.file(current),
-                fileNode,
-                false,
-            )
-        }
+        const currentFileUri = vscode.Uri.file(current)
+
+        const diffDataUri = fileNode.type === NodeType.Modified || fileNode.type === NodeType.Renamed
+            ? await this.uriGenerator.createForDiff(fileNode, compareChanges ? FileStage.Change : FileStage.Parent)
+            : await this.uriGenerator.createForDiff(fileNode)
+
+        return currentAsParent
+            ? this.displayDiff(currentFileUri, diffDataUri, fileNode, false)
+            : this.displayDiff(diffDataUri, currentFileUri, fileNode, false)
     }
 
     /**
@@ -115,7 +96,7 @@ export default class {
      * @param hint     the hint reference to know file origin
      */
     private displayDiff(base: vscode.Uri, modified: vscode.Uri, fileNode: StashNode, hint: boolean) {
-        void vscode.commands.executeCommand<void>(
+        return vscode.commands.executeCommand<void>(
             'vscode.diff',
             base,
             modified,
