@@ -4,8 +4,9 @@ import Git from './Git'
 
 export interface Stash {
     index: number;
-    description: string;
     date: string;
+    hash: string;
+    description: string;
 }
 
 export interface RenameStash {
@@ -50,23 +51,22 @@ export default class StashGit extends Git {
         const params = [
             'stash',
             'list',
-            '--format="%ci %s"',
+            '--format="%ci %h %s"',
         ]
 
         const stashList = (await this.exec(params, cwd)).trim()
 
-        const list: Stash[] = []
+        const sep1 = 26  // date length
+        const sep2 = 34  // date length + (1) space + (7) hash length
 
-        if (stashList.length > 0) {
-            const sep1 = 26 // date length
-            stashList.split(/\r?\n/g).forEach((stash, index) => {
-                list.push({
-                    index,
-                    date: stash.substring(1, sep1),
-                    description: stash.substring(sep1 + 1).slice(0, -1).trim(),
-                })
-            })
-        }
+        const list: Stash[] = stashList
+            .split(/\r?\n/g)
+            .map((stash, index) => ({
+                index,
+                date: stash.substring(1, sep1),
+                hash: stash.substring(sep1 + 1, sep2),
+                description: stash.substring(sep2 + 1).slice(0, -1).trim(),
+            }))
 
         return list
     }

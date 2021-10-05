@@ -52,6 +52,13 @@ export default class StashNode {
     }
 
     /**
+     * Gets the node commit hash.
+     */
+    public get hash(): string | null {
+        return this.source.hash
+    }
+
+    /**
      * Gets the loaded children.
      */
     public get children(): StashNode[] | null {
