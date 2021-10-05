@@ -62,7 +62,7 @@ export default class {
      */
     private getStashItem(node: StashNode): TreeItem {
         return {
-            id: `${node.type}.${node.parent.path}.${node.index}`,
+            id: `${node.type}.${node.parent.path}.${node.hash}`,
             label: this.stashLabels.getName(node),
             description: this.stashLabels.getDescription(node),
             tooltip: this.stashLabels.getTooltip(node),
@@ -89,7 +89,7 @@ export default class {
         }
 
         return {
-            id: `${node.type}.${node.parent.parent.path}.${node.parent.index}.${node.name}`,
+            id: `${node.type}.${node.parent.parent.path}.${node.parent.hash}.${node.name}`,
             label: this.stashLabels.getName(node),
             description: this.stashLabels.getDescription(node),
             tooltip: this.stashLabels.getTooltip(node),

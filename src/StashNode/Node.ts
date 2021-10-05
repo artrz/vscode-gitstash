@@ -9,5 +9,6 @@ export default interface Node {
     index?: number;
     parent?: Node;
     date?: string;
+    hash?: string;
     path?: string;
 }

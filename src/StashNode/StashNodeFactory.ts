@@ -39,6 +39,7 @@ export default class {
             index: stash.index,
             parent: parentNode,
             date: stash.date,
+            hash: stash.hash,
         })
     }
 

@@ -58,14 +58,8 @@ export default class {
      * Gets the stashes list.
      */
     private async getStashes(repositoryNode: StashNode): Promise<StashNode[]> {
-        return this.stashGit.getStashes(repositoryNode.path).then((rawList: Stash[]) => {
-            const stashNodes: StashNode[] = []
-            rawList.forEach((stash: Stash) => {
-                stashNodes.push(this.stashNodeFactory.createStashNode(stash, repositoryNode))
-            })
-
-            return stashNodes
-        })
+        return (await this.stashGit.getStashes(repositoryNode.path))
+            .map((stash: Stash) => this.stashNodeFactory.createStashNode(stash, repositoryNode))
     }
 
     /**
