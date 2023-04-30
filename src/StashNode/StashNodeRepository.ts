@@ -1,7 +1,7 @@
 'use strict'
 
-import NodeType from './NodeType'
 import StashGit, { RenameStash, Stash, StashedFiles } from '../Git/StashGit'
+import NodeType from './NodeType'
 import StashNode from './StashNode'
 import StashNodeFactory from './StashNodeFactory'
 import WorkspaceGit from '../Git/WorkspaceGit'

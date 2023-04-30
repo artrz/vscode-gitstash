@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Updated
 
  - Breadcrumbs like text on commands' selection placeholders
+ - Dependency updates
 
 ### Fixed
 

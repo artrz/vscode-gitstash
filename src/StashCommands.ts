@@ -80,7 +80,7 @@ export class StashCommands {
         }
 
         void this.workspaceGit.getRepositories().then((repositoryPaths: string[]) => {
-            const rps = {}
+            const repositories: Record<string, string[]> = {}
             repositoryPaths
                 .sort()
                 .reverse()
@@ -88,14 +88,14 @@ export class StashCommands {
                     for (let i = 0; i < filePaths.length; i += 1) {
                         const filePath = filePaths[i]
                         if (filePath && filePath.indexOf(repoPath) === 0) {
-                            rps[repoPath] = [filePath].concat(rps[repoPath] || [])
+                            repositories[repoPath] = [filePath].concat(repositories[repoPath] || [])
                             filePaths[i] = null
                         }
                     }
                 })
 
-            Object.keys(rps).forEach((repoPath) => {
-                this.exec(repoPath, params.concat(rps[repoPath]), 'Selected files stashed')
+            Object.keys(repositories).forEach((repoPath) => {
+                this.exec(repoPath, params.concat(repositories[repoPath]), 'Selected files stashed')
             })
         })
     }
