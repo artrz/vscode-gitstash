@@ -8,7 +8,7 @@ This extension adds a rich set of commands and an interactive explorer tree wher
 
 Tree features
   - Apply, pop, branch, drop stashes (buttons / context menu)
-  - Diff stashed file changes or compare with current file state
+  - Diff stashed file changes + [alternative diff modes](#diff-view-modes)
   - Apply changes from single stashed file
   - Copy to clipboard (context menu)
   - Configurable labels, descriptions, icons, tooltips, decorations, clipboard data
@@ -25,6 +25,25 @@ Tree features
 ![Failure notification](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/docs/failure.png)
 
 ![Image diff](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/docs/image-diff.png)
+
+
+## Diff view modes
+
+### Stash changes ⟷ Current
+
+This is the main diff mode where the stashed changes are compared to the current state of the file.
+
+### Current ⟷ Stash changes
+
+This diff view compares the current state of the file to the staged file, this helps to review how valuable may be the previous (staged) changes considering the latest updates.
+
+### Stash source ⟷ Current
+
+This mode compares the original state of the stashed file before being modified. Being able to compare the staged file before changing can be helpful when the current state of the file has changed in a way that the staged changes don't make much cense anymore.
+
+### Current ⟷ Stash source
+
+Alternative way to diff the stashed file without its changes.
 
 
 ## Commands
