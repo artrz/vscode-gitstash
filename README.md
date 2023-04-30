@@ -6,13 +6,16 @@ Seamlessly integration of git stash functionalities to your editor
 
 This extension adds a rich set of commands and an interactive explorer tree where you can create, inspect, apply and delete stashes, so managing this data becomes a breeze. It also adds a context menu option on the files listed in the source control view to selectively stash them. Every executed command is logged along its output for peace of mind.
 
-Tree features
+### Stashes explorer
   - Apply, pop, branch, drop stashes (buttons / context menu)
   - Diff stashed file changes + [alternative diff modes](#diff-view-modes)
   - Apply changes from single stashed file
   - Copy to clipboard (context menu)
   - Configurable labels, descriptions, icons, tooltips, decorations, clipboard data
   - Configurable data loading strategy for files (performance related)
+
+### Source control explorer
+  - Stash selected files (context menu)
 
 ![GitStash preview](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/docs/screencast.gif)
 
