@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [[5.2.0] 2023-04-30](https://github.com/arturock/vscode-gitstash/tree/v5.2.0)
+
 ### Added
 
  - Allow to configure if pop or apply will available as main or secondary stash item action
