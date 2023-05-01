@@ -59,7 +59,7 @@ export default class StashGit extends Git {
         const sep1 = 26  // date length
         const sep2 = 34  // date length + (1) space + (7) hash length
 
-        const list: Stash[] = stashList
+        const list: Stash[] = !stashList.length ? [] : stashList
             .split(/\r?\n/g)
             .map((stash, index) => ({
                 index,
