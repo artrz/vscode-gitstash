@@ -51,13 +51,13 @@ export default class StashGit extends Git {
         const params = [
             'stash',
             'list',
-            '--format="%ci %h %s"',
+            '--format="%ci %h %gs"',
         ]
 
         const stashList = (await this.exec(params, cwd)).trim()
 
         const sep1 = 26  // date length
-        const sep2 = 34  // date length + (1) space + (7) hash length
+        const sep2 = 32  // date length + (1) space + (7) hash length
 
         const list: Stash[] = !stashList.length ? [] : stashList
             .split(/\r?\n/g)
