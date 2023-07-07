@@ -257,7 +257,9 @@ export class StashCommands {
 
         this.performLogging(params, result, node)
 
-        this.showNotification(notificationText || result, type)
+        if (notificationText !== 'Stash dropped') {
+            this.showNotification(notificationText || result, type)
+        }
     }
 
     /**
