@@ -25,6 +25,15 @@ export default class Workspace {
     }
 
     /**
+     * Gets the workspace directory paths.
+     */
+    private static getWorkspacePaths(): string[] {
+        return (workspace.workspaceFolders || [])
+            .filter((folder: WorkspaceFolder) => fs.existsSync(folder.uri.fsPath))
+            .map((folder: WorkspaceFolder) => folder.uri.fsPath)
+    }
+
+    /**
      * Gets a list of parent directories paths starting from the workspace paths.
      *
      * @param workspacePaths the base workspace paths.
@@ -65,7 +74,7 @@ export default class Workspace {
         const roots: string[] = []
 
         workspacePaths.forEach((workspacePath) => {
-            const subDirectories = Workspace.getSubdirectoriesTree(
+            const subDirectories = this.getSubdirectoriesTree(
                 workspacePath,
                 searchLevels,
                 [workspacePath],
@@ -74,22 +83,6 @@ export default class Workspace {
         })
 
         return roots
-    }
-
-    /**
-     * Gets the workspace directory paths.
-     */
-    private static getWorkspacePaths(): string[] {
-        const folders = workspace.workspaceFolders || []
-        const paths: string[] = []
-
-        folders.forEach((folder: WorkspaceFolder) => {
-            if (fs.existsSync(folder.uri.fsPath)) {
-                paths.push(folder.uri.fsPath)
-            }
-        })
-
-        return paths
     }
 
     /**
@@ -110,7 +103,7 @@ export default class Workspace {
 
                     if (fs.statSync(subDirectoryPath).isDirectory()) {
                         list.push(subDirectoryPath)
-                        Workspace.getSubdirectoriesTree(subDirectoryPath, levels, list)
+                        this.getSubdirectoriesTree(subDirectoryPath, levels, list)
                     }
                 }
             })

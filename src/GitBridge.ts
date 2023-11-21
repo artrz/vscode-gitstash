@@ -24,7 +24,7 @@ export default class GitBridge {
      * @param fileNode the stashed node file
      * @param stage    the file stash stage
      */
-    public getFileContents(fileNode: StashNode, stage?: FileStage): Promise<Buffer | string> {
+    public getFileContents(fileNode: StashNode, stage?: FileStage): Promise<string> {
         switch (fileNode.type) {
             case NodeType.Deleted:
                 return this.stashGit.getParentContents(fileNode.parent.path, fileNode.parent.index, fileNode.name)

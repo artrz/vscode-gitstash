@@ -83,10 +83,10 @@ export default class UriGenerator {
     /**
      * Generates a tmp file with the given content.
      *
-     * @param content  the buffer with the content
+     * @param content  the string with the content
      * @param filename the string with the filename
      */
-    private createTmpFile(content: Buffer | string, filename: string): tmp.FileResult {
+    private createTmpFile(content: string, filename: string): tmp.FileResult {
         const file = tmp.fileSync({
             prefix: 'vscode-gitstash-',
             postfix: path.extname(filename),

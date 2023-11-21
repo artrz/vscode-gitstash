@@ -73,7 +73,7 @@ export default class {
             : fileNode.path
 
         if (!fs.existsSync(current)) {
-            return vscode.window.showErrorMessage(`File ${current} not found`)
+            return vscode.window.showErrorMessage(`File ${current} not found.`)
         }
 
         const currentFileUri = vscode.Uri.file(current)
@@ -96,6 +96,10 @@ export default class {
      * @param hint     the hint reference to know file origin
      */
     private displayDiff(base: vscode.Uri, modified: vscode.Uri, fileNode: StashNode, hint: boolean) {
+        if (!fs.existsSync(base.fsPath)) {
+            void vscode.window.showWarningMessage(`File ${base.fsPath} not found.`)
+        }
+
         return vscode.commands.executeCommand<void>(
             'vscode.diff',
             base,

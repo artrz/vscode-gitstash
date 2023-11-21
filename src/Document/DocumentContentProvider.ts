@@ -19,7 +19,7 @@ export default class implements vscode.TextDocumentContentProvider {
         const side = params.get('side')
 
         const stashGit = new StashGit()
-        let contents: Promise<string | Buffer>
+        let contents: Promise<string>
 
         try {
             if (type === NodeType.Deleted) {
@@ -48,7 +48,7 @@ export default class implements vscode.TextDocumentContentProvider {
             console.log(e)
         }
 
-        return (await contents).toString()
+        return contents
     }
 
     get onDidChange(): vscode.Event<vscode.Uri> {

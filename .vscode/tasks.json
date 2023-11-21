@@ -25,8 +25,8 @@
         {
             "label": "Watch",
             "type": "npm",
-            "script": "watch",
-            "problemMatcher": "$tsc-watch",
+            "script": "webpack-dev",
+            "problemMatcher": "$ts-webpack-watch",
             "isBackground": true,
             "presentation": {
                 "reveal": "always"

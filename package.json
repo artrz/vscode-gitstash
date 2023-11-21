@@ -3,7 +3,7 @@
     "displayName": "Git Stash",
     "description": "Give extra stash abilities to Code. Visually browse stashes, review and extract changes. Get all stash commands and more.",
     "version": "5.2.0",
-    "publisher": "arturock",
+    "publisher": "Arturo Rodríguez",
     "license": "MIT",
     "icon": "resources/logo.png",
     "galleryBanner": {
@@ -24,13 +24,13 @@
         "stash diff",
         "multi-root ready"
     ],
-    "homepage": "https://github.com/arturock/vscode-gitstash/blob/master/README.md",
+    "homepage": "https://github.com/artrz/vscode-gitstash/blob/master/README.md",
     "repository": {
         "type": "git",
-        "url": "https://github.com/arturock/vscode-gitstash.git"
+        "url": "https://github.com/artrz/vscode-gitstash.git"
     },
     "bugs": {
-        "url": "https://github.com/arturock/vscode-gitstash/issues"
+        "url": "https://github.com/artrz/vscode-gitstash/issues"
     },
     "main": "./dist/extension",
     "activationEvents": [

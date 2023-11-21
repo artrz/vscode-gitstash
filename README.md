@@ -20,17 +20,17 @@ Every executed command is logged along its output for peace of mind.
 
 ### Screenshots
 
-![GitStash preview](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/docs/screencast.gif)
+![GitStash preview](https://raw.githubusercontent.com/artrz/vscode-gitstash/master/resources/docs/screencast.gif)
 
-![Tree actions](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/docs/tree.png)
+![Tree actions](https://raw.githubusercontent.com/artrz/vscode-gitstash/master/resources/docs/tree.png)
 
-![Success notification](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/docs/success.png)
+![Success notification](https://raw.githubusercontent.com/artrz/vscode-gitstash/master/resources/docs/success.png)
 
-![Conflicts notification](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/docs/conflicts.png)
+![Conflicts notification](https://raw.githubusercontent.com/artrz/vscode-gitstash/master/resources/docs/conflicts.png)
 
-![Failure notification](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/docs/failure.png)
+![Failure notification](https://raw.githubusercontent.com/artrz/vscode-gitstash/master/resources/docs/failure.png)
 
-![Image diff](https://raw.githubusercontent.com/arturock/vscode-gitstash/master/resources/docs/image-diff.png)
+![Image diff](https://raw.githubusercontent.com/artrz/vscode-gitstash/master/resources/docs/image-diff.png)
 
 
 ## Diff view modes

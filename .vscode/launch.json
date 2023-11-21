@@ -24,7 +24,7 @@
             "skipFiles": ["<node_internals>/**", "**/node_modules/**", "**/resources/app/out/vs/**"],
             "smartStep": true,
             "sourceMaps": true,
-            "preLaunchTask": "npm: webpack-dev"
+            "preLaunchTask": "Watch"
         },
         {
             "name": "Launch Git Stash Tests",
@@ -36,7 +36,6 @@
                 "--extensionDevelopmentPath=${workspaceFolder}",
                 "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
             ],
-            "stopOnEntry": false,
             "sourceMaps": true,
             "outFiles": [ "${workspaceFolder}/out/test/**/*.js" ],
             "preLaunchTask": "npm: test-compile"

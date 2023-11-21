@@ -6,7 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [[5.2.0] 2023-04-30](https://github.com/arturock/vscode-gitstash/tree/v5.2.0)
+### Added
+
+ - Notify when diffing a non existent file against its stashed version
+
+### Fixed
+
+- Catch missing errors on git execution processes
+
+## [[5.2.0] 2023-04-30](https://github.com/artrz/vscode-gitstash/tree/v5.2.0)
 
 ### Added
 
@@ -24,7 +32,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Id uniqueness for stash items on the explorer tree
 
-## [[5.1.0] 2021-09-12](https://github.com/arturock/vscode-gitstash/tree/v5.1.0)
+## [[5.1.0] 2021-09-12](https://github.com/artrz/vscode-gitstash/tree/v5.1.0)
 
 ### Added
 
@@ -34,7 +42,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Typo in config key
 
-## [[5.0.0] 2021-09-10](https://github.com/arturock/vscode-gitstash/tree/v5.0.0)
+## [[5.0.0] 2021-09-10](https://github.com/artrz/vscode-gitstash/tree/v5.0.0)
 
 ### Added
 
@@ -47,7 +55,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Remove wrong commands from palette
 
-## [[4.0.0] 2021-07-27](https://github.com/arturock/vscode-gitstash/tree/v4.0.0)
+## [[4.0.0] 2021-07-27](https://github.com/artrz/vscode-gitstash/tree/v4.0.0)
 
 ### Added
 
@@ -66,39 +74,39 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Files on expanded stashes disappeared when reloading tree
 
-## [[3.3.1] 2020-10-22](https://github.com/arturock/vscode-gitstash/tree/v3.3.1)
+## [[3.3.1] 2020-10-22](https://github.com/artrz/vscode-gitstash/tree/v3.3.1)
 
 ### Fixed
 
 - Wrong documentation on some labels
 - Remove wrong command from palette
 
-## [[3.3.0] 2020-09-27](https://github.com/arturock/vscode-gitstash/tree/v3.3.0)
+## [[3.3.0] 2020-09-27](https://github.com/artrz/vscode-gitstash/tree/v3.3.0)
 
 ### Added
 
 - Allow to copy to clipboard stash information from tree view
 
-## [[3.2.2] 2020-09-27](https://github.com/arturock/vscode-gitstash/tree/v3.2.2)
+## [[3.2.2] 2020-09-27](https://github.com/artrz/vscode-gitstash/tree/v3.2.2)
 
 ### Fixed
 
 - Typo on tooltip - thanks to [@Dylanlan](https://github.com/Dylanlan)
 
-## [[3.2.1] 2020-07-26](https://github.com/arturock/vscode-gitstash/tree/v3.2.1)
+## [[3.2.1] 2020-07-26](https://github.com/artrz/vscode-gitstash/tree/v3.2.1)
 
 ### Updated
 
 - Latest dependencies
 - New code style
 
-## [[3.2.0] 2019-11-10](https://github.com/arturock/vscode-gitstash/tree/v3.2.0)
+## [[3.2.0] 2019-11-10](https://github.com/artrz/vscode-gitstash/tree/v3.2.0)
 
 ### Added
 
 - Allow configuration to show the number of stashes on the explorer repository label
 
-## [[3.1.0] 2019-09-23](https://github.com/arturock/vscode-gitstash/tree/v3.1.0)
+## [[3.1.0] 2019-09-23](https://github.com/artrz/vscode-gitstash/tree/v3.1.0)
 
 ### Added
 
@@ -108,7 +116,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Not refreshing automatically the stashes explorer on Windows under some circumstances
 
-## [[3.0.0] 2019-09-09](https://github.com/arturock/vscode-gitstash/tree/v3.0.0)
+## [[3.0.0] 2019-09-09](https://github.com/artrz/vscode-gitstash/tree/v3.0.0)
 
 ### Added
 
@@ -129,13 +137,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Not handling correctly file paths with spaces in their names
 - Better success/error identification when running git commands
 
-## [[2.1.1] 2019-05-15](https://github.com/arturock/vscode-gitstash/tree/v2.1.1)
+## [[2.1.1] 2019-05-15](https://github.com/artrz/vscode-gitstash/tree/v2.1.1)
 
 ### Fixed
 
 Showing duplicated repositories on tree in some cases - thanks to [@nckcol](https://github.com/nckcol)
 
-## [[2.1.0] 2019-04-09](https://github.com/arturock/vscode-gitstash/tree/v2.1.0)
+## [[2.1.0] 2019-04-09](https://github.com/artrz/vscode-gitstash/tree/v2.1.0)
 
 ### Added
 
@@ -143,7 +151,7 @@ Showing duplicated repositories on tree in some cases - thanks to [@nckcol](http
   - File
     - Recreate untracked file
 
-## [[2.0.0] 2019-04-08](https://github.com/arturock/vscode-gitstash/tree/v2.0.0)
+## [[2.0.0] 2019-04-08](https://github.com/artrz/vscode-gitstash/tree/v2.0.0)
 
 ### Added
 
@@ -156,19 +164,19 @@ Showing duplicated repositories on tree in some cases - thanks to [@nckcol](http
   - Rename some settings
   - Update some default formats
 
-## [[1.0.2] 2019-02-02](https://github.com/arturock/vscode-gitstash/tree/v1.0.2)
+## [[1.0.2] 2019-02-02](https://github.com/artrz/vscode-gitstash/tree/v1.0.2)
 
 ### Fixed
 
 - Unable to compare with current version on Win
 
-## [[1.0.1] 2018-11-01](https://github.com/arturock/vscode-gitstash/tree/v1.0.1)
+## [[1.0.1] 2018-11-01](https://github.com/artrz/vscode-gitstash/tree/v1.0.1)
 
 ### Fixed
 
 - Unable to create stash when al changes are staged
 
-## [[1.0.0] 2018-10-16](https://github.com/arturock/vscode-gitstash/tree/v1.0.0)
+## [[1.0.0] 2018-10-16](https://github.com/artrz/vscode-gitstash/tree/v1.0.0)
 
 ### Added
 
@@ -187,7 +195,7 @@ Showing duplicated repositories on tree in some cases - thanks to [@nckcol](http
 - Notify when a stash application has conflicts
 - Log shows date, git command and involved stash if available
 
-## [[0.8.0] 2018-08-25](https://github.com/arturock/vscode-gitstash/tree/v0.8.0)
+## [[0.8.0] 2018-08-25](https://github.com/artrz/vscode-gitstash/tree/v0.8.0)
 
 ### Added
 
@@ -205,13 +213,13 @@ Showing duplicated repositories on tree in some cases - thanks to [@nckcol](http
 
 - Some text encoding problems
 
-## [[0.7.1] 2017-10-20](https://github.com/arturock/vscode-gitstash/tree/v0.7.1)
+## [[0.7.1] 2017-10-20](https://github.com/artrz/vscode-gitstash/tree/v0.7.1)
 
 ### Fixed
 
 - Show log only when requested
 
-## [[0.7.0] 2017-10-19](https://github.com/arturock/vscode-gitstash/tree/v0.7.0)
+## [[0.7.0] 2017-10-19](https://github.com/artrz/vscode-gitstash/tree/v0.7.0)
 
 ### Updated
 
@@ -224,7 +232,7 @@ Showing duplicated repositories on tree in some cases - thanks to [@nckcol](http
 - Explorer showing non stash files in some cases
 - Not showing contents of indexed untracked files
 
-## [[0.6.0] 2017-10-01](https://github.com/arturock/vscode-gitstash/tree/v0.6.0)
+## [[0.6.0] 2017-10-01](https://github.com/artrz/vscode-gitstash/tree/v0.6.0)
 
 ### Added
 
@@ -239,7 +247,7 @@ Showing duplicated repositories on tree in some cases - thanks to [@nckcol](http
 
 Commands are now listed only when on a git repository
 
-## [[0.5.0] 2017-10-01](https://github.com/arturock/vscode-gitstash/tree/v0.5.0)
+## [[0.5.0] 2017-10-01](https://github.com/artrz/vscode-gitstash/tree/v0.5.0)
 
 ### Added
 
@@ -255,7 +263,7 @@ Commands are now listed only when on a git repository
 
 - Explorer Tree icons
 
-## [[0.4.0] 2017-09-29](https://github.com/arturock/vscode-gitstash/tree/v0.4.0)
+## [[0.4.0] 2017-09-29](https://github.com/artrz/vscode-gitstash/tree/v0.4.0)
 
 ### Added
 
@@ -268,13 +276,13 @@ Commands are now listed only when on a git repository
 
 - Improve auto-reload time in explorer tree
 
-## [[0.3.1] 2017-09-26](https://github.com/arturock/vscode-gitstash/tree/v0.3.1)
+## [[0.3.1] 2017-09-26](https://github.com/artrz/vscode-gitstash/tree/v0.3.1)
 
 ### Fixed
 
 - Trimming diff data breaking some results
 
-## [[0.3.0] 2017-09-26](https://github.com/arturock/vscode-gitstash/tree/v0.3.0)
+## [[0.3.0] 2017-09-26](https://github.com/artrz/vscode-gitstash/tree/v0.3.0)
 
 - Configure diff view title
 
@@ -282,13 +290,13 @@ Commands are now listed only when on a git repository
 
 - Improve stash watcher
 
-## [[0.2.0] 2017-09-25](https://github.com/arturock/vscode-gitstash/tree/v0.2.0)
+## [[0.2.0] 2017-09-25](https://github.com/artrz/vscode-gitstash/tree/v0.2.0)
 
 ### Added
 
 - Configurations for tree items
 
-## [[0.1.0] 2017-09-24](https://github.com/arturock/vscode-gitstash/tree/v0.1.0)
+## [[0.1.0] 2017-09-24](https://github.com/artrz/vscode-gitstash/tree/v0.1.0)
 
 ### Added
 

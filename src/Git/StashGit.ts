@@ -172,13 +172,13 @@ export default class StashGit extends Git {
      * @param index the int with the index of the parent stash
      * @param file  the string with the stashed file name
      */
-    public async getStashContents(cwd: string, index: number, file: string): Promise<Buffer | string> {
+    public async getStashContents(cwd: string, index: number, file: string): Promise<string> {
         const params = [
             'show',
             `stash@{${index}}:${file}`,
         ]
 
-        return await this.call(params, cwd)
+        return this.exec(params, cwd)
     }
 
     /**
@@ -193,13 +193,13 @@ export default class StashGit extends Git {
      * @param index the int with the index of the parent stash
      * @param file  the string with the stashed file name
      */
-    public async getParentContents(cwd: string, index: number, file: string): Promise<Buffer | string> {
+    public async getParentContents(cwd: string, index: number, file: string): Promise<string> {
         const params = [
             'show',
             `stash@{${index}}^1:${file}`,
         ]
 
-        return await this.call(params, cwd)
+        return this.exec(params, cwd)
     }
 
     /**
@@ -209,12 +209,12 @@ export default class StashGit extends Git {
      * @param index the int with the index of the parent stash
      * @param file  the string with the stashed file name
      */
-    public async getThirdParentContents(cwd: string, index: number, file: string): Promise<Buffer | string> {
+    public async getThirdParentContents(cwd: string, index: number, file: string): Promise<string> {
         const params = [
             'show',
             `stash@{${index}}^3:${file}`,
         ]
 
-        return await this.call(params, cwd)
+        return this.exec(params, cwd)
     }
 }
