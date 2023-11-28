@@ -112,7 +112,7 @@ export default class {
     private parseStashLabel(stashNode: StashNode, template: string): string {
         return template
             .replace('${index}', stashNode.index.toString())
-            .replace('${branch}', this.getStashBranch(stashNode))
+            .replace('${branch}, ', '')
             .replace('${description}', this.getStashDescription(stashNode))
             .replace('${dateTimeLong}', DateFormat.toFullyReadable(new Date(Date.parse(stashNode.date))))
             .replace('${dateTimeSmall}', DateFormat.toDateTimeSmall(new Date(Date.parse(stashNode.date))))
