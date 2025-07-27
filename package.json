@@ -100,7 +100,10 @@
                 },
                 "gitstash.explorer.items.stash.popAndApply": {
                     "type": "string",
-                    "enum": ["pop", "apply"],
+                    "enum": [
+                        "pop",
+                        "apply"
+                    ],
                     "enumDescriptions": [
                         "Pop as button, apply as context option",
                         "Apply as button, pop as context option"
@@ -110,7 +113,12 @@
                 },
                 "gitstash.explorer.items.stash.diffButton": {
                     "type": "string",
-                    "enum": ["changes-current", "current-changes", "source-current", "current-source"],
+                    "enum": [
+                        "changes-current",
+                        "current-changes",
+                        "source-current",
+                        "current-source"
+                    ],
                     "enumDescriptions": [
                         "Stash changes ⟷ Current",
                         "Current ⟷ Stash changes",
@@ -127,7 +135,11 @@
                 },
                 "gitstash.explorer.items.file.icons": {
                     "type": "string",
-                    "enum": ["file", "letter", "dot"],
+                    "enum": [
+                        "file",
+                        "letter",
+                        "dot"
+                    ],
                     "enumDescriptions": [
                         "Show the icon corresponding the file type",
                         "Show the classic letter icon",
@@ -138,7 +150,12 @@
                 },
                 "gitstash.explorer.items.file.decoration": {
                     "type": "string",
-                    "enum": ["none", "badge", "color", "badge-color"],
+                    "enum": [
+                        "none",
+                        "badge",
+                        "color",
+                        "badge-color"
+                    ],
                     "enumDescriptions": [
                         "Do not add decorations",
                         "Add badge",
@@ -197,7 +214,11 @@
                 },
                 "gitstash.explorer.itemDisplayMode": {
                     "type": "string",
-                    "enum": ["show-empty", "hide-empty", "indicate-empty"],
+                    "enum": [
+                        "show-empty",
+                        "hide-empty",
+                        "indicate-empty"
+                    ],
                     "enumDescriptions": [
                         "Empty repositories will be listed",
                         "Empty repositories will be hidden",
@@ -294,7 +315,7 @@
                 "category": "GitStash",
                 "icon": "$(git-compare)"
             },
-           {
+            {
                 "command": "gitstash.diffSourceCurrent",
                 "title": "Compare Stash source ⟷ Current",
                 "category": "GitStash",
@@ -470,13 +491,11 @@
                     "when": "view == gitstash.explorer && viewItem == repository",
                     "group": "inline@2"
                 },
-
                 {
                     "command": "gitstash.openDir",
                     "when": "view == gitstash.explorer && viewItem == repository",
                     "group": "menu@1"
                 },
-
                 {
                     "command": "gitstash.apply",
                     "when": "view == gitstash.explorer && viewItem == stash && config.gitstash.explorer.items.stash.popAndApply == apply",
@@ -492,7 +511,6 @@
                     "when": "view == gitstash.explorer && viewItem == stash",
                     "group": "inline@2"
                 },
-
                 {
                     "command": "gitstash.apply",
                     "when": "view == gitstash.explorer && viewItem == stash && config.gitstash.explorer.items.stash.popAndApply != apply",
@@ -508,7 +526,6 @@
                     "when": "view == gitstash.explorer && viewItem == stash",
                     "group": "menu@2"
                 },
-
                 {
                     "command": "gitstash.openCurrent",
                     "when": "view == gitstash.explorer && viewItem =~ /file:(modified|indexAdded|renamed)/",
@@ -544,7 +561,6 @@
                     "when": "view == gitstash.explorer && viewItem =~ /file:(untracked)/",
                     "group": "inline@3"
                 },
-
                 {
                     "submenu": "file.compare",
                     "when": "view == gitstash.explorer && viewItem =~ /file/",
@@ -620,21 +636,21 @@
         "test": "node ./out/test/runTest.js"
     },
     "dependencies": {
-        "tmp": "0.2.1"
+        "tmp": "0.2.3"
     },
     "devDependencies": {
         "@types/glob": "^8.1.0",
-        "@types/mocha": "^10.0.1",
-        "@types/node": "12.12.70",
-        "@types/tmp": "0.2.3",
-        "@types/vscode": "1.52.0",
-        "@typescript-eslint/eslint-plugin": "^5.59.1",
-        "@typescript-eslint/parser": "^5.59.1",
-        "eslint": "^8.39.0",
-        "ts-loader": "^9.4.2",
-        "typescript": "^5.0.4",
+        "@types/mocha": "^10.0.10",
+        "@types/node": "22.16.5",
+        "@types/tmp": "0.2.6",
+        "@types/vscode": "1.70.0",
+        "@typescript-eslint/eslint-plugin": "^8.38.0",
+        "@typescript-eslint/parser": "^8.38.0",
+        "eslint": "^8.57.1",
+        "ts-loader": "^9.5.2",
+        "typescript": "^5.8.3",
         "vscode-test": "^1.6.1",
-        "webpack": "^5.81.0",
-        "webpack-cli": "^5.0.2"
+        "webpack": "^5.100.2",
+        "webpack-cli": "^6.0.1"
     }
 }
