@@ -15,7 +15,7 @@ export default class {
         const errors: string[] = []
 
         const cmd = spawn(command, args, { cwd })
-        cmd.stderr.setEncoding(encoding || 'utf8')
+        cmd.stderr.setEncoding(encoding ?? 'utf8')
 
         return new Promise<string>((resolve, reject) => {
             cmd.on('error', (err: Error) => errors.push(err.message))
@@ -26,7 +26,7 @@ export default class {
 
             cmd.on('close', (code: number) => {
                 const result = response.length
-                    ? Buffer.concat(response).toString(encoding || 'utf8').trim()
+                    ? Buffer.concat(response).toString(encoding ?? 'utf8').trim()
                     : ''
 
                 const error = errors.length ? errors.join().trim() : ''

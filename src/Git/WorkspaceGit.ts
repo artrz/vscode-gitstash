@@ -3,7 +3,7 @@
 import Config from '../Config'
 import Git from './Git'
 import { Uri } from 'vscode'
-import Workspace from '../Workspace'
+import * as Workspace from '../Workspace'
 
 export default class WorkspaceGit extends Git {
     private config: Config
@@ -19,7 +19,7 @@ export default class WorkspaceGit extends Git {
     public async hasGitRepository(): Promise<boolean> {
         const repository = await this.getRepositories(true)
 
-        return repository && repository.length > 0
+        return repository.length > 0
     }
 
     /**
@@ -44,7 +44,7 @@ export default class WorkspaceGit extends Git {
                 }
 
                 gitPath = Uri.file(gitPath).fsPath
-                if (paths.indexOf(gitPath) === -1) {
+                if (!paths.includes(gitPath)) {
                     paths.push(gitPath)
 
                     if (firstOnly) {
@@ -53,6 +53,7 @@ export default class WorkspaceGit extends Git {
                 }
             }
             catch (e) {
+                console.error(e)
                 continue
             }
         }

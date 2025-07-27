@@ -6,7 +6,7 @@ enum NodeType {
     Modified = 'm',
     Renamed = 'n',
     Untracked = 'u',
-    Message = 'i'
+    Message = 'i',
 }
 
 export default NodeType

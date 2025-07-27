@@ -8,12 +8,18 @@ import StashNode from './StashNode/StashNode'
 import WorkspaceGit from './Git/WorkspaceGit'
 
 enum StashType {
-    'Simple',
-    'KeepIndex',
-    'IncludeUntracked',
-    'IncludeUntrackedKeepIndex',
-    'All',
-    'AllKeepIndex',
+    Simple,
+    KeepIndex,
+    IncludeUntracked,
+    IncludeUntrackedKeepIndex,
+    All,
+    AllKeepIndex,
+}
+
+enum NotificationType {
+    Warning = 'warning',
+    Message = 'message',
+    Error = 'error',
 }
 
 export class StashCommands {
@@ -87,7 +93,7 @@ export class StashCommands {
                 .forEach((repoPath) => {
                     for (let i = 0; i < filePaths.length; i += 1) {
                         const filePath = filePaths[i]
-                        if (filePath && filePath.indexOf(repoPath) === 0) {
+                        if (filePath?.startsWith(repoPath)) {
                             repositories[repoPath] = [filePath].concat(repositories[repoPath] || [])
                             filePaths[i] = null
                         }
@@ -207,22 +213,22 @@ export class StashCommands {
                     const issueType = this.findResultIssues(result)
 
                     if (issueType === 'conflict') {
-                        this.logResult(params, 'warning', result, `${successMessage} with conflicts`, node)
+                        this.logResult(params, NotificationType.Warning, result, `${successMessage} with conflicts`, node)
                     }
                     else if (issueType === 'empty') {
-                        this.logResult(params, 'message', result, 'No local changes to save', node)
+                        this.logResult(params, NotificationType.Message, result, 'No local changes to save', node)
                     }
                     else {
-                        this.logResult(params, 'message', result, successMessage, node)
+                        this.logResult(params, NotificationType.Message, result, successMessage, node)
                     }
                 },
                 (error: string) => {
                     const excerpt = error.substring(error.indexOf(':') + 1).trim()
-                    this.logResult(params, 'error', error, excerpt, node)
+                    this.logResult(params, NotificationType.Error, error, excerpt, node)
                 },
             )
             .catch((error: Error) => {
-                this.logResult(params, 'error', error.toString())
+                this.logResult(params, NotificationType.Error, error.toString())
             })
     }
 
@@ -231,7 +237,7 @@ export class StashCommands {
      *
      * @param result the operation result
      */
-    private findResultIssues(result: string): string|null {
+    private findResultIssues(result: string): string | null {
         for (const line of result.split('\n')) {
             if (line.startsWith('CONFLICT (content): ')) {
                 return 'conflict'
@@ -252,12 +258,12 @@ export class StashCommands {
      * @param result           the result content
      * @param notificationText the optional notification message
      */
-    private logResult(params: string[], type: string, result: string, notificationText?: string, node?: StashNode): void {
+    private logResult(params: string[], type: NotificationType, result: string, notificationText?: string, node?: StashNode): void {
         this.prepareLogChannel()
 
         this.performLogging(params, result, node)
 
-        this.showNotification(notificationText || result, type)
+        this.showNotification(notificationText ?? result, type)
     }
 
     /**
@@ -300,7 +306,7 @@ export class StashCommands {
      * @param type        the the message type
      */
     private showNotification(information: string, type: string) {
-        const summary = information.substr(0, 300)
+        const summary = information.substring(0, 300)
 
         const actions = [{ title: 'Show log' }]
         const callback = (value) => {

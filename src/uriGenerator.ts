@@ -48,7 +48,7 @@ export default class UriGenerator {
             return Uri.parse(`${UriGenerator.emptyFileScheme}:`)
         }
 
-        if (this.supportedBinaryFiles.indexOf(path.extname(node.name)) > -1) {
+        if (this.supportedBinaryFiles.includes(path.extname(node.name))) {
             return Uri.file(
                 this.createTmpFile(
                     await this.gitBridge.getFileContents(node, stage),
@@ -72,9 +72,9 @@ export default class UriGenerator {
         const query = `cwd=${node.parent.path}`
             + `&index=${node.parent.index}`
             + `&path=${node.name}`
-            + `&oldPath=${node.oldName || ''}`
+            + `&oldPath=${node.oldName ?? ''}`
             + `&type=${node.type}`
-            + `&side=${side || ''}`
+            + `&side=${side ?? ''}`
             + `&t=${timestamp}`
 
         return Uri.parse(`${UriGenerator.fileScheme}:${node.path}?${query}`)
