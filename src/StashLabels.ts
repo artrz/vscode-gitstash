@@ -2,7 +2,7 @@
 
 import * as path from 'path'
 import Config from './Config'
-import DateFormat from './DateFormat'
+import * as DateFormat from './DateFormat'
 import NodeType from './StashNode/NodeType'
 import StashNode from './StashNode/StashNode'
 
