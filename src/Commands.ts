@@ -241,19 +241,20 @@ export class Commands {
     private clearPerform = (repositoryNode: StashNode): void => {
         const repositoryLabel = this.stashLabels.getName(repositoryNode)
 
-        vscode.window
-            .showWarningMessage<vscode.MessageItem>(
-                `Clear all stashes on ${repositoryLabel}?`,
-                { modal: true },
-                { title: 'Proceed' },
-            )
+        vscode.window.showWarningMessage<vscode.MessageItem>(
+            `Clear all stashes on ${repositoryLabel}?`,
+            { modal: true },
+            { title: 'Proceed' },
+        )
             .then(
                 (option) => {
                     if (typeof option !== 'undefined') {
                         this.stashCommands.clear(repositoryNode)
                     }
                 },
-                (e: unknown) => { console.error('failure', e) },
+                (e: unknown) => {
+                    console.error('failure', e)
+                },
             )
     }
 
@@ -333,7 +334,7 @@ export class Commands {
             .then((branchName) => {
                 if (typeof branchName === 'string') {
                     if (!branchName.length) {
-                        vscode.window.showErrorMessage('A branch name is required.')
+                        void vscode.window.showErrorMessage('A branch name is required.')
                     }
                     else {
                         this.stashCommands.branch(stashNode, branchName)
@@ -391,12 +392,11 @@ export class Commands {
         const parentLabel = this.stashLabels.getName(fileNode.parent)
         const exists = fs.existsSync(fileNode.path)
 
-        void vscode.window
-            .showWarningMessage<vscode.MessageItem>(
-                `${parentLabel}\n\nCreate file ${fileNode.name}?${exists ? '\n\nThis will overwrite the current file' : ''}`,
-                { modal: true },
-                { title: 'Proceed' },
-            )
+        void vscode.window.showWarningMessage<vscode.MessageItem>(
+            `${parentLabel}\n\nCreate file ${fileNode.name}?${exists ? '\n\nThis will overwrite the current file' : ''}`,
+            { modal: true },
+            { title: 'Proceed' },
+        )
             .then((option) => {
                 if (typeof option !== 'undefined') {
                     this.stashCommands.createSingle(fileNode)
