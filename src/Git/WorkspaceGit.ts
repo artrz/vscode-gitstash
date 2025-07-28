@@ -1,9 +1,9 @@
 'use strict'
 
+import * as Workspace from '../Workspace'
 import Config from '../Config'
 import Git from './Git'
 import { Uri } from 'vscode'
-import * as Workspace from '../Workspace'
 
 export default class WorkspaceGit extends Git {
     private config: Config

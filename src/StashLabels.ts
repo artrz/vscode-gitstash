@@ -1,8 +1,8 @@
 'use strict'
 
+import * as DateFormat from './DateFormat'
 import * as path from 'path'
 import Config from './Config'
-import * as DateFormat from './DateFormat'
 import NodeType from './StashNode/NodeType'
 import StashNode from './StashNode/StashNode'
 

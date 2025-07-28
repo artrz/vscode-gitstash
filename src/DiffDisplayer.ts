@@ -24,7 +24,7 @@ export default class {
      */
     public async showDiff(fileNode: StashNode): Promise<void> {
         if (fileNode.type === NodeType.Modified || fileNode.type === NodeType.Renamed) {
-            this.displayDiff(
+            void this.displayDiff(
                 await this.uriGenerator.createForDiff(fileNode, FileStage.Parent),
                 await this.uriGenerator.createForDiff(fileNode, FileStage.Change),
                 fileNode,
@@ -34,7 +34,7 @@ export default class {
         }
 
         if (fileNode.type === NodeType.Untracked) {
-            this.displayDiff(
+            void this.displayDiff(
                 await this.uriGenerator.createForDiff(),
                 await this.uriGenerator.createForDiff(fileNode),
                 fileNode,
@@ -44,7 +44,7 @@ export default class {
         }
 
         if (fileNode.type === NodeType.IndexAdded) {
-            this.displayDiff(
+            void this.displayDiff(
                 await this.uriGenerator.createForDiff(),
                 await this.uriGenerator.createForDiff(fileNode),
                 fileNode,
@@ -54,7 +54,7 @@ export default class {
         }
 
         if (fileNode.type === NodeType.Deleted) {
-            this.displayDiff(
+            void this.displayDiff(
                 await this.uriGenerator.createForDiff(fileNode),
                 await this.uriGenerator.createForDiff(),
                 fileNode,

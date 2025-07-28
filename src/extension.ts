@@ -41,7 +41,9 @@ export function activate(context: ExtensionContext): void {
 
     const watcherManager = new FileSystemWatcherManager(
         workspaceGit.getRepositories(),
-        (projectDirectory: Uri) => { treeProvider.reload('update', projectDirectory) },
+        (projectDirectory: Uri) => {
+            treeProvider.reload('update', projectDirectory)
+        },
     )
 
     context.subscriptions.push(

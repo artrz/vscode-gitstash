@@ -19,7 +19,9 @@ export default class implements Disposable {
         this.callback = callback
 
         void repositories.then((directories) => {
-            directories.forEach((directory) => { this.registerProjectWatcher(directory) })
+            directories.forEach((directory) => {
+                this.registerProjectWatcher(directory)
+            })
         })
     }
 
