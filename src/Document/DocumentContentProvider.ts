@@ -12,14 +12,20 @@ export default class implements vscode.TextDocumentContentProvider {
         const params = new URLSearchParams(uri.query)
 
         const cwd = params.get('cwd')
-        const index = parseInt(params.get('index'), 10)
+        const index = parseInt(params.get('index') ?? '-1', 10)
         const path = params.get('path')
-        const oldPath = params.get('oldPath')
+        const oldPath = params.get('oldPath') ?? ''
         const type = params.get('type')
         const side = params.get('side')
 
+        if (!cwd || !path || index < 0) {
+            console.error(`cwd: ${cwd}`)
+            console.error(`path: ${path}`)
+            return ''
+        }
+
         const stashGit = new StashGit()
-        let contents: Promise<string>
+        let contents: Promise<string> = Promise.resolve<string>('')
 
         try {
             if (type === NodeType.Deleted) {

@@ -105,7 +105,7 @@ export class Commands {
         void this.runOnRepository(
             repositoryNode,
             (repositoryNode: StashNode) => this.stashPerform(repositoryNode),
-            'Create stash'
+            'Create stash',
         )
     }
 
@@ -118,7 +118,7 @@ export class Commands {
         void this.runOnRepository(
             repositoryNode,
             (repositoryNode: StashNode) => this.clearPerform(repositoryNode),
-            'Clear stashes'
+            'Clear stashes',
         )
     }
 
@@ -243,17 +243,17 @@ export class Commands {
 
         vscode.window
             .showWarningMessage<vscode.MessageItem>(
-            `Clear all stashes on ${repositoryLabel}?`,
-            { modal: true },
-            { title: 'Proceed' },
-        )
+                `Clear all stashes on ${repositoryLabel}?`,
+                { modal: true },
+                { title: 'Proceed' },
+            )
             .then(
                 (option) => {
                     if (typeof option !== 'undefined') {
                         this.stashCommands.clear(repositoryNode)
                     }
                 },
-                (e) => console.error('failure', e),
+                (e: unknown) => { console.error('failure', e) },
             )
     }
 
@@ -332,9 +332,12 @@ export class Commands {
             })
             .then((branchName) => {
                 if (typeof branchName === 'string') {
-                    !branchName.length
-                        ? void vscode.window.showErrorMessage('A branch name is required.')
-                        : this.stashCommands.branch(stashNode, branchName)
+                    if (!branchName.length) {
+                        vscode.window.showErrorMessage('A branch name is required.')
+                    }
+                    else {
+                        this.stashCommands.branch(stashNode, branchName)
+                    }
                 }
             })
     }
@@ -390,10 +393,10 @@ export class Commands {
 
         void vscode.window
             .showWarningMessage<vscode.MessageItem>(
-            `${parentLabel}\n\nCreate file ${fileNode.name}?${exists ? '\n\nThis will overwrite the current file' : ''}`,
-            { modal: true },
-            { title: 'Proceed' },
-        )
+                `${parentLabel}\n\nCreate file ${fileNode.name}?${exists ? '\n\nThis will overwrite the current file' : ''}`,
+                { modal: true },
+                { title: 'Proceed' },
+            )
             .then((option) => {
                 if (typeof option !== 'undefined') {
                     this.stashCommands.createSingle(fileNode)
@@ -452,7 +455,7 @@ export class Commands {
             : null
 
         const node = editorPath
-            ? nodes.sort().reverse().find((node) => editorPath.indexOf(node.path) !== -1)
+            ? nodes.sort().reverse().find((node) => editorPath.includes(node.path))
             : null
 
         if (node) {
@@ -491,7 +494,7 @@ export class Commands {
             return this.runOnRepository(
                 repositoryOrStashNode,
                 (repositoryNode: StashNode) => this.showStashes(repositoryNode, callback, placeholder, canPickMany || false),
-                placeholder
+                placeholder,
             )
         }
 

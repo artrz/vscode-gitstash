@@ -56,17 +56,19 @@ export default class StashGit extends Git {
 
         const stashList = (await this.exec(params, cwd)).trim()
 
-        const sep1 = 26  // date length
-        const sep2 = 34  // date length + (1) space + (7) hash length
+        const sep1 = 26 // date length
+        const sep2 = 34 // date length + (1) space + (7) hash length
 
-        const list: Stash[] = !stashList.length ? [] : stashList
-            .split(/\r?\n/g)
-            .map((stash, index) => ({
-                index,
-                date: stash.substring(1, sep1),
-                hash: stash.substring(sep1 + 1, sep2),
-                description: stash.substring(sep2 + 1).slice(0, -1).trim(),
-            }))
+        const list: Stash[] = !stashList.length
+            ? []
+            : stashList
+                .split(/\r?\n/g)
+                .map((stash, index) => ({
+                    index,
+                    date: stash.substring(1, sep1),
+                    hash: stash.substring(sep1 + 1, sep2),
+                    description: stash.substring(sep2 + 1).slice(0, -1).trim(),
+                }))
 
         return list
     }
@@ -112,7 +114,7 @@ export default class StashGit extends Git {
                         files.modified.push(file)
                     }
                     else if (status === 'R') {
-                        const fileNames = /^\d+\s+([^\t]+)\t(.+)$/.exec(file)
+                        const fileNames = /^\d+\s+([^\t]+)\t(.+)$/.exec(file) as string[]
                         files.renamed.push({
                             new: fileNames[2],
                             old: fileNames[1],
@@ -155,7 +157,10 @@ export default class StashGit extends Git {
                 })
             }
         }
-        catch (e) { /* we may get an error if there aren't untracked files */ }
+        catch (e) {
+            /* we may get an error if there aren't untracked files */
+            console.log(e)
+        }
 
         return list
     }

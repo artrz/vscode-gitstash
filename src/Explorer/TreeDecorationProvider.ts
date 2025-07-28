@@ -37,7 +37,7 @@ export default class implements FileDecorationProvider, Disposable {
             return undefined
         }
 
-        const nodeType = uri.query.split('type=')[1].split('&')[0]
+        const nodeType: NodeType = uri.query.split('type=')[1].split('&')[0] as NodeType
 
         switch (nodeType) {
             case NodeType.Untracked:
@@ -67,8 +67,8 @@ export default class implements FileDecorationProvider, Disposable {
      */
     private getDecorator(badge: string, color: string): FileDecoration {
         return {
-            badge: this.config.get<string>('explorer.items.file.decoration').indexOf('badge') > -1 ? badge : undefined,
-            color: this.config.get<string>('explorer.items.file.decoration').indexOf('color') > -1 ? new ThemeColor(color) : undefined,
+            badge: this.config.get<string>('explorer.items.file.decoration').includes('badge') ? badge : undefined,
+            color: this.config.get<string>('explorer.items.file.decoration').includes('color') ? new ThemeColor(color) : undefined,
             propagate: false,
         }
     }

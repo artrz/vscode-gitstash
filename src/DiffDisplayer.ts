@@ -24,39 +24,43 @@ export default class {
      */
     public async showDiff(fileNode: StashNode): Promise<void> {
         if (fileNode.type === NodeType.Modified || fileNode.type === NodeType.Renamed) {
-            return this.displayDiff(
+            this.displayDiff(
                 await this.uriGenerator.createForDiff(fileNode, FileStage.Parent),
                 await this.uriGenerator.createForDiff(fileNode, FileStage.Change),
                 fileNode,
                 true,
             )
+            return
         }
 
         if (fileNode.type === NodeType.Untracked) {
-            return this.displayDiff(
+            this.displayDiff(
                 await this.uriGenerator.createForDiff(),
                 await this.uriGenerator.createForDiff(fileNode),
                 fileNode,
                 true,
             )
+            return
         }
 
         if (fileNode.type === NodeType.IndexAdded) {
-            return this.displayDiff(
+            this.displayDiff(
                 await this.uriGenerator.createForDiff(),
                 await this.uriGenerator.createForDiff(fileNode),
                 fileNode,
                 true,
             )
+            return
         }
 
         if (fileNode.type === NodeType.Deleted) {
-            return this.displayDiff(
+            this.displayDiff(
                 await this.uriGenerator.createForDiff(fileNode),
                 await this.uriGenerator.createForDiff(),
                 fileNode,
                 true,
             )
+            return
         }
     }
 
@@ -100,7 +104,7 @@ export default class {
             void vscode.window.showWarningMessage(`File ${base.fsPath} not found.`)
         }
 
-        return vscode.commands.executeCommand<void>(
+        return vscode.commands.executeCommand<unknown>(
             'vscode.diff',
             base,
             modified,

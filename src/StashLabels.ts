@@ -2,7 +2,7 @@
 
 import * as path from 'path'
 import Config from './Config'
-import DateFormat from './DateFormat'
+import * as DateFormat from './DateFormat'
 import NodeType from './StashNode/NodeType'
 import StashNode from './StashNode/StashNode'
 
@@ -174,7 +174,7 @@ export default class {
      * @param stashNode the source node
      */
     private getStashBranch(stashNode: StashNode): string {
-        return stashNode.name.indexOf('WIP on ') === 0
+        return stashNode.name.startsWith('WIP on ')
             ? stashNode.name.substring(7, stashNode.name.indexOf(':'))
             : stashNode.name.substring(3, stashNode.name.indexOf(':'))
     }
@@ -215,8 +215,8 @@ export default class {
         const reference = fromStash ? 'original' : 'current'
 
         const values = fromStash
-            ? {l: reference, r: type}
-            : {l: type, r: reference}
+            ? { l: reference, r: type }
+            : { l: type, r: reference }
 
         return `${values.l} ⟷ ${values.r}`
     }

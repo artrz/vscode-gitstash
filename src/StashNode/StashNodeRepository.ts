@@ -69,7 +69,6 @@ export default class {
      */
     private async getFiles(stashNode: StashNode): Promise<StashNode[]> {
         return this.stashGit.getStashedFiles(stashNode.path, stashNode.index).then((stashedFiles: StashedFiles) => {
-
             const fileNodes: StashNode[] = []
             const path = stashNode.path
 

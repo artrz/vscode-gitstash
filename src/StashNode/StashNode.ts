@@ -74,7 +74,7 @@ export default class StashNode {
             NodeType.IndexAdded,
             NodeType.Modified,
             NodeType.Untracked,
-        ].indexOf(this.type) > -1
+        ].includes(this.type)
     }
 
     /**
@@ -108,7 +108,7 @@ export default class StashNode {
     /**
      * Sets the node children.
      */
-    public setChildren(children: StashNode[]): StashNode {
+    public setChildren(children: StashNode[]): this {
         this.childrenCache = children
         return this
     }

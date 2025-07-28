@@ -19,7 +19,7 @@ export default class implements Disposable {
         this.callback = callback
 
         void repositories.then((directories) => {
-            directories.forEach((directory) => this.registerProjectWatcher(directory))
+            directories.forEach((directory) => { this.registerProjectWatcher(directory) })
         })
     }
 
@@ -67,16 +67,15 @@ export default class implements Disposable {
 
         try {
             const watcher = watch(pathToMonitor, (event: string, filename) => {
-                if (filename.indexOf('stash') > -1) {
-                    if (filename && filename.indexOf('stash') > -1) {
-                        this.callback(Uri.file(projectPath))
-                    }
+                if (filename?.includes('stash')) {
+                    this.callback(Uri.file(projectPath))
                 }
             })
 
             this.watchers.set(projectPath, watcher)
         }
         catch (error) {
+            console.error(error)
             void window.showErrorMessage(`Unable to a create a stashes monitor for
             ${projectPath}. This may happen on NFS or if the path is a link`)
         }
@@ -89,7 +88,7 @@ export default class implements Disposable {
      */
     private removeProjectWatcher(path: string): void {
         if (this.watchers.has(path)) {
-            this.watchers.get(path).close()
+            this.watchers.get(path)?.close()
             this.watchers.delete(path)
         }
     }

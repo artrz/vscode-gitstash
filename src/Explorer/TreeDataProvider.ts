@@ -11,6 +11,7 @@ import {
 } from 'vscode'
 import Config from '../Config'
 import GitBridge from '../GitBridge'
+import NodeType from '../StashNode/NodeType'
 import StashLabels from '../StashLabels'
 import StashNode from '../StashNode/StashNode'
 import StashNodeRepository from '../StashNode/StashNodeRepository'
@@ -26,15 +27,15 @@ export default class implements TreeDataProvider<StashNode> {
     private treeItemFactory: TreeItemFactory
     private gitBridge: GitBridge
     private rawStashes = {}
-    private loadTimeout: NodeJS.Timer
-    private showExplorer: boolean
+    private loadTimeout: NodeJS.Timeout | null
+    private showExplorer: boolean | undefined
 
     constructor(
         config: Config,
         stashNodeRepository: StashNodeRepository,
         gitBridge: GitBridge,
         uriGenerator: UriGenerator,
-        stashLabels: StashLabels
+        stashLabels: StashLabels,
     ) {
         this.config = config
         this.stashNodeRepository = stashNodeRepository
@@ -83,7 +84,7 @@ export default class implements TreeDataProvider<StashNode> {
      * @param node the parent node for the requested children
      */
     public getChildren(node?: StashNode): Thenable<StashNode[]> | StashNode[] {
-        if (node && node.children) {
+        if (node?.children) {
             return this.prepareChildren(node, node.children)
         }
 
@@ -92,7 +93,7 @@ export default class implements TreeDataProvider<StashNode> {
             : this.stashNodeRepository.getChildren(node)
 
         return children.then((children: StashNode[]) => {
-            node && node.setChildren(children)
+            node?.setChildren(children)
             return this.prepareChildren(node, children)
         })
     }
@@ -120,7 +121,7 @@ export default class implements TreeDataProvider<StashNode> {
             if (!parent) {
                 return [this.stashNodeRepository.getMessageNode('No repositories found.')]
             }
-            if (parent.type === 'r') {
+            if (parent.type === NodeType.Repository) {
                 return [this.stashNodeRepository.getMessageNode('No stashes found.')]
             }
         }
@@ -149,7 +150,8 @@ export default class implements TreeDataProvider<StashNode> {
         }
 
         this.loadTimeout = setTimeout((type: string, pathUri?: Uri) => {
-            if (['settings', 'force'].indexOf(type) !== -1) {
+            this.loadTimeout = null
+            if (['settings', 'force'].includes(type)) {
                 this.onDidChangeTreeDataEmitter.fire()
             }
             else {
