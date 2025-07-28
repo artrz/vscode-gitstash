@@ -6,9 +6,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [[5.3.0] 2025-07-27](https://github.com/artrz/vscode-gitstash/tree/v5.3.0)
+
 ### Added
 
  - Notify when diffing a non existent file against its stashed version
+
+### Updated
+
+ - Dependency updates
+ - Code maintenance
 
 ### Fixed
 
