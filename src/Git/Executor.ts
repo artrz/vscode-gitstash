@@ -35,7 +35,7 @@ export default class {
                     resolve(errors.length === 0 ? result : `${result}\n\n${error}`)
                 }
                 else {
-                    reject(response.length === 0 ? error : `${result}\n\n${error}`)
+                    reject(new Error(response.length === 0 ? error : `${result}\n\n${error}`))
                 }
             })
         })

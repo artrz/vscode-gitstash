@@ -33,38 +33,12 @@ module.exports = {
         ],
         "@typescript-eslint/consistent-type-assertions": "warn",
         "@typescript-eslint/consistent-type-definitions": "warn",
-        "@typescript-eslint/indent": "warn",
-        "@typescript-eslint/member-delimiter-style": [
-            "warn",
-            {
-                "multiline": {
-                    "delimiter": "semi",
-                    "requireLast": true
-                },
-                "singleline": {
-                    "delimiter": "semi",
-                    "requireLast": false
-                }
-            }
-        ],
         "@typescript-eslint/no-inferrable-types": "warn",
         "@typescript-eslint/no-unused-expressions": "off",
         "@typescript-eslint/no-var-requires": "off",
         "@typescript-eslint/prefer-for-of": "warn",
         "@typescript-eslint/prefer-namespace-keyword": "warn",
-        "@typescript-eslint/quotes": [
-            "warn",
-            "single",
-            {
-                "avoidEscape": true
-            }
-        ],
-        "@typescript-eslint/semi": [
-            "warn",
-            "never"
-        ],
         "@typescript-eslint/triple-slash-reference": "warn",
-        "@typescript-eslint/type-annotation-spacing": "warn",
         "arrow-body-style": "warn",
         "arrow-parens": [
             "warn",
