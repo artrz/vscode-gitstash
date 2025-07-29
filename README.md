@@ -18,6 +18,15 @@ Every executed command is logged along its output for peace of mind.
 ### Source control explorer
   - Stash selected files (context menu)
 
+### Command palette
+You don't need to use the explorer buttons, just type `gitstash` in the command palette. Multi-root supported.
+  - gitstash: Apply...
+  - gitstash: Branch...
+  - gitstash: Clear
+  - gitstash: Drop...
+  - gitstash: Refresh explorer
+  - gitstash: Toggle explorer
+
 ### Screenshots
 
 ![GitStash preview](https://raw.githubusercontent.com/artrz/vscode-gitstash/master/resources/docs/screencast.gif)
@@ -105,3 +114,8 @@ Alternative way to diff the stashed file without its changes.
 - Use `Stash... - Keep index` if you want to make two or more commits out of the changes in the working tree and you want to isolate features to test each change before committing.
 - With `Git Stash` + `Stash Apply...` you can make a backup in case you want to make some cleanup for incomplete features before making a commit.
 - You may want to control when to see the stash explorer, to do so add a key binding to execute `gitstash.explorer.toggle` and configure the extension to not to show the stash explorer tree when starting the editor with `gitstash.explorer.enabled`.
+
+
+## Release Notes
+
+See the [changelog](./CHANGELOG.md).
