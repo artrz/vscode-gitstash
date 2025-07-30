@@ -10,7 +10,7 @@
     "license": "MIT",
     "icon": "resources/logo.png",
     "galleryBanner": {
-        "color": "#555555",
+        "color": "#045aa6",
         "theme": "dark"
     },
     "engines": {

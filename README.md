@@ -2,6 +2,11 @@
 
 Seamlessly integration of git stash functionalities to your editor
 
+[![CSC Version](https://vsmarketplacebadges.dev/version-short/arturock.gitstash.svg?color=1b79ca)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/arturock.gitstash?color=1b79ca&style=flat&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
+[![Downloads](https://vsmarketplacebadges.dev/downloads-short/arturock.gitstash.svg?color=1b79ca&style=flat&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
+[![Rating](https://img.shields.io/visual-studio-marketplace/r/arturock.gitstash?color=1b79ca&style=flat&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
+
 ## Features
 
 This extension adds a rich set of commands and an interactive explorer tree where you can create, inspect, apply and delete stashes, so managing this data becomes a breeze. It also adds a context menu option on the files listed in the source control view to selectively stash them.
