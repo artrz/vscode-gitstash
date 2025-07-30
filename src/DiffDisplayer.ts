@@ -3,8 +3,6 @@
  * GPL-3.0-only. See LICENSE.md in the project root for license details.
  */
 
-'use string'
-
 import * as fs from 'fs'
 import * as vscode from 'vscode'
 import { FileStage } from './Git/StashGit'

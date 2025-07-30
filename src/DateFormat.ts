@@ -3,8 +3,6 @@
  * GPL-3.0-only. See LICENSE.md in the project root for license details.
  */
 
-'use strict'
-
 export function toDateTimeIso(date: Date): string {
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())} ${getOffset(date)}`
 }

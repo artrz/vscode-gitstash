@@ -3,8 +3,6 @@
  * GPL-3.0-only. See LICENSE.md in the project root for license details.
  */
 
-'use strict'
-
 import * as vscode from 'vscode'
 import StashGit, { FileStage } from '../Git/StashGit'
 import NodeType from '../StashNode/NodeType'

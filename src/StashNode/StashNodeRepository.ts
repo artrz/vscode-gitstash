@@ -3,8 +3,6 @@
  * GPL-3.0-only. See LICENSE.md in the project root for license details.
  */
 
-'use strict'
-
 import StashGit, { RenameStash, Stash, StashedFiles } from '../Git/StashGit'
 import NodeType from './NodeType'
 import StashNode from './StashNode'

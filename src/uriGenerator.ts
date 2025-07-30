@@ -3,8 +3,6 @@
  * GPL-3.0-only. See LICENSE.md in the project root for license details.
  */
 
-'use strict'
-
 import * as fs from 'fs'
 import * as path from 'path'
 import * as tmp from 'tmp'
