@@ -1,0 +1,11 @@
+{
+    "$schema": "./node_modules/@favware/cliff-jumper/assets/cliff-jumper.schema.json",
+    "gitRepo": "auto",
+    "gitToken": "none",
+    "install": true,
+    "name": "vscode-gitstash",
+    "org": "artrz",
+    "packagePath": ".",
+    "tagTemplate": "v{{new-version}}",
+    "verbose": true
+}

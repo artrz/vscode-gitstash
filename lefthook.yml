@@ -1,0 +1,14 @@
+#   https://github.com/evilmartians/lefthook/blob/master/docs/configuration.md
+
+pre-commit:
+  parallel: true
+  commands:
+    eslint:
+      glob: "*.{ts}"
+      run: npx eslint {staged_files}
+
+pre-push:
+  commands:
+    packages-audit:
+      tags: frontend security
+      run: npm audit
