@@ -1,6 +1,6 @@
 # Git Stash
 
-Seamlessly integration of git stash functionalities to your editor
+**Seamlessly integration of git stash functionalities to your editor**
 
 [![CSC Version](https://vsmarketplacebadges.dev/version-short/arturock.gitstash.svg?color=1b79ca)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
 [![Installs](https://vsmarketplacebadges.dev/installs-short/arturock.gitstash.svg?color=1b79ca)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
