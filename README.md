@@ -3,9 +3,10 @@
 Seamlessly integration of git stash functionalities to your editor
 
 [![CSC Version](https://vsmarketplacebadges.dev/version-short/arturock.gitstash.svg?color=1b79ca)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
-[![Installs](https://img.shields.io/visual-studio-marketplace/i/arturock.gitstash?color=1b79ca&style=flat&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
-[![Downloads](https://vsmarketplacebadges.dev/downloads-short/arturock.gitstash.svg?color=1b79ca&style=flat&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
-[![Rating](https://img.shields.io/visual-studio-marketplace/r/arturock.gitstash?color=1b79ca&style=flat&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
+[![Installs](https://vsmarketplacebadges.dev/installs-short/arturock.gitstash.svg?color=1b79ca)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
+[![Downloads](https://vsmarketplacebadges.dev/downloads-short/arturock.gitstash.svg?color=1b79ca)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
+[![Rating](https://vsmarketplacebadges.dev/rating-star/arturock.gitstash.svg?color=1b79ca)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
+
 
 ## Features
 
