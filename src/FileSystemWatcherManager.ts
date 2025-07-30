@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Arturo Rodríguez V.
+ * GPL-3.0-only. See LICENSE.md in the project root for license details.
+ */
+
 import { Disposable, Uri, WorkspaceFolder, WorkspaceFoldersChangeEvent, window } from 'vscode'
 import { FSWatcher, existsSync, watch } from 'fs'
 import { join } from 'path'

@@ -8,7 +8,7 @@
         "name": "Arturo Rodríguez",
         "url": "https://github.com/artrz"
     },
-    "license": "MIT",
+    "license": "GPL-3.0-only",
     "homepage": "https://github.com/artrz/vscode-gitstash/blob/master/README.md",
     "repository": {
         "type": "git",
