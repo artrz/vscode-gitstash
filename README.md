@@ -2,10 +2,13 @@
 
 **Seamlessly integration of git stash functionalities to your editor**
 
-[![CSC Version](https://vsmarketplacebadges.dev/version-short/arturock.gitstash.svg?color=1b79ca)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
-[![Installs](https://vsmarketplacebadges.dev/installs-short/arturock.gitstash.svg?color=1b79ca)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
-[![Downloads](https://vsmarketplacebadges.dev/downloads-short/arturock.gitstash.svg?color=1b79ca)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
-[![Rating](https://vsmarketplacebadges.dev/rating-star/arturock.gitstash.svg?color=1b79ca)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
+[![Version](https://vsmarketplacebadges.dev/version-short/arturock.gitstash.svg?color=f2266e)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
+[![Downloads](https://vsmarketplacebadges.dev/downloads-short/arturock.gitstash.svg?color=f2266e)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
+[![Rating Star](https://vsmarketplacebadges.dev/rating-star/arturock.gitstash.svg?color=f2266e)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
+
+[![OpenVSX Version](https://shields.io/open-vsx/v/arturock/gitstash?color=c160ef&label=Open%20VSX)](https://open-vsx.org/extension/arturock/gitstash)
+[![OpenVSX Downloads](https://shields.io/open-vsx/dt/arturock/gitstash?color=c160ef)](https://open-vsx.org/extension/arturock/gitstash)
+[![OpenVSX rating](https://img.shields.io/open-vsx/stars/arturock/gitstash?color=c160ef)](https://open-vsx.org/extension/arturock/gitstash)
 
 
 ## Features
