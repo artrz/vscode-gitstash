@@ -632,17 +632,22 @@
         ]
     },
     "scripts": {
+        "init": "lefthook install",
         "lint": "eslint ./src",
         "lint-fix": "npm run lint -- --fix",
-        "vscode:prepublish": "npm run lint && webpack --mode development",
+        "check-types": "tsc --noEmit",
         "webpack": "webpack --mode development",
-        "webpack-dev": "webpack --watch --mode development",
-        "test": "node ./out/test/runTest.js"
+        "vscode:prepublish": "npm run lint && webpack --mode development",
+        "test": "node ./out/test/runTest.js",
+        "bump": "npm run lint && vsce package && npx @favware/cliff-jumper",
+        "debump": "git reset --soft HEAD~1 ; git tag --delete",
+        "publish": "git push origin main && git push --tags && vsce publish && npx ovsx publish"
     },
     "dependencies": {
         "tmp": "0.2.3"
     },
     "devDependencies": {
+        "@favware/cliff-jumper": "^6.0.0",
         "@types/mocha": "^10.0.10",
         "@types/node": "^22.17.0",
         "@types/tmp": "0.2.6",
@@ -650,6 +655,7 @@
         "@typescript-eslint/eslint-plugin": "^8.38.0",
         "@typescript-eslint/parser": "^8.38.0",
         "eslint": "^8.57.1",
+        "lefthook": "^1.12.2",
         "ts-loader": "^9.5.2",
         "typescript": "~5.5.4",
         "vscode-test": "^1.6.1",

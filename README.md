@@ -128,3 +128,40 @@ Alternative way to diff the stashed file without its changes.
 ## Release Notes
 
 See the [changelog](./CHANGELOG.md).
+
+
+## Contributing
+
+First of, thanks for your interest in helping out!
+
+There are a set of tool configured to ease development:
+ - Git hooks configured via [Lefthook](https://lefthook.dev/)
+ - Github PR title linted via [Commitlint](https://commitlint.js.org/)
+ - Versioning managed via [cliff-jumper](https://github.com/favware/cliff-jumper)
+
+Lefthook is configured to automatically perform tasks on pre-commit and pre-push hooks.
+To install the git hooks in your cloned repo run `npm run prepare`.
+This way, [the configured hooks](./lefthook.yml) will be automatically executed.
+
+When creating a PR, the title will be automatically linted with a [github workflow](./.github/workflows/semantic-pull-request.yml)
+to ensure it's conformant with the [conventional commit structure](https://www.conventionalcommits.org/en/v1.0.0/).
+Failing to comply wont let the PR to merge. This is important because the versioning tool
+uses the commit messages to define the version change.
+
+
+## Versioning and releasing
+
+Once you're in the main branch with all changes merged and ready to release a new version:
+
+Use `npm run bump` to increment the version and update the changelog and commit the changes. Internally,
+`bump` uses cliff-jumper to automatize the process. Notice this script also calls `vsce package`.
+
+To undo a bump, use `npm run debump [THE GENERATED TAG]` which undoes the commit and deletes the tag.
+
+Finally, run `npm run publish` to push the changes along with the new tag.
+Publishing will also upload the new version to vscode Marketplace and the Open VSX Registry.
+
+
+## License
+
+See the [license](./LICENSE.md).
