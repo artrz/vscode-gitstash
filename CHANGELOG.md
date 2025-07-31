@@ -25,12 +25,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
- - Notify when diffing a non existent file against its stashed version
+- Notify when diffing a non existent file against its stashed version
 
 ### Updated
 
- - Dependency updates
- - Code maintenance
+- Dependency updates
+- Code maintenance
 
 ### Fixed
 
@@ -40,15 +40,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
- - Allow to configure if pop or apply will available as main or secondary stash item action
- - Allow to configure the alternative diff action for the stashed file compare button
- - Other comparison modes for diffing changes
- - Branch command on stash context menu
+- Allow to configure if pop or apply will available as main or secondary stash item action
+- Allow to configure the alternative diff action for the stashed file compare button
+- Other comparison modes for diffing changes
+- Branch command on stash context menu
 
 ### Updated
 
- - Breadcrumbs like text on commands' selection placeholders
- - Dependency updates
+- Breadcrumbs like text on commands' selection placeholders
+- Dependency updates
 
 ### Fixed
 
