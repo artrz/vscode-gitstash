@@ -2,7 +2,7 @@
     "name": "gitstash",
     "displayName": "Git Stash",
     "description": "Give extra stash abilities to Code. Visually browse stashes, review and extract changes. Get all stash commands and more.",
-    "version": "5.3.0",
+    "version": "5.3.1",
     "publisher": "arturock",
     "author": {
         "name": "Arturo Rodríguez"

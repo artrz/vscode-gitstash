@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.3.1] - 2025-07-31
+
+### Changed
+
+- Update readme
+- Update package.json plugin data
+- Update dep @types/node to ^22.17.0
+- Configure CI tools  (#110)
+- Update package lock file
+
+### Removed
+
+- Remove 'use strict' from ts files
+
+[https://github.com/artrz/vscode-gitstash/compare/v5.3.0..v5.3.1](https://github.com/artrz/vscode-gitstash/compare/v5.3.0..v5.3.1)
+
 ## [[5.3.0] 2025-07-27](https://github.com/artrz/vscode-gitstash/tree/v5.3.0)
 
 ### Added
