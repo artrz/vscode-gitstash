@@ -644,7 +644,7 @@
         "publish": "git push origin main && git push --tags && vsce publish && npx ovsx publish"
     },
     "dependencies": {
-        "tmp": "0.2.3"
+        "tmp": "0.2.4"
     },
     "devDependencies": {
         "@favware/cliff-jumper": "^6.0.0",
