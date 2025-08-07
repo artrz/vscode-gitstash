@@ -657,7 +657,7 @@
         "@types/vscode": "1.70.0",
         "@typescript-eslint/eslint-plugin": "^8.38.0",
         "@typescript-eslint/parser": "^8.38.0",
-        "eslint": "^8.57.1",
+        "eslint": "^9.32.0",
         "lefthook": "^1.12.2",
         "ts-loader": "^9.5.2",
         "typescript": "~5.5.4",
