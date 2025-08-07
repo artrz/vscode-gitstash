@@ -635,13 +635,16 @@
         "init": "lefthook install",
         "lint": "eslint ./src",
         "lint-fix": "npm run lint -- --fix",
-        "check-types": "tsc --noEmit",
+        "ts:check": "tsc --noEmit",
+        "ts:compile": "tsc -p . --outDir out",
         "webpack": "webpack --mode development",
-        "vscode:prepublish": "npm run lint && webpack --mode development",
+        "dev:webpack": "webpack --watch --mode development",
+        "pretest": "npm run ts:compile && npm run lint",
         "test": "node ./out/test/runTest.js",
-        "bump": "npm run lint && vsce package && npx @favware/cliff-jumper",
-        "debump": "git reset --soft HEAD~1 ; git tag --delete",
-        "publish": "git push origin main && git push --tags && vsce publish && npx ovsx publish"
+        "vscode:prepublish": "npm run ts:check && npm run lint && npm run webpack",
+        "pub:bump": "npm run lint && vsce package && npx @favware/cliff-jumper",
+        "pub:debump": "git reset --soft HEAD~1 ; git tag --delete",
+        "pub:release": "git push origin main && git push --tags && vsce publish && npx ovsx publish"
     },
     "dependencies": {
         "tmp": "0.2.4"
