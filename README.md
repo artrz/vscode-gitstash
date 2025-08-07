@@ -153,12 +153,13 @@ uses the commit messages to define the version change.
 
 Once you're in the main branch with all changes merged and ready to release a new version:
 
-Use `npm run bump` to increment the version and update the changelog and commit the changes. Internally,
-`bump` uses cliff-jumper to automatize the process. Notice this script also calls `vsce package`.
+Use `npm run pub:bump` to increment the version and update the changelog and commit the changes. Internally,
+`pub:bump` uses cliff-jumper to automatize the process. Notice this script also calls `vsce package`.
 
-To undo a bump, use `npm run debump [THE GENERATED TAG]` which undoes the commit and deletes the tag.
+To undo a bump, use `npm run pub:debump [generated tag]` which undoes the commit and deletes the tag. E.g.:
+`npm run pub:debump v0.5.0`
 
-Finally, run `npm run publish` to push the changes along with the new tag.
+Finally, run `npm run pub:release` to push the changes along with the new tag.
 Publishing will also upload the new version to vscode Marketplace and the Open VSX Registry.
 
 
