@@ -1,11 +1,14 @@
+.github/**
 .vscode/**
 node_modules/**
+out/**
 resources/docs/**
 src/**
 test/**
-**/*.map
+.cliff-jumperrc.json
+.eslintrc.js
 .gitignore
+cliff.toml
+lefthook.yml
 tsconfig.json
-tslint.json
-tslint-prepublish.json
 webpack.config.js
