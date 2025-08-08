@@ -3,15 +3,24 @@
  * GPL-3.0-only. See LICENSE.md in the project root for license details.
  */
 
-import NodeType from './NodeType'
+export default abstract class Node {
+    constructor(
+        protected _name: string,
+    ) {
+    }
 
-export default interface Node {
-    type: NodeType;
-    name: string;
-    oldName?: string;
-    index?: number;
-    parent?: Node;
-    date?: string;
-    hash?: string;
-    path?: string;
+    /**
+     * Gets the node name.
+     */
+    public get name(): string {
+        return this._name
+    }
+
+    public toString() {
+        return `Node[${this.name}]`
+    }
+
+    public get id(): string {
+        return `?.${this.toString()}`
+    }
 }

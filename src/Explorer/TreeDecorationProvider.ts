@@ -13,7 +13,7 @@ import {
     window,
 } from 'vscode'
 import Config from '../Config'
-import NodeType from '../StashNode/NodeType'
+import FileNodeType from '../StashNode/FileNodeType'
 import UriGenerator from '../uriGenerator'
 
 export default class implements FileDecorationProvider, Disposable {
@@ -40,22 +40,22 @@ export default class implements FileDecorationProvider, Disposable {
             return undefined
         }
 
-        const nodeType: NodeType = uri.query.split('type=')[1].split('&')[0] as NodeType
+        const nodeType = uri.query.split('type=')[1].split('&')[0] as FileNodeType
 
         switch (nodeType) {
-            case NodeType.Untracked:
+            case FileNodeType.Untracked:
                 return this.getDecorator('U', 'gitDecoration.untrackedResourceForeground')
 
-            case NodeType.IndexAdded:
+            case FileNodeType.IndexAdded:
                 return this.getDecorator('A', 'gitDecoration.addedResourceForeground')
 
-            case NodeType.Deleted:
+            case FileNodeType.Deleted:
                 return this.getDecorator('D', 'gitDecoration.deletedResourceForeground')
 
-            case NodeType.Modified:
+            case FileNodeType.Modified:
                 return this.getDecorator('M', 'gitDecoration.modifiedResourceForeground')
 
-            case NodeType.Renamed:
+            case FileNodeType.Renamed:
                 return this.getDecorator('R', 'gitDecoration.renamedResourceForeground')
         }
 
