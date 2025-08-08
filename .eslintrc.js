@@ -4,6 +4,7 @@ module.exports = {
         "node": true
     },
     "parser": "@typescript-eslint/parser",
+    "ignorePatterns": [".eslintrc.js"],
     "parserOptions": {
         "project": ["./tsconfig.json"],
         "sourceType": "module"
@@ -75,7 +76,6 @@ module.exports = {
         "no-redeclare": "warn",
         "no-throw-literal": "warn",
         "no-trailing-spaces": "warn",
-        "no-underscore-dangle": "warn",
         "no-unsafe-finally": "warn",
         "no-var": "warn",
         "one-var": [
