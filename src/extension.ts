@@ -10,10 +10,9 @@ import DiffDisplayer from './DiffDisplayer'
 import DocumentContentProvider from './Document/DocumentContentProvider'
 import EmptyDocumentContentProvider from './Document/EmptyDocumentContentProvider'
 import FileSystemWatcherManager from './FileSystemWatcherManager'
-import GitBridge from './GitBridge'
+import NodeContainer from './StashNode/NodeContainer'
 import { StashCommands } from './StashCommands'
 import StashLabels from './StashLabels'
-import StashNodeRepository from './StashNode/StashNodeRepository'
 import TreeDataProvider from './Explorer/TreeDataProvider'
 import TreeDecorationProvider from './Explorer/TreeDecorationProvider'
 import UriGenerator from './uriGenerator'
@@ -24,16 +23,15 @@ export function activate(context: ExtensionContext): void {
 
     const config = new Config()
 
-    const gitBridge = new GitBridge()
-    const nodeRepository = new StashNodeRepository(new WorkspaceGit(config))
+    const nodeContainer = new NodeContainer(new WorkspaceGit(config))
     const stashLabels = new StashLabels(config)
-    const uriGenerator = new UriGenerator(gitBridge)
+    const uriGenerator = new UriGenerator(nodeContainer)
 
-    const treeProvider = new TreeDataProvider(config, nodeRepository, gitBridge, uriGenerator, stashLabels)
+    const treeProvider = new TreeDataProvider(config, nodeContainer, uriGenerator, stashLabels)
 
     const wsGit = new WorkspaceGit(config)
     const stashCommands = new Commands(
-        wsGit,
+        nodeContainer,
         new StashCommands(config, wsGit, window.createOutputChannel(channelName), stashLabels),
         new DiffDisplayer(uriGenerator, stashLabels),
         stashLabels,

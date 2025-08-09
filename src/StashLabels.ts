@@ -6,7 +6,9 @@
 import * as DateFormat from './DateFormat'
 import * as path from 'path'
 import Config from './Config'
-import NodeType from './StashNode/NodeType'
+import FileNode from './StashNode/FileNode'
+import Node from './StashNode/Node'
+import RepositoryNode from './StashNode/RepositoryNode'
 import StashNode from './StashNode/StashNode'
 
 export default class {
@@ -21,7 +23,7 @@ export default class {
      *
      * @param node The node to be used as base
      */
-    public getName(node: StashNode): string {
+    public getName(node: Node): string {
         return this.getContent(node, 'label')
     }
 
@@ -30,7 +32,7 @@ export default class {
      *
      * @param node The node to be used as base
      */
-    public getDescription(node: StashNode): string {
+    public getDescription(node: Node): string {
         return this.getContent(node, 'description')
     }
 
@@ -39,7 +41,7 @@ export default class {
      *
      * @param node The node to be used as base
      */
-    public getTooltip(node: StashNode): string {
+    public getTooltip(node: Node): string {
         return this.getContent(node, 'tooltip')
     }
 
@@ -48,28 +50,27 @@ export default class {
      *
      * @param stashNode The node to be used as base
      */
-    public clipboardTemplate(node: StashNode): string {
+    public clipboardTemplate(node: Node): string {
         return this.getContent(node, 'to-clipboard')
     }
 
     /**
-     * Generates clipboard text for the stash node.
+     * Generates clipboard text for the node.
      *
-     * @param stashNode The node to be used as base
+     * @param node The node to be used as base
      */
-    public clipboardNode(node: StashNode): string {
-        switch (node.type) {
-            case NodeType.Repository:
-                return node.path
-            case NodeType.Stash:
-                return node.name
-            case NodeType.Deleted:
-            case NodeType.IndexAdded:
-            case NodeType.Modified:
-            case NodeType.Untracked:
-            case NodeType.Renamed:
-                return node.path
+    public clipboardNode(node: Node): string {
+        if (node instanceof RepositoryNode) {
+            return node.path
         }
+        if (node instanceof StashNode) {
+            return node.name
+        }
+        if (node instanceof FileNode) {
+            return node.path
+        }
+
+        return node.id
     }
 
     /**
@@ -78,20 +79,25 @@ export default class {
      * @param node The node to be used as base
      * @param property The string with the property prefix for setting keys
      */
-    private getContent(node: StashNode, property: string): string {
-        switch (node.type) {
-            case NodeType.Repository:
-                return this.parseRepositoryLabel(node, this.config.get(`explorer.items.repository.${property}Content`))
-            case NodeType.Stash:
-                return this.parseStashLabel(node, this.config.get(`explorer.items.stash.${property}Content`))
-            case NodeType.Deleted:
-            case NodeType.IndexAdded:
-            case NodeType.Modified:
-            case NodeType.Untracked:
-                return this.parseFileLabel(node, this.config.get(`explorer.items.file.${property}Content`))
-            case NodeType.Renamed:
-                return this.parseFileLabel(node, this.config.get(`explorer.items.renamedFile.${property}Content`))
+    private getContent(node: Node, property: string): string {
+        if (node instanceof RepositoryNode) {
+            const placeholder = this.config.get<string>(`explorer.items.repository.${property}Content`)
+            return this.parseRepositoryLabel(node, placeholder)
         }
+        if (node instanceof StashNode) {
+            const placeholder = this.config.get<string>(`explorer.items.stash.${property}Content`)
+            return this.parseStashLabel(node, placeholder)
+        }
+        if (node instanceof FileNode) {
+            if (node.isAdded || node.isDeleted || node.isModified || node.isUntracked) {
+                return this.parseFileLabel(node, this.config.get(`explorer.items.file.${property}Content`))
+            }
+            if (node.isRenamed) {
+                return this.parseFileLabel(node, this.config.get(`explorer.items.renamedFile.${property}Content`))
+            }
+        }
+
+        throw new Error(`getContent(): Unsupported Node: ${node.name}`);
     }
 
     /**
@@ -99,7 +105,7 @@ export default class {
      *
      * @param repositoryNode The node to be used as base
      */
-    private parseRepositoryLabel(repositoryNode: StashNode, template: string): string {
+    private parseRepositoryLabel(repositoryNode: RepositoryNode, template: string): string {
         return template
             .replace('${path}', `${path.dirname(repositoryNode.path)}/`)
             .replace('${directory}', path.basename(repositoryNode.path))
@@ -130,7 +136,7 @@ export default class {
      *
      * @param fileNode The node to be used as base
      */
-    private parseFileLabel(fileNode: StashNode, template: string): string {
+    private parseFileLabel(fileNode: FileNode, template: string): string {
         return template
             .replace('${filename}', path.basename(fileNode.name))
             .replace('${oldFilename}', fileNode.oldName ? path.basename(fileNode.oldName) : '')
@@ -144,7 +150,7 @@ export default class {
      * @param fileNode the file node to be shown
      * @param hint     the hint reference to know file origin
      */
-    public getDiffTitle(fileNode: StashNode, hint: boolean): string {
+    public getDiffTitle(fileNode: FileNode, hint: boolean): string {
         return this.config.settings
             .get('editor.diffTitleFormat', '')
             .replace('${filename}', path.basename(fileNode.name))
@@ -187,9 +193,9 @@ export default class {
      *
      * @param stashNode the source node
      */
-    private getChildrenCount(repositoryNode: StashNode): string {
+    private getChildrenCount(repositoryNode: RepositoryNode): string {
         const count = repositoryNode.childrenCount
-        return !isNaN(count) ? count.toString() : '-'
+        return typeof count === 'number' ? count.toString() : '-'
     }
 
     /**
@@ -197,15 +203,16 @@ export default class {
      *
      * @param fileNode the source node
      */
-    private getTypeLabel(fileNode: StashNode): string {
-        switch (fileNode.type) {
-            case NodeType.Deleted: return 'Deleted'
-            case NodeType.IndexAdded: return 'Added'
-            case NodeType.Modified: return 'Modified'
-            case NodeType.Renamed: return 'Renamed'
-            case NodeType.Untracked: return 'Untracked'
-            default: return 'Other'
+    private getTypeLabel(fileNode: FileNode): string {
+        switch (true) {
+            case fileNode.isDeleted: return 'Deleted'
+            case fileNode.isAdded: return 'Added'
+            case fileNode.isModified: return 'Modified'
+            case fileNode.isRenamed: return 'Renamed'
+            case fileNode.isUntracked: return 'Untracked'
         }
+
+        throw new Error(`getContent(): Unsupported fileNode type: ${fileNode.type}`);
     }
 
     /**
@@ -213,7 +220,7 @@ export default class {
      *
      * @param fileNode the source node
      */
-    private getHint(fileNode: StashNode, fromStash: boolean): string {
+    private getHint(fileNode: FileNode, fromStash: boolean): string {
         const type = this.getTypeLabel(fileNode).toLowerCase()
         const reference = fromStash ? 'original' : 'current'
 

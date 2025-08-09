@@ -13,43 +13,40 @@ import {
     window,
 } from 'vscode'
 import Config from '../Config'
-import GitBridge from '../GitBridge'
-import NodeType from '../StashNode/NodeType'
+import Node from '../StashNode/Node'
+import NodeContainer from '../StashNode/NodeContainer'
+import RepositoryNode from '../StashNode/RepositoryNode'
 import StashLabels from '../StashLabels'
 import StashNode from '../StashNode/StashNode'
-import StashNodeRepository from '../StashNode/StashNodeRepository'
 import TreeItemFactory from './TreeItemFactory'
 import UriGenerator from '../uriGenerator'
 
-export default class implements TreeDataProvider<StashNode> {
+export default class implements TreeDataProvider<Node> {
     private readonly onDidChangeTreeDataEmitter = new EventEmitter<void>()
     readonly onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event
 
     private config: Config
-    private stashNodeRepository: StashNodeRepository
+    private nodeContainer: NodeContainer
     private treeItemFactory: TreeItemFactory
-    private gitBridge: GitBridge
     private rawStashes = {}
     private loadTimeout: NodeJS.Timeout | null
     private showExplorer: boolean | undefined
 
     constructor(
         config: Config,
-        stashNodeRepository: StashNodeRepository,
-        gitBridge: GitBridge,
+        nodeContainer: NodeContainer,
         uriGenerator: UriGenerator,
         stashLabels: StashLabels,
     ) {
         this.config = config
-        this.stashNodeRepository = stashNodeRepository
-        this.gitBridge = gitBridge
+        this.nodeContainer = nodeContainer
         this.treeItemFactory = new TreeItemFactory(config, uriGenerator, stashLabels)
     }
 
     /**
      * Creates a tree view.
      */
-    public createTreeView(): TreeView<StashNode> {
+    public createTreeView(): TreeView<Node> {
         const treeView = window.createTreeView('gitstash.explorer', {
             treeDataProvider: this,
             showCollapseAll: true,
@@ -85,20 +82,34 @@ export default class implements TreeDataProvider<StashNode> {
      * Gets the tree children, which may be repositories, stashes or files.
      *
      * @param node the parent node for the requested children
+     * @see TreeDataProvider.getChildren
      */
-    public getChildren(node?: StashNode): Thenable<StashNode[]> | StashNode[] {
-        if (node?.children) {
+    public getChildren(node?: Node): Thenable<Node[]> | Node[] {
+        if ((node instanceof RepositoryNode || node instanceof StashNode) && node.children) {
             return this.prepareChildren(node, node.children)
         }
 
-        const children = !node
-            ? this.stashNodeRepository.getRepositories(this.config.get('explorer.eagerLoadStashes'))
-            : this.stashNodeRepository.getChildren(node)
+        if (!node) {
+            const eagerLoad: boolean = this.config.get('explorer.eagerLoadStashes')
+            return this.nodeContainer.getRepositories(eagerLoad)
+                .then((repositories) => this.prepareChildren(node, repositories))
+        }
 
-        return children.then((children: StashNode[]) => {
-            node?.setChildren(children)
-            return this.prepareChildren(node, children)
-        })
+        if (node instanceof RepositoryNode) {
+            return this.nodeContainer.getStashes(node).then((stashes) => {
+                node.setChildren(stashes)
+                return this.prepareChildren(node, stashes)
+            })
+        }
+
+        if (node instanceof StashNode) {
+            return this.nodeContainer.getFiles(node).then((files) => {
+                node.setChildren(files)
+                return this.prepareChildren(node, files)
+            })
+        }
+
+        return []
     }
 
     /**
@@ -107,12 +118,12 @@ export default class implements TreeDataProvider<StashNode> {
      * @param parent   the children's parent node
      * @param children the parent's children
      */
-    private prepareChildren(parent: StashNode | null, children: StashNode[]): StashNode[] {
+    private prepareChildren(parent: Node | undefined, children: Node[]): Node[] {
         const itemDisplayMode = this.config.get('explorer.itemDisplayMode')
 
         if (!parent) {
             if (itemDisplayMode === 'hide-empty' && this.config.get('explorer.eagerLoadStashes')) {
-                children = children.filter((repositoryNode: StashNode) => repositoryNode.childrenCount)
+                children = children.filter((repositoryNode: RepositoryNode) => repositoryNode.childrenCount)
             }
         }
 
@@ -122,10 +133,10 @@ export default class implements TreeDataProvider<StashNode> {
 
         if (itemDisplayMode === 'indicate-empty') {
             if (!parent) {
-                return [this.stashNodeRepository.getMessageNode('No repositories found.')]
+                return [this.nodeContainer.getMessageNode('No repositories found.')]
             }
-            if (parent.type === NodeType.Repository) {
-                return [this.stashNodeRepository.getMessageNode('No stashes found.')]
+            if (parent instanceof RepositoryNode) {
+                return [this.nodeContainer.getMessageNode('No stashes found.')]
             }
         }
 
@@ -137,7 +148,7 @@ export default class implements TreeDataProvider<StashNode> {
      *
      * @param node the node to be used as base
      */
-    public getTreeItem(node: StashNode): TreeItem {
+    public getTreeItem(node: Node): TreeItem {
         return this.treeItemFactory.getTreeItem(node)
     }
 
@@ -154,13 +165,15 @@ export default class implements TreeDataProvider<StashNode> {
 
         this.loadTimeout = setTimeout((type: string, pathUri?: Uri) => {
             this.loadTimeout = null
+
             if (['settings', 'force'].includes(type)) {
-                this.onDidChangeTreeDataEmitter.fire()
+                return void this.onDidChangeTreeDataEmitter.fire()
             }
-            else {
+
+            if (pathUri) {
                 const path = pathUri.fsPath
 
-                void this.gitBridge.getRawStashesList(path).then((rawStash: null | string) => {
+                return void this.nodeContainer.getRawStashesList(path).then((rawStash: null | string) => {
                     const cachedRawStash = this.rawStashes[path] as null | string
 
                     if (!cachedRawStash || cachedRawStash !== rawStash) {
@@ -169,6 +182,9 @@ export default class implements TreeDataProvider<StashNode> {
                     }
                 })
             }
+
+            console.error(`TreeDataProvider.reload() with type '${type}' requires a defined pathUri argument`)
+            throw new Error('TreeDataProvider.reload()')
         }, type === 'force' ? 250 : 750, type, projectPath)
     }
 }
