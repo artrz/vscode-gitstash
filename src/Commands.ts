@@ -6,36 +6,32 @@
 import * as fs from 'fs'
 import * as vscode from 'vscode'
 import DiffDisplayer from './DiffDisplayer'
-import NodeType from './StashNode/NodeType'
+import FileNode from './StashNode/FileNode'
+import Node from './StashNode/Node'
+import NodeContainer from './StashNode/NodeContainer'
+import RepositoryNode from './StashNode/RepositoryNode'
 import { StashCommands } from './StashCommands'
-import StashGit from './Git/StashGit'
 import StashLabels from './StashLabels'
 import StashNode from './StashNode/StashNode'
-import StashNodeFactory from './StashNode/StashNodeFactory'
-import WorkspaceGit from './Git/WorkspaceGit'
 
 interface QuickPickRepositoryNodeItem extends vscode.QuickPickItem {
-    node: StashNode;
+    node: RepositoryNode
 }
 interface QuickPickStashNodeItem extends vscode.QuickPickItem {
-    node: StashNode;
+    node: StashNode
 }
 
 export class Commands {
-    private stashGit: StashGit
-    private workspaceGit: WorkspaceGit
-    private stashLabels: StashLabels
+    private nodeContainer: NodeContainer
     private stashCommands: StashCommands
-    private stashNodeFactory: StashNodeFactory
     private displayer: DiffDisplayer
+    private stashLabels: StashLabels
 
-    constructor(workspaceGit: WorkspaceGit, stashCommands: StashCommands, diffDisplayer: DiffDisplayer, stashLabels: StashLabels) {
-        this.workspaceGit = workspaceGit
+    constructor(nodeContainer: NodeContainer, stashCommands: StashCommands, diffDisplayer: DiffDisplayer, stashLabels: StashLabels) {
+        this.nodeContainer = nodeContainer
         this.stashCommands = stashCommands
-        this.stashLabels = stashLabels
         this.displayer = diffDisplayer
-        this.stashGit = new StashGit()
-        this.stashNodeFactory = new StashNodeFactory()
+        this.stashLabels = stashLabels
     }
 
     /**
@@ -65,30 +61,30 @@ export class Commands {
      *
      * @param fileNode the involved node
      */
-    public show = (fileNode: StashNode): void => void this.displayer.showDiff(fileNode)
+    public show = (fileNode: FileNode): void => void this.displayer.showDiff(fileNode)
 
     /**
      * Shows a diff document comparing the modified stashed file and the current version.
      *
      * @param fileNode the involved node
      */
-    public diffChangesCurrent = (fileNode: StashNode): void => void this.displayer.showDiffCurrent(fileNode, true, false)
-    public diffCurrentChanges = (fileNode: StashNode): void => void this.displayer.showDiffCurrent(fileNode, true, true)
+    public diffChangesCurrent = (fileNode: FileNode): void => void this.displayer.showDiffCurrent(fileNode, true, false)
+    public diffCurrentChanges = (fileNode: FileNode): void => void this.displayer.showDiffCurrent(fileNode, true, true)
 
     /**
      * Shows a diff document comparing the stashed file parent and the current version.
      *
      * @param fileNode the involved node
      */
-    public diffSourceCurrent = (fileNode: StashNode): void => void this.displayer.showDiffCurrent(fileNode, false, false)
-    public diffCurrentSource = (fileNode: StashNode): void => void this.displayer.showDiffCurrent(fileNode, false, true)
+    public diffSourceCurrent = (fileNode: FileNode): void => void this.displayer.showDiffCurrent(fileNode, false, false)
+    public diffCurrentSource = (fileNode: FileNode): void => void this.displayer.showDiffCurrent(fileNode, false, true)
 
     /**
      * Opens the file inside an editor.
      *
      * @param repositoryNode the node with the directory to be opened
      */
-    public openFile = (fileNode?: StashNode): void => void vscode.commands
+    public openFile = (fileNode: FileNode): void => void vscode.commands
         .executeCommand<void>('vscode.open', vscode.Uri.parse(fileNode.path))
 
     /**
@@ -96,7 +92,7 @@ export class Commands {
      *
      * @param repositoryNode the node with the directory to be opened
      */
-    public openDir = (repositoryNode?: StashNode): void => void vscode.env
+    public openDir = (repositoryNode: RepositoryNode): void => void vscode.env
         .openExternal(vscode.Uri.parse(repositoryNode.path))
 
     /**
@@ -104,10 +100,10 @@ export class Commands {
      *
      * @param repositoryNode the involved node
      */
-    public stash = (repositoryNode?: StashNode): void => {
+    public stash = (repositoryNode?: RepositoryNode): void => {
         void this.runOnRepository(
             repositoryNode,
-            (repositoryNode: StashNode) => this.stashPerform(repositoryNode),
+            (repositoryNode: RepositoryNode) => this.stashPerform(repositoryNode),
             'Create stash',
         )
     }
@@ -117,10 +113,10 @@ export class Commands {
      *
      * @param repositoryNode the involved node
      */
-    public clear = (repositoryNode?: StashNode): void => {
+    public clear = (repositoryNode?: RepositoryNode): void => {
         void this.runOnRepository(
             repositoryNode,
-            (repositoryNode: StashNode) => this.clearPerform(repositoryNode),
+            (repositoryNode: RepositoryNode) => this.clearPerform(repositoryNode),
             'Clear stashes',
         )
     }
@@ -182,7 +178,7 @@ export class Commands {
      *
      * @param repositoryNode the repository node
      */
-    private stashPerform = (repositoryNode: StashNode): void => {
+    private stashPerform = (repositoryNode: RepositoryNode): void => {
         const repositoryLabel = this.stashLabels.getName(repositoryNode)
 
         const opts = [
@@ -241,7 +237,7 @@ export class Commands {
      *
      * @param repositoryNode the involved node
      */
-    private clearPerform = (repositoryNode: StashNode): void => {
+    private clearPerform = (repositoryNode: RepositoryNode): void => {
         const repositoryLabel = this.stashLabels.getName(repositoryNode)
 
         vscode.window.showWarningMessage<vscode.MessageItem>(
@@ -269,6 +265,7 @@ export class Commands {
     private popPerform = (stashNode: StashNode): void => {
         const stashLabel = this.stashLabels.getName(stashNode)
         const repositoryLabel = this.stashLabels.getName(stashNode.parent)
+
         void vscode.window.showQuickPick(
             [
                 {
@@ -299,6 +296,7 @@ export class Commands {
     private applyPerform = (stashNode: StashNode): void => {
         const stashLabel = this.stashLabels.getName(stashNode)
         const repositoryLabel = this.stashLabels.getName(stashNode.parent)
+
         void vscode.window.showQuickPick(
             [
                 {
@@ -329,6 +327,7 @@ export class Commands {
     public branchPerform = (stashNode: StashNode): void => {
         const stashLabel = this.stashLabels.getName(stashNode)
         const repositoryLabel = this.stashLabels.getName(stashNode.parent)
+
         void vscode.window
             .showInputBox({
                 placeHolder: `Stash apply › ${repositoryLabel} › ${stashLabel} › ...`,
@@ -371,7 +370,7 @@ export class Commands {
      *
      * @param fileNode the involved node
      */
-    public applySingle = (fileNode: StashNode): void => {
+    public applySingle = (fileNode: FileNode): void => {
         const parentLabel = this.stashLabels.getName(fileNode.parent)
 
         void vscode.window.showWarningMessage<vscode.MessageItem>(
@@ -391,7 +390,7 @@ export class Commands {
      *
      * @param fileNode the involved node
      */
-    public createSingle = (fileNode: StashNode): void => {
+    public createSingle = (fileNode: FileNode): void => {
         const parentLabel = this.stashLabels.getName(fileNode.parent)
         const exists = fs.existsSync(fileNode.path)
 
@@ -412,7 +411,7 @@ export class Commands {
      *
      * @param node the involved node
      */
-    public clipboardFromTemplate = (node: StashNode): void => {
+    public clipboardFromTemplate = (node: Node): void => {
         void vscode.env.clipboard.writeText(this.stashLabels.clipboardTemplate(node))
     }
 
@@ -421,7 +420,7 @@ export class Commands {
      *
      * @param node the involved node
      */
-    public toClipboardFromObject = (node: StashNode): void => {
+    public toClipboardFromObject = (node: Node): void => {
         void vscode.env.clipboard.writeText(this.stashLabels.clipboardNode(node))
     }
 
@@ -433,36 +432,32 @@ export class Commands {
      * @param pickerPlaceholder a string to prepend in the place holder
      */
     private runOnRepository = async (
-        repositoryNode: StashNode | undefined,
-        callback: (stashNode: StashNode) => unknown,
-        pickerPlaceholder: string
-    ) => {
+        repositoryNode: RepositoryNode | undefined,
+        callback: (x: RepositoryNode) => unknown,
+        pickerPlaceholder: string,
+    ): Promise<void> => {
         if (repositoryNode) {
-            return callback(repositoryNode)
+            return void callback(repositoryNode)
         }
 
-        const nodes: StashNode[] = (await this.workspaceGit.getRepositories())
-            .map((path) => this.stashNodeFactory.createRepositoryNode(path))
+        const nodes = await this.nodeContainer.getRepositories(false)
 
         if (nodes.length === 0) {
-            void vscode.window.showInformationMessage('There are no git repositories.')
-            return undefined
+            return void vscode.window.showInformationMessage('There are no git repositories.')
         }
 
         if (nodes.length === 1) {
-            return callback(nodes[0])
+            return void callback(nodes[0])
         }
 
-        const editorPath = vscode.window.activeTextEditor
-            ? vscode.window.activeTextEditor.document.uri.fsPath
-            : null
+        const activeFilePath = vscode.window.activeTextEditor?.document.uri.fsPath
 
-        const node = editorPath
-            ? nodes.sort().reverse().find((node) => editorPath.includes(node.path))
-            : null
+        repositoryNode = activeFilePath
+            ? nodes.sort().reverse().find((node) => activeFilePath.includes(node.path))
+            : undefined
 
-        if (node) {
-            return callback(node)
+        if (repositoryNode) {
+            return void callback(repositoryNode)
         }
 
         const selection = await vscode.window.showQuickPick<QuickPickRepositoryNodeItem>(
@@ -470,40 +465,35 @@ export class Commands {
             { placeHolder: `${pickerPlaceholder} › ...`, canPickMany: false },
         )
 
-        return selection ? callback(selection.node) : undefined
+        if (selection) {
+            callback(selection.node)
+        }
     }
 
     /**
      * Executes a callback on a stash.
      *
-     * @param repositoryOrStashNode the involved node
-     * @param callback              the callback to execute with the node
-     * @param placeholder           a string to append to the placeholder as first segment
-     * @param canPickMany           indicate if multi-selection will be available
+     * @param stashNode   the involved node
+     * @param callback    the callback to execute with the node
+     * @param placeholder a string to append to the placeholder as first segment
+     * @param canPickMany indicate if multi-selection will be available
      */
     private runOnStash = (
-        repositoryOrStashNode: StashNode | StashNode[] | undefined,
-        callback: (...x: unknown[]) => unknown,
+        stashNode: StashNode | undefined,
+        callback: (...x: StashNode[]) => unknown,
         placeholder: string,
-        canPickMany?: boolean,
-    ) => {
-        if (Array.isArray(repositoryOrStashNode)) {
-            return repositoryOrStashNode.find((stashNode) => stashNode.type !== NodeType.Stash)
-                ? vscode.window.showErrorMessage('Selection contains invalid items.')
-                : callback(repositoryOrStashNode)
+        canPickMany: boolean | undefined = false,
+    ): void => {
+        if (stashNode) {
+            return void callback(stashNode)
         }
 
-        if (!repositoryOrStashNode || repositoryOrStashNode.type === NodeType.Repository) {
-            return this.runOnRepository(
-                repositoryOrStashNode,
-                (repositoryNode: StashNode) => this.showStashes(repositoryNode, callback, placeholder, canPickMany || false),
-                placeholder,
-            )
-        }
-
-        return repositoryOrStashNode.type !== NodeType.Stash
-            ? vscode.window.showErrorMessage(`Invalid item ${repositoryOrStashNode.name}.`)
-            : callback(repositoryOrStashNode)
+        return void this.runOnRepository(
+            undefined,
+            (repositoryNode: RepositoryNode) => this
+                .showStashes(repositoryNode, callback, placeholder, canPickMany),
+            placeholder,
+        )
     }
 
     /**
@@ -515,17 +505,17 @@ export class Commands {
      * @param canPickMany    indicate if multi-selection will be available
      */
     private async showStashes(
-        repositoryNode: StashNode,
-        callback: (...args: unknown[]) => unknown,
+        repositoryNode: RepositoryNode,
+        callback: (...x: StashNode[]) => unknown,
         placeholder: string,
         canPickMany: boolean,
-    ): Promise<unknown> | null {
+    ): Promise<void> {
         const repositoryLabel = this.stashLabels.getName(repositoryNode)
 
-        const list = await this.stashGit.getStashes(repositoryNode.path)
+        const list = await this.nodeContainer.getStashes(repositoryNode)
 
         if (!list.length) {
-            return vscode.window.showInformationMessage(`There are no stashed changes on ${repositoryLabel}.`)
+            return void vscode.window.showInformationMessage(`There are no stashed changes on ${repositoryLabel}.`)
         }
 
         const options = {
@@ -534,21 +524,20 @@ export class Commands {
         }
 
         const items: QuickPickStashNodeItem[] = list
-            .map((stash) => this.stashNodeFactory.createStashNode(stash, repositoryNode))
-            .map((node) => ({
-                node,
-                label: this.stashLabels.getName(node),
-                description: this.stashLabels.getDescription(node),
+            .map((stashNode) => ({
+                node: stashNode,
+                label: this.stashLabels.getName(stashNode),
+                description: this.stashLabels.getDescription(stashNode),
             }))
 
-        const selection: QuickPickStashNodeItem | QuickPickStashNodeItem[] = await vscode.window.showQuickPick(items, options)
+        const selection: QuickPickStashNodeItem | QuickPickStashNodeItem[] | undefined = await vscode.window.showQuickPick(items, options)
 
         if (selection) {
-            const nodeOrNodes: StashNode | StashNode[] = Array.isArray(selection)
+            const nodes = Array.isArray(selection)
                 ? selection.map((item: QuickPickStashNodeItem) => item.node)
-                : selection.node
+                : [selection.node]
 
-            return callback(nodeOrNodes)
+            callback(...nodes)
         }
     }
 }
