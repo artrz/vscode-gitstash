@@ -5,6 +5,9 @@
 
 import * as vscode from 'vscode'
 import Config from './Config'
+import FileNode from './StashNode/FileNode'
+import Node from './StashNode/Node'
+import RepositoryNode from './StashNode/RepositoryNode'
 import StashGit from './Git/StashGit'
 import StashLabels from './StashLabels'
 import StashNode from './StashNode/StashNode'
@@ -45,7 +48,7 @@ export class StashCommands {
     /**
      * Generates a stash.
      */
-    public stash = (repositoryNode: StashNode, type: StashType, message?: string): void => {
+    public stash = (repositoryNode: RepositoryNode, type: StashType, message?: string): void => {
         const params = ['stash', 'save']
 
         switch (type) {
@@ -68,7 +71,7 @@ export class StashCommands {
                 break
         }
 
-        if (message.length > 0) {
+        if (message?.length) {
             params.push(message)
         }
 
@@ -88,17 +91,18 @@ export class StashCommands {
             params.push('-m', stashMessage)
         }
 
+        const paths: (string | null)[] = filePaths
         void this.workspaceGit.getRepositories().then((repositoryPaths: string[]) => {
             const repositories: Record<string, string[]> = {}
             repositoryPaths
                 .sort()
                 .reverse()
                 .forEach((repoPath) => {
-                    for (let i = 0; i < filePaths.length; i += 1) {
-                        const filePath = filePaths[i]
+                    for (let i = 0; i < paths.length; i += 1) {
+                        const filePath = paths[i]
                         if (filePath?.startsWith(repoPath)) {
                             repositories[repoPath] = [filePath].concat(repositories[repoPath] || [])
-                            filePaths[i] = null
+                            paths[i] = null
                         }
                     }
                 })
@@ -112,7 +116,7 @@ export class StashCommands {
     /**
      * Removes the stashes list.
      */
-    public clear = (repositoryNode: StashNode): void => {
+    public clear = (repositoryNode: RepositoryNode): void => {
         const params = ['stash', 'clear']
 
         this.exec(repositoryNode.path, params, 'Stash list cleared', repositoryNode)
@@ -178,7 +182,7 @@ export class StashCommands {
     /**
      * Applies changes from a file.
      */
-    public applySingle = (fileNode: StashNode): void => {
+    public applySingle = (fileNode: FileNode): void => {
         const params = [
             'checkout',
             `stash@{${fileNode.parent.index}}`,
@@ -191,7 +195,7 @@ export class StashCommands {
     /**
      * Applies changes from a file.
      */
-    public createSingle = (fileNode: StashNode): void => {
+    public createSingle = (fileNode: FileNode): void => {
         const params = [
             'checkout',
             `stash@{${fileNode.parent.index}}^3`,
@@ -209,7 +213,12 @@ export class StashCommands {
      * @param successMessage the string message to show on success
      * @param node           the involved node
      */
-    private exec(cwd: string, params: string[], successMessage: string, node?: StashNode): void {
+    private exec(
+        cwd: string,
+        params: string[],
+        successMessage: string,
+        node?: Node,
+    ): void {
         this.stashGit.exec(params, cwd)
             .then(
                 (result: string) => {
@@ -261,7 +270,13 @@ export class StashCommands {
      * @param result           the result content
      * @param notificationText the optional notification message
      */
-    private logResult(params: string[], type: NotificationType, result: string, notificationText?: string, node?: StashNode): void {
+    private logResult(
+        params: string[],
+        type: NotificationType,
+        result: string,
+        notificationText?: string,
+        node?: Node,
+    ): void {
         this.prepareLogChannel()
 
         this.performLogging(params, result, node)
@@ -289,9 +304,17 @@ export class StashCommands {
      * @param result      the string result message
      * @param description the optional string alert description
      */
-    private performLogging(params: string[], result: string, node?: StashNode) {
+    private performLogging(
+        params: string[],
+        result: string,
+        node?: Node,
+    ): void {
         if (node) {
-            const cwd = node.isFile ? node.parent.path : node.path
+            const cwd = node instanceof RepositoryNode || node instanceof StashNode
+                ? node.path
+                : node instanceof FileNode
+                    ? node.parent.path
+                    : undefined
             this.channel.appendLine(cwd
                 ? `  ${cwd} - ${this.stashLabels.getName(node)}`
                 : `  ${this.stashLabels.getName(node)}`,

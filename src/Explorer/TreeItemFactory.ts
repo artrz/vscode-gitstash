@@ -9,7 +9,10 @@ import {
     TreeItemCollapsibleState,
 } from 'vscode'
 import Config from '../Config'
-import NodeType from '../StashNode/NodeType'
+import FileNode from '../StashNode/FileNode'
+import MessageNode from '../StashNode/MessageNode'
+import Node from '../StashNode/Node'
+import RepositoryNode from '../StashNode/RepositoryNode'
 import StashLabels from '../StashLabels'
 import StashNode from '../StashNode/StashNode'
 import UriGenerator from '../uriGenerator'
@@ -31,13 +34,21 @@ export default class {
      *
      * @param node the node to be used as base
      */
-    public getTreeItem(node: StashNode): TreeItem {
-        switch (node.type) {
-            case NodeType.Repository: return this.getRepositoryItem(node)
-            case NodeType.Stash:      return this.getStashItem(node)
-            case NodeType.Message:    return this.getMessageItem(node)
-            default:                  return this.getFileItem(node)
+    public getTreeItem(node: Node): TreeItem {
+        if (node instanceof RepositoryNode) {
+            return this.getRepositoryItem(node)
         }
+        if (node instanceof StashNode) {
+            return this.getStashItem(node)
+        }
+        if (node instanceof MessageNode) {
+            return this.getMessageItem(node)
+        }
+        if (node instanceof FileNode) {
+            return this.getFileItem(node)
+        }
+
+        throw new Error(`getTreeItem() Invalid node ${node.name}`);
     }
 
     /**
@@ -45,16 +56,15 @@ export default class {
      *
      * @param node the node to be used as base
      */
-    private getRepositoryItem(node: StashNode): TreeItem {
+    private getRepositoryItem(node: RepositoryNode): TreeItem {
         return {
-            id: `${node.type}.${node.path}`,
+            id: node.id,
             label: this.stashLabels.getName(node),
             description: this.stashLabels.getDescription(node),
             tooltip: this.stashLabels.getTooltip(node),
             iconPath: new ThemeIcon('repo'),
             contextValue: 'repository',
             collapsibleState: TreeItemCollapsibleState.Collapsed,
-            resourceUri: this.uriGenerator.createForTreeItem(node),
         }
     }
 
@@ -65,14 +75,13 @@ export default class {
      */
     private getStashItem(node: StashNode): TreeItem {
         return {
-            id: `${node.type}.${node.parent.path}.${node.hash}`,
+            id: node.id,
             label: this.stashLabels.getName(node),
             description: this.stashLabels.getDescription(node),
             tooltip: this.stashLabels.getTooltip(node),
             iconPath: new ThemeIcon('archive'),
             contextValue: 'stash',
             collapsibleState: TreeItemCollapsibleState.Collapsed,
-            resourceUri: this.uriGenerator.createForTreeItem(node),
         }
     }
 
@@ -81,22 +90,22 @@ export default class {
      *
      * @param node the node to be used as base
      */
-    private getFileItem(node: StashNode): TreeItem {
+    private getFileItem(node: FileNode): TreeItem {
         let context = 'file'
-        switch (node.type) {
-            case (NodeType.Deleted): context += ':deleted'; break
-            case (NodeType.IndexAdded): context += ':indexAdded'; break
-            case (NodeType.Modified): context += ':modified'; break
-            case (NodeType.Renamed): context += ':renamed'; break
-            case (NodeType.Untracked): context += ':untracked'; break
+        switch (true) {
+            case (node.isAdded): context += ':indexAdded'; break
+            case (node.isDeleted): context += ':deleted'; break
+            case (node.isModified): context += ':modified'; break
+            case (node.isRenamed): context += ':renamed'; break
+            case (node.isUntracked): context += ':untracked'; break
         }
 
         return {
-            id: `${node.type}.${node.parent.parent.path}.${node.parent.hash}.${node.name}`,
+            id: node.id,
             label: this.stashLabels.getName(node),
             description: this.stashLabels.getDescription(node),
             tooltip: this.stashLabels.getTooltip(node),
-            iconPath: this.getFileIcon(node.type),
+            iconPath: this.getFileIcon(node),
             contextValue: context,
             collapsibleState: TreeItemCollapsibleState.None,
             resourceUri: this.uriGenerator.createForTreeItem(node),
@@ -108,9 +117,9 @@ export default class {
         }
     }
 
-    private getMessageItem(node: StashNode): TreeItem {
+    private getMessageItem(node: MessageNode): TreeItem {
         return {
-            id: `${node.type}.${node.name}`,
+            id: node.id,
             label: node.name,
             description: undefined,
             tooltip: undefined,
@@ -123,19 +132,19 @@ export default class {
     /**
      * Builds a file icon path.
      *
-     * @param filename the filename of the icon
+     * @param node the node to be used as base
      */
-    private getFileIcon(type: NodeType): { light: string; dark: string } | ThemeIcon {
+    private getFileIcon(node: FileNode): { light: string; dark: string } | ThemeIcon {
         if (this.config.get('explorer.items.file.icons') === 'file') {
             return ThemeIcon.File
         }
 
-        switch (type) {
-            case NodeType.Deleted: return this.getIcon('status-deleted.svg')
-            case NodeType.IndexAdded: return this.getIcon('status-added.svg')
-            case NodeType.Modified: return this.getIcon('status-modified.svg')
-            case NodeType.Renamed: return this.getIcon('status-renamed.svg')
-            case NodeType.Untracked: return this.getIcon('status-untracked.svg')
+        switch (true) {
+            case node.isDeleted: return this.getIcon('status-deleted.svg')
+            case node.isAdded: return this.getIcon('status-added.svg')
+            case node.isModified: return this.getIcon('status-modified.svg')
+            case node.isRenamed: return this.getIcon('status-renamed.svg')
+            case node.isUntracked: return this.getIcon('status-untracked.svg')
             default: return new ThemeIcon('file-text')
         }
     }

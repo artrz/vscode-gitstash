@@ -43,10 +43,7 @@ export default class implements FileDecorationProvider, Disposable {
         const nodeType = uri.query.split('type=')[1].split('&')[0] as FileNodeType
 
         switch (nodeType) {
-            case FileNodeType.Untracked:
-                return this.getDecorator('U', 'gitDecoration.untrackedResourceForeground')
-
-            case FileNodeType.IndexAdded:
+            case FileNodeType.Added:
                 return this.getDecorator('A', 'gitDecoration.addedResourceForeground')
 
             case FileNodeType.Deleted:
@@ -57,9 +54,10 @@ export default class implements FileDecorationProvider, Disposable {
 
             case FileNodeType.Renamed:
                 return this.getDecorator('R', 'gitDecoration.renamedResourceForeground')
-        }
 
-        return undefined
+            case FileNodeType.Untracked:
+                return this.getDecorator('U', 'gitDecoration.untrackedResourceForeground')
+        }
     }
 
     /**

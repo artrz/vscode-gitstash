@@ -20,6 +20,7 @@ export default class {
     }
 
     public get<T>(section: string, defaultValue?: T): T {
-        return this.settings.get(section, defaultValue)
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.settings.get(section, defaultValue)!
     }
 }

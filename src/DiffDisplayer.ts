@@ -5,10 +5,9 @@
 
 import * as fs from 'fs'
 import * as vscode from 'vscode'
+import FileNode from './StashNode/FileNode'
 import { FileStage } from './Git/StashGit'
-import NodeType from './StashNode/NodeType'
 import StashLabels from './StashLabels'
-import StashNode from './StashNode/StashNode'
 import UriGenerator from './uriGenerator'
 
 export default class {
@@ -25,45 +24,41 @@ export default class {
      *
      * @param fileNode
      */
-    public async showDiff(fileNode: StashNode): Promise<void> {
-        if (fileNode.type === NodeType.Modified || fileNode.type === NodeType.Renamed) {
-            void this.displayDiff(
+    public async showDiff(fileNode: FileNode): Promise<void> {
+        if (fileNode.isAdded) {
+            return void this.displayDiff(
+                await this.uriGenerator.createForDiff(),
+                await this.uriGenerator.createForDiff(fileNode),
+                fileNode,
+                true,
+            )
+        }
+
+        if (fileNode.isDeleted) {
+            return void this.displayDiff(
+                await this.uriGenerator.createForDiff(fileNode),
+                await this.uriGenerator.createForDiff(),
+                fileNode,
+                true,
+            )
+        }
+
+        if (fileNode.isModified || fileNode.isRenamed) {
+            return void this.displayDiff(
                 await this.uriGenerator.createForDiff(fileNode, FileStage.Parent),
                 await this.uriGenerator.createForDiff(fileNode, FileStage.Change),
                 fileNode,
                 true,
             )
-            return
         }
 
-        if (fileNode.type === NodeType.Untracked) {
-            void this.displayDiff(
+        if (fileNode.isUntracked) {
+            return void this.displayDiff(
                 await this.uriGenerator.createForDiff(),
                 await this.uriGenerator.createForDiff(fileNode),
                 fileNode,
                 true,
             )
-            return
-        }
-
-        if (fileNode.type === NodeType.IndexAdded) {
-            void this.displayDiff(
-                await this.uriGenerator.createForDiff(),
-                await this.uriGenerator.createForDiff(fileNode),
-                fileNode,
-                true,
-            )
-            return
-        }
-
-        if (fileNode.type === NodeType.Deleted) {
-            void this.displayDiff(
-                await this.uriGenerator.createForDiff(fileNode),
-                await this.uriGenerator.createForDiff(),
-                fileNode,
-                true,
-            )
-            return
         }
     }
 
@@ -74,8 +69,8 @@ export default class {
      * @param compareChanges  compare changes or the changes' parent
      * @param currentAsParent show current file on the left side
      */
-    public async showDiffCurrent(fileNode: StashNode, compareChanges: boolean, currentAsParent: boolean): Promise<unknown> {
-        const current = fileNode.type === NodeType.Renamed
+    public async showDiffCurrent(fileNode: FileNode, compareChanges: boolean, currentAsParent: boolean): Promise<unknown> {
+        const current = fileNode.isRenamed
             ? `${fileNode.parent.path}/${fileNode.oldName}`
             : fileNode.path
 
@@ -85,7 +80,7 @@ export default class {
 
         const currentFileUri = vscode.Uri.file(current)
 
-        const diffDataUri = fileNode.type === NodeType.Modified || fileNode.type === NodeType.Renamed
+        const diffDataUri = fileNode.isModified || fileNode.isRenamed
             ? await this.uriGenerator.createForDiff(fileNode, compareChanges ? FileStage.Change : FileStage.Parent)
             : await this.uriGenerator.createForDiff(fileNode)
 
@@ -102,7 +97,7 @@ export default class {
      * @param fileNode the stash node that's being displayed
      * @param hint     the hint reference to know file origin
      */
-    private displayDiff(base: vscode.Uri, modified: vscode.Uri, fileNode: StashNode, hint: boolean) {
+    private displayDiff(base: vscode.Uri, modified: vscode.Uri, fileNode: FileNode, hint: boolean) {
         if (!fs.existsSync(base.fsPath)) {
             void vscode.window.showWarningMessage(`File ${base.fsPath} not found.`)
         }

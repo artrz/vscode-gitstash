@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode'
 import StashGit, { FileStage } from '../Git/StashGit'
-import NodeType from '../StashNode/NodeType'
+import FileNodeType from '../StashNode/FileNodeType'
 import { URLSearchParams } from 'url'
 
 export default class implements vscode.TextDocumentContentProvider {
@@ -18,7 +18,7 @@ export default class implements vscode.TextDocumentContentProvider {
         const index = parseInt(params.get('index') ?? '-1', 10)
         const path = params.get('path')
         const oldPath = params.get('oldPath') ?? ''
-        const type = params.get('type') as NodeType
+        const type = params.get('type') as FileNodeType
         const side = params.get('side') as FileStage
 
         if (!cwd || !path || index < 0) {
@@ -31,24 +31,28 @@ export default class implements vscode.TextDocumentContentProvider {
         let contents: Promise<string> = Promise.resolve<string>('')
 
         try {
-            if (type === NodeType.Deleted) {
-                contents = stashGit.getParentContents(cwd, index, path)
-            }
-            else if (type === NodeType.IndexAdded) {
+            if (type === FileNodeType.Added) {
                 contents = stashGit.getStashContents(cwd, index, path)
             }
-            else if (type === NodeType.Modified) {
+            else if (type === FileNodeType.Deleted) {
+                contents = stashGit.getParentContents(cwd, index, path)
+            }
+            else if (type === FileNodeType.Modified) {
                 contents = side === FileStage.Parent
                     ? stashGit.getParentContents(cwd, index, path)
                     : stashGit.getStashContents(cwd, index, path)
             }
-            else if (type === NodeType.Renamed) {
+            else if (type === FileNodeType.Renamed) {
                 contents = side === FileStage.Parent
                     ? stashGit.getParentContents(cwd, index, oldPath)
                     : stashGit.getStashContents(cwd, index, path)
             }
-            else if (type === NodeType.Untracked) {
+            else if (type === FileNodeType.Untracked) {
                 contents = stashGit.getThirdParentContents(cwd, index, path)
+            }
+            else {
+                console.warn(`provideTextDocumentContent type[${params.get('type')}] side[${side}]`)
+                console.warn(uri.query)
             }
         }
         catch (e) {
