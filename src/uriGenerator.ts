@@ -6,9 +6,9 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as tmp from 'tmp'
+import FileNode from './StashNode/FileNode'
 import { FileStage } from './Git/StashGit'
-import GitBridge from './GitBridge'
-import StashNode from './StashNode/StashNode'
+import NodeContainer from './StashNode/NodeContainer'
 import { Uri } from 'vscode'
 
 export default class UriGenerator {
@@ -24,10 +24,9 @@ export default class UriGenerator {
         '.webp',
     ]
 
-    private gitBridge: GitBridge
-
-    constructor(gitBridge: GitBridge) {
-        this.gitBridge = gitBridge
+    constructor(
+        private nodeContainer: NodeContainer,
+    ) {
         tmp.setGracefulCleanup()
     }
 
@@ -36,7 +35,7 @@ export default class UriGenerator {
      *
      * @param node  the node to be used as base for the URI
      */
-    public createForTreeItem(node: StashNode): Uri {
+    public createForTreeItem(node: FileNode): Uri {
         return Uri.parse(`${UriGenerator.fileScheme}:${node.path}?type=${node.type}&t=${new Date().getTime()}`)
     }
 
@@ -46,7 +45,7 @@ export default class UriGenerator {
      * @param node  the node to be used as base for the URI
      * @param stage the file stash stage
      */
-    public async createForDiff(node?: StashNode, stage?: FileStage): Promise<Uri> {
+    public async createForDiff(node?: FileNode, stage?: FileStage): Promise<Uri> {
         if (!node) {
             return Uri.parse(`${UriGenerator.emptyFileScheme}:`)
         }
@@ -54,7 +53,7 @@ export default class UriGenerator {
         if (this.supportedBinaryFiles.includes(path.extname(node.name))) {
             return Uri.file(
                 this.createTmpFile(
-                    await this.gitBridge.getFileContents(node, stage),
+                    await this.nodeContainer.getFileContents(node, stage),
                     node.name,
                 ).name,
             )
@@ -69,13 +68,13 @@ export default class UriGenerator {
      * @param node the node to be used as base for the URI
      * @param side the editor side
      */
-    private generateUri(node: StashNode, side?: string): Uri {
+    private generateUri(node: FileNode, side?: string): Uri {
         const timestamp = new Date().getTime()
 
         const query = `cwd=${node.parent.path}`
             + `&index=${node.parent.index}`
             + `&path=${node.name}`
-            + `&oldPath=${node.oldName ?? ''}`
+            + `&oldPath=${node.oldName}`
             + `&type=${node.type}`
             + `&side=${side ?? ''}`
             + `&t=${timestamp}`
