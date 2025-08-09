@@ -18,7 +18,7 @@ export interface RenameStash {
 }
 
 export interface StashedFiles {
-    indexAdded: string[];
+    added: string[];
     modified: string[];
     renamed: RenameStash[];
     untracked: string[];
@@ -84,11 +84,11 @@ export default class StashGit extends Git {
      */
     public async getStashedFiles(cwd: string, index: number): Promise<StashedFiles> {
         const files: StashedFiles = {
-            untracked: await this.getStashUntracked(cwd, index),
-            indexAdded: [],
-            modified: [],
+            added: [],
             deleted: [],
+            modified: [],
             renamed: [] as RenameStash[],
+            untracked: await this.getStashUntracked(cwd, index),
         }
 
         const params = [
@@ -108,7 +108,7 @@ export default class StashGit extends Git {
                     const file = line.substring(1).trim()
 
                     if (status === 'A') {
-                        files.indexAdded.push(file)
+                        files.added.push(file)
                     }
                     else if (status === 'D') {
                         files.deleted.push(file)
@@ -135,7 +135,7 @@ export default class StashGit extends Git {
     }
 
     /**
-     * Gets the stash untracked files.
+     * Gets the stash's untracked files.
      *
      * @param cwd   the current working directory
      * @param index the int with the stash index
@@ -162,7 +162,9 @@ export default class StashGit extends Git {
         }
         catch (e) {
             /* we may get an error if there aren't untracked files */
-            console.log(e)
+            console.warn(e)
+            console.debug(params.join(' '))
+            console.warn(' * Ignore if error is: fatal: Not a valid object name stash@{0}^3')
         }
 
         return list
