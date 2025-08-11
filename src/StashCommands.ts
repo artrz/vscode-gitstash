@@ -225,9 +225,10 @@ export class StashCommands {
                         this.logResult(params, NotificationType.Message, result, successMessage, node)
                     }
                 },
-                (error: string) => {
-                    const excerpt = error.substring(error.indexOf(':') + 1).trim()
-                    this.logResult(params, NotificationType.Error, error, excerpt, node)
+                (error: Error) => {
+                    const msg = error.message
+                    const excerpt = msg.substring(msg.indexOf(':') + 1).trim()
+                    this.logResult(params, NotificationType.Error, msg, excerpt, node)
                 },
             )
             .catch((error: Error) => {
