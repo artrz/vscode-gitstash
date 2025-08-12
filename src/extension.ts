@@ -80,6 +80,8 @@ export function activate(context: ExtensionContext): void {
 
         commands.registerCommand('gitstash.clipboardRepositoryPath', stashCommands.toClipboardFromObject),
         commands.registerCommand('gitstash.clipboardStashMessage', stashCommands.toClipboardFromObject),
+        commands.registerCommand('gitstash.clipboardStashHash', stashCommands.clipboardStashHash),
+        commands.registerCommand('gitstash.clipboardStashHashShort', stashCommands.clipboardStashHashShort),
         commands.registerCommand('gitstash.clipboardFilePath', stashCommands.toClipboardFromObject),
         commands.registerCommand('gitstash.clipboardInfo', stashCommands.clipboardFromTemplate),
 
