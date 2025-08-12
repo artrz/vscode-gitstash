@@ -95,10 +95,7 @@ function getSubRootPaths(workspacePaths: string[], searchLevels: number): string
  * @param list     the directories list accumulator
  */
 function getSubdirectoriesTree(rootPath: string, levels: number, list?: string[]): string[] {
-    if (list === undefined) {
-        list = [] as string[]
-    }
-    // list ??= [] as string[]
+    list ??= [] as string[]
     levels -= 1
 
     if (levels >= 0) {
@@ -106,8 +103,7 @@ function getSubdirectoriesTree(rootPath: string, levels: number, list?: string[]
             if (subPath !== '.git') {
                 const subDirectoryPath = path.join(rootPath, subPath)
 
-                // TS complains list can be undefined so adding it to the if to make the compiler happy.
-                if (list && fs.statSync(subDirectoryPath).isDirectory()) {
+                if (fs.statSync(subDirectoryPath).isDirectory()) {
                     list.push(subDirectoryPath)
                     getSubdirectoriesTree(subDirectoryPath, levels, list)
                 }

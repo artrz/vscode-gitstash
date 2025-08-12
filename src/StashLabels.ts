@@ -97,7 +97,7 @@ export default class {
             }
         }
 
-        throw new Error(`getContent(): Unsupported Node: ${node.name}`);
+        throw new Error(`getContent(): Unsupported Node: ${node.name}`)
     }
 
     /**
@@ -192,7 +192,7 @@ export default class {
             case fileNode.isUntracked: return 'Untracked'
         }
 
-        throw new Error(`getContent(): Unsupported fileNode type: ${fileNode.type}`);
+        throw new Error(`getContent(): Unsupported fileNode type: ${fileNode.type}`)
     }
 
     /**

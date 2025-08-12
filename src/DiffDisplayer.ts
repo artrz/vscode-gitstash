@@ -102,7 +102,7 @@ export default class {
             void vscode.window.showWarningMessage(`File ${base.fsPath} not found.`)
         }
 
-        return vscode.commands.executeCommand<unknown>(
+        return vscode.commands.executeCommand(
             'vscode.diff',
             base,
             modified,
