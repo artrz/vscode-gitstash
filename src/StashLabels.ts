@@ -10,6 +10,7 @@ import FileNode from './StashNode/FileNode'
 import Node from './StashNode/Node'
 import RepositoryNode from './StashNode/RepositoryNode'
 import StashNode from './StashNode/StashNode'
+import MessageNode from './StashNode/MessageNode'
 
 export default class {
     private config: Config
@@ -95,6 +96,9 @@ export default class {
             if (node.isRenamed) {
                 return this.parseFileLabel(node, this.config.get(`explorer.items.renamedFile.${property}Content`))
             }
+        }
+        if (node instanceof MessageNode) {
+            return node.name
         }
 
         throw new Error(`getContent(): Unsupported Node: ${node.name}`)
