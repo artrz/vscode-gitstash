@@ -3,7 +3,7 @@
  * GPL-3.0-only. See LICENSE.md in the project root for license details.
  */
 
-import Executor from './Executor'
+import Executor from '../Foundation/Executor'
 
 export default class extends Executor {
     /**

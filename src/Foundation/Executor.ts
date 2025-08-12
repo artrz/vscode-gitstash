@@ -13,7 +13,7 @@ export default class {
      * @param cwd      the string with the current working directory
      * @param encoding the BufferEncoding string with the optional encoding to replace utf8
      */
-    public async call(command: string, args: string[], cwd?: string, encoding?: BufferEncoding): Promise<string> {
+    protected async call(command: string, args: string[], cwd?: string, encoding?: BufferEncoding): Promise<string> {
         const response: Buffer[] = []
         const errors: string[] = []
 
