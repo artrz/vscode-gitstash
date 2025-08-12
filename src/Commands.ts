@@ -41,7 +41,7 @@ export class Commands {
      */
     public stashSelected = (...resourceStates: vscode.SourceControlResourceState[]): void => {
         const paths = resourceStates.map(
-            (resourceState: vscode.SourceControlResourceState) => resourceState.resourceUri.fsPath
+            (resourceState: vscode.SourceControlResourceState) => resourceState.resourceUri.fsPath,
         )
 
         void vscode.window
@@ -85,7 +85,7 @@ export class Commands {
      * @param repositoryNode the node with the directory to be opened
      */
     public openFile = (fileNode: FileNode): void => void vscode.commands
-        .executeCommand<void>('vscode.open', vscode.Uri.parse(fileNode.path))
+        .executeCommand('vscode.open', vscode.Uri.parse(fileNode.path))
 
     /**
      * Opens the directory pointed by repository node.
@@ -103,7 +103,7 @@ export class Commands {
     public stash = (repositoryNode?: RepositoryNode): void => {
         void this.runOnRepository(
             repositoryNode,
-            (repositoryNode: RepositoryNode) => this.stashPerform(repositoryNode),
+            (repositoryNode: RepositoryNode) => { this.stashPerform(repositoryNode) },
             'Create stash',
         )
     }
@@ -116,7 +116,7 @@ export class Commands {
     public clear = (repositoryNode?: RepositoryNode): void => {
         void this.runOnRepository(
             repositoryNode,
-            (repositoryNode: RepositoryNode) => this.clearPerform(repositoryNode),
+            (repositoryNode: RepositoryNode) => { this.clearPerform(repositoryNode) },
             'Clear stashes',
         )
     }
@@ -129,7 +129,7 @@ export class Commands {
     public pop = (stashNode?: StashNode): void => {
         this.runOnStash(
             stashNode,
-            (stashNode: StashNode) => this.popPerform(stashNode),
+            (stashNode: StashNode) => { this.popPerform(stashNode) },
             'Stash pop',
         )
     }
@@ -142,7 +142,7 @@ export class Commands {
     public apply = (stashNode?: StashNode): void => {
         this.runOnStash(
             stashNode,
-            (stashNode: StashNode) => this.applyPerform(stashNode),
+            (stashNode: StashNode) => { this.applyPerform(stashNode) },
             'Stash apply',
         )
     }
@@ -155,7 +155,7 @@ export class Commands {
     public branch = (stashNode?: StashNode): void => {
         this.runOnStash(
             stashNode,
-            (stashNode: StashNode) => this.branchPerform(stashNode),
+            (stashNode: StashNode) => { this.branchPerform(stashNode) },
             'Stash branch',
         )
     }
@@ -168,7 +168,7 @@ export class Commands {
     public drop = (stashNode?: StashNode): void => {
         this.runOnStash(
             stashNode,
-            (stashNode: StashNode) => this.dropPerform(stashNode),
+            (stashNode: StashNode) => { this.dropPerform(stashNode) },
             'Stash drop',
         )
     }

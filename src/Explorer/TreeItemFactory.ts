@@ -48,7 +48,7 @@ export default class {
             return this.getFileItem(node)
         }
 
-        throw new Error(`getTreeItem() Invalid node ${node.name}`);
+        throw new Error(`getTreeItem() Invalid node ${node.name}`)
     }
 
     /**
@@ -134,7 +134,7 @@ export default class {
      *
      * @param node the node to be used as base
      */
-    private getFileIcon(node: FileNode): { light: string; dark: string } | ThemeIcon {
+    private getFileIcon(node: FileNode): { light: string, dark: string } | ThemeIcon {
         if (this.config.get('explorer.items.file.icons') === 'file') {
             return ThemeIcon.File
         }
@@ -154,7 +154,7 @@ export default class {
      *
      * @param filename the filename of the icon
      */
-    private getIcon(filename: string): { light: string; dark: string } {
+    private getIcon(filename: string): { light: string, dark: string } {
         return {
             light: join(__dirname, '..', 'resources', 'icons', 'light', 'files', this.config.get('explorer.items.file.icons'), filename),
             dark: join(__dirname, '..', 'resources', 'icons', 'dark', 'files', this.config.get('explorer.items.file.icons'), filename),

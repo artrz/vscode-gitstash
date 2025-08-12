@@ -6,23 +6,23 @@
 import Git from './Git'
 
 export interface Stash {
-    index: number;
-    date: string;
-    hash: string;
-    description: string;
+    index: number
+    date: string
+    hash: string
+    description: string
 }
 
 export interface RenameStash {
-    new: string;
-    old: string;
+    new: string
+    old: string
 }
 
 export interface StashedFiles {
-    added: string[];
-    modified: string[];
-    renamed: RenameStash[];
-    untracked: string[];
-    deleted: string[];
+    added: string[]
+    modified: string[]
+    renamed: RenameStash[]
+    untracked: string[]
+    deleted: string[]
 }
 
 export const enum FileStage {

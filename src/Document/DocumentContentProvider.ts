@@ -47,6 +47,7 @@ export default class implements vscode.TextDocumentContentProvider {
                     ? stashGit.getParentContents(cwd, index, oldPath)
                     : stashGit.getStashContents(cwd, index, path)
             }
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             else if (type === FileNodeType.Untracked) {
                 contents = stashGit.getThirdParentContents(cwd, index, path)
             }
