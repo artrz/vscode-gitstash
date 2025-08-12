@@ -29,7 +29,7 @@ export default class implements TreeDataProvider<Node> {
     private nodeContainer: NodeContainer
     private treeItemFactory: TreeItemFactory
     private rawStashes = {}
-    private loadTimeout: NodeJS.Timeout | null
+    private loadTimeout: NodeJS.Timeout | undefined
     private showExplorer: boolean | undefined
 
     constructor(
@@ -123,7 +123,9 @@ export default class implements TreeDataProvider<Node> {
 
         if (!parent) {
             if (itemDisplayMode === 'hide-empty' && this.config.get('explorer.eagerLoadStashes')) {
-                children = children.filter((repositoryNode: RepositoryNode) => repositoryNode.childrenCount)
+                children = children.filter(
+                    (repositoryNode) => (repositoryNode as RepositoryNode).childrenCount,
+                )
             }
         }
 
@@ -164,8 +166,7 @@ export default class implements TreeDataProvider<Node> {
         }
 
         this.loadTimeout = setTimeout((type: string, pathUri?: Uri) => {
-            this.loadTimeout = null
-
+            this.loadTimeout = undefined
             if (['settings', 'force'].includes(type)) {
                 this.onDidChangeTreeDataEmitter.fire()
                 return
