@@ -9,6 +9,7 @@ import StashGit from './Git/StashGit'
 import StashLabels from './StashLabels'
 import StashNode from './StashNode/StashNode'
 import WorkspaceGit from './Git/WorkspaceGit'
+import { toDateTimeIso } from './DateFormat'
 
 enum StashType {
     Simple,
@@ -227,8 +228,7 @@ export class StashCommands {
                 },
                 (error: Error) => {
                     const msg = error.message
-                    const excerpt = msg.substring(msg.indexOf(':') + 1).trim()
-                    this.logResult(params, NotificationType.Error, msg, excerpt, node)
+                    this.logResult(params, NotificationType.Error, msg, msg, node)
                 },
             )
             .catch((error: Error) => {
@@ -261,25 +261,11 @@ export class StashCommands {
      * @param type             the message type
      * @param result           the result content
      * @param notificationText the optional notification message
+     * @param node             the optional involved node
      */
     private logResult(params: string[], type: NotificationType, result: string, notificationText?: string, node?: StashNode): void {
-        this.prepareLogChannel()
-
-        this.performLogging(params, result, node)
-
+        this.performLogging(params, result, type, node)
         this.showNotification(notificationText ?? result, type)
-    }
-
-    /**
-     * Prepares the log channel to before using it.
-     */
-    private prepareLogChannel() {
-        if (this.config.settings.get('log.autoclear')) {
-            this.channel.clear()
-        }
-
-        const currentTime = new Date()
-        this.channel.appendLine(`> ${currentTime.toLocaleString()}`)
     }
 
     /**
@@ -290,17 +276,24 @@ export class StashCommands {
      * @param result      the string result message
      * @param description the optional string alert description
      */
-    private performLogging(params: string[], result: string, node?: StashNode) {
-        if (node) {
-            const cwd = node.isFile ? node.parent.path : node.path
-            this.channel.appendLine(cwd
-                ? `  ${cwd} - ${this.stashLabels.getName(node)}`
-                : `  ${this.stashLabels.getName(node)}`,
-            )
+    private performLogging(params: string[], result: string, type: NotificationType, node?: StashNode) {
+        if (this.config.settings.get('log.autoclear')) {
+            this.channel.clear()
         }
 
-        this.channel.appendLine(`  git ${params.join(' ')}`)
-        this.channel.appendLine(`${result.trim()}\n`)
+        const currentTime = toDateTimeIso(new Date())
+        const cmd = `git ${params.join(' ')}`
+        const tp = type === NotificationType.Message ? 'info' : type as string
+
+        let msg = `${currentTime} [${tp}] > ${cmd}`
+
+        if (node) {
+            const cwd = node.isFile ? node.parent.path : node.path
+            msg += ` (${cwd}) [${this.stashLabels.getName(node)}]`
+        }
+
+        this.channel.appendLine(`${msg}`)
+        this.channel.appendLine(`${result.trim()}\n\n`)
     }
 
     /**
