@@ -407,7 +407,7 @@ export class Commands {
     }
 
     /**
-     * Puts the stash node text from a template to clipboard.
+     * Copy the stash node text from a template to clipboard.
      *
      * @param node the involved node
      */
@@ -416,12 +416,21 @@ export class Commands {
     }
 
     /**
-     * Puts the stash node text on clipboard.
+     * Copy the stash node text to clipboard.
      *
      * @param node the involved node
      */
     public toClipboardFromObject = (node: Node): void => {
         void vscode.env.clipboard.writeText(this.stashLabels.clipboardNode(node))
+    }
+
+    /**
+     * Copy the stash hash to clipboard.
+     *
+     * @param node the involved node
+     */
+    public clipboardStashHash = (node: StashNode): void => {
+        void vscode.env.clipboard.writeText(node.hash)
     }
 
     /**

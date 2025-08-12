@@ -364,6 +364,11 @@
                 "category": "GitStash"
             },
             {
+                "command": "gitstash.clipboardStashHash",
+                "title": "Stash hash",
+                "category": "GitStash"
+            },
+            {
                 "command": "gitstash.clipboardFilePath",
                 "title": "File path",
                 "category": "GitStash"
@@ -460,6 +465,10 @@
                 },
                 {
                     "command": "gitstash.clipboardStashMessage",
+                    "when": "false"
+                },
+                {
+                    "command": "gitstash.clipboardStashHash",
                     "when": "false"
                 },
                 {
@@ -606,6 +615,11 @@
                 },
                 {
                     "command": "gitstash.clipboardStashMessage",
+                    "when": "view == gitstash.explorer && viewItem == stash",
+                    "group": "node_clipboard_copy@1"
+                },
+                {
+                    "command": "gitstash.clipboardStashHash",
                     "when": "view == gitstash.explorer && viewItem == stash",
                     "group": "node_clipboard_copy@1"
                 },
