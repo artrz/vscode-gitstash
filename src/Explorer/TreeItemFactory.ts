@@ -93,7 +93,7 @@ export default class {
     private getFileItem(node: FileNode): TreeItem {
         let context = 'file'
         switch (true) {
-            case (node.isAdded): context += ':indexAdded'; break
+            case (node.isAdded): context += ':added'; break
             case (node.isDeleted): context += ':deleted'; break
             case (node.isModified): context += ':modified'; break
             case (node.isRenamed): context += ':renamed'; break
