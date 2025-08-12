@@ -232,7 +232,9 @@ export class StashCommands {
                         this.logResult(params, NotificationType.Message, result, 'No local changes to save', node)
                     }
                     else {
-                        this.logResult(params, NotificationType.Message, result, successMessage, node)
+                        if (this.config.get<boolean>('notifications.success.show')) {
+                            this.logResult(params, NotificationType.Message, result, successMessage, node)
+                        }
                     }
                 },
                 (error: unknown) => {

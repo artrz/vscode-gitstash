@@ -41,6 +41,7 @@ export default class Config extends BaseConfig {
         editorDiffTitleFormat: 'editor.diffTitleFormat',
 
         logAutoclear: 'log.autoclear',
+        notifySuccess: 'notifications.success.show',
     } as const
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters

@@ -239,6 +239,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Clears the log window before showing the action result"
+                },
+                "gitstash.notifications.success.show": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Shows a notification after a successful execution"
                 }
             }
         },
