@@ -19,10 +19,10 @@ export interface RenameStash {
 
 export interface StashedFiles {
     added: string[]
+    deleted: string[]
     modified: string[]
     renamed: RenameStash[]
     untracked: string[]
-    deleted: string[]
 }
 
 export const enum FileStage {
