@@ -22,8 +22,7 @@ export default class implements vscode.TextDocumentContentProvider {
         const side = params.get('side') as FileStage
 
         if (!cwd || !path || index < 0) {
-            console.error(`cwd: ${cwd}`)
-            console.error(`path: ${path}`)
+            console.error(`cwd: ${cwd}, path: ${path}, index: ${index}`)
             return ''
         }
 
