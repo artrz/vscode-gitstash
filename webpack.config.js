@@ -2,7 +2,6 @@
 
 'use strict'
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const path = require('path')
 
 /** @type {import('webpack').Configuration} */
