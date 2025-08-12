@@ -314,7 +314,7 @@ export class StashCommands {
         type: NotificationType,
         node?: Node,
     ): void {
-        if (this.config.settings.get('log.autoclear')) {
+        if (this.config.get<boolean>('log.autoclear')) {
             this.channel.clear()
         }
 

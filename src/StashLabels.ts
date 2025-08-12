@@ -82,21 +82,59 @@ export default class {
      */
     private getContent(node: Node, property: string): string {
         if (node instanceof RepositoryNode) {
-            const placeholder = this.config.get<string>(`explorer.items.repository.${property}Content`)
-            return this.parseRepositoryLabel(node, placeholder)
+            const prop = (() => {
+                switch (property) {
+                    case 'label': return this.config.key.expItemsRepoLabel
+                    case 'description': return this.config.key.expItemsRepoDescription
+                    case 'tooltip': return this.config.key.expItemsRepoTooltip
+                    case 'to-clipboard': return this.config.key.expItemsRepoToClipboard
+                }
+                throw new Error('Invalid property')
+            })()
+            return this.parseRepositoryLabel(node, this.config.get<string>(prop))
         }
+
         if (node instanceof StashNode) {
-            const placeholder = this.config.get<string>(`explorer.items.stash.${property}Content`)
-            return this.parseStashLabel(node, placeholder)
+            const prop = (() => {
+                switch (property) {
+                    case 'label': return this.config.key.expItemsStashLabel
+                    case 'description': return this.config.key.expItemsStashDescription
+                    case 'tooltip': return this.config.key.expItemsStashTooltip
+                    case 'to-clipboard': return this.config.key.expItemsStashToClipboard
+                }
+                throw new Error('Invalid property')
+            })()
+            return this.parseStashLabel(node, this.config.get<string>(prop))
         }
+
         if (node instanceof FileNode) {
             if (node.isAdded || node.isDeleted || node.isModified || node.isUntracked) {
-                return this.parseFileLabel(node, this.config.get(`explorer.items.file.${property}Content`))
+                const prop = (() => {
+                    switch (property) {
+                        case 'label': return this.config.key.expItemsFileLabel
+                        case 'description': return this.config.key.expItemsFileDescription
+                        case 'tooltip': return this.config.key.expItemsFileTooltip
+                        case 'to-clipboard': return this.config.key.expItemsFileToClipboard
+                    }
+                    throw new Error('Invalid property')
+                })()
+                return this.parseFileLabel(node, this.config.get<string>(prop))
             }
+
             if (node.isRenamed) {
-                return this.parseFileLabel(node, this.config.get(`explorer.items.renamedFile.${property}Content`))
+                const prop = (() => {
+                    switch (property) {
+                        case 'label': return this.config.key.expItemsRenamedFileLabel
+                        case 'description': return this.config.key.expItemsRenamedFileDescription
+                        case 'tooltip': return this.config.key.expItemsRenamedFileTooltip
+                        case 'to-clipboard': return this.config.key.expItemsRenamedFileToClipboard
+                    }
+                    throw new Error('Invalid property')
+                })()
+                return this.parseFileLabel(node, this.config.get<string>(prop))
             }
         }
+
         if (node instanceof MessageNode) {
             return node.name
         }
@@ -155,8 +193,7 @@ export default class {
      * @param hint     the hint reference to know file origin
      */
     public getDiffTitle(fileNode: FileNode, hint: boolean): string {
-        return this.config.settings
-            .get('editor.diffTitleFormat', '')
+        return this.config.get<string>('editor.diffTitleFormat')
             .replace('${filename}', path.basename(fileNode.name))
             .replace('${filepath}', `${path.dirname(fileNode.name)}/`)
             .replace('${dateTimeLong}', DateFormat.toFullyReadable(fileNode.date))
