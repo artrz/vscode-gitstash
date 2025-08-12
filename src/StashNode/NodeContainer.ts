@@ -117,6 +117,7 @@ export default class NodeContainer {
         }
         if (fileNode.isRenamed) {
             return stage === FileStage.Parent
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 ? this.stashGit.getParentContents(fileNode.parent.path, fileNode.parent.index, fileNode.oldName!)
                 : this.stashGit.getStashContents(fileNode.parent.path, fileNode.parent.index, fileNode.name)
         }
@@ -124,7 +125,7 @@ export default class NodeContainer {
             return this.stashGit.getThirdParentContents(fileNode.parent.path, fileNode.parent.index, fileNode.name)
         }
 
-        throw new Error(`Unsupported fileNode type: ${fileNode.type}`);
+        throw new Error(`Unsupported fileNode type: ${fileNode.type}`)
     }
 
     /**
