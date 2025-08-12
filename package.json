@@ -360,7 +360,17 @@
             },
             {
                 "command": "gitstash.clipboardStashMessage",
-                "title": "Stash message",
+                "title": "Message",
+                "category": "GitStash"
+            },
+            {
+                "command": "gitstash.clipboardStashHash",
+                "title": "Hash",
+                "category": "GitStash"
+            },
+            {
+                "command": "gitstash.clipboardStashHashShort",
+                "title": "Short hash",
                 "category": "GitStash"
             },
             {
@@ -460,6 +470,14 @@
                 },
                 {
                     "command": "gitstash.clipboardStashMessage",
+                    "when": "false"
+                },
+                {
+                    "command": "gitstash.clipboardStashHash",
+                    "when": "false"
+                },
+                {
+                    "command": "gitstash.clipboardStashHashShort",
                     "when": "false"
                 },
                 {
@@ -605,9 +623,19 @@
                     "group": "node_clipboard_copy@1"
                 },
                 {
-                    "command": "gitstash.clipboardStashMessage",
+                    "command": "gitstash.clipboardStashHash",
                     "when": "view == gitstash.explorer && viewItem == stash",
                     "group": "node_clipboard_copy@1"
+                },
+                {
+                    "command": "gitstash.clipboardStashHashShort",
+                    "when": "view == gitstash.explorer && viewItem == stash",
+                    "group": "node_clipboard_copy@2"
+                },
+                {
+                    "command": "gitstash.clipboardStashMessage",
+                    "when": "view == gitstash.explorer && viewItem == stash",
+                    "group": "node_clipboard_copy@3"
                 },
                 {
                     "command": "gitstash.clipboardFilePath",
@@ -616,7 +644,7 @@
                 },
                 {
                     "command": "gitstash.clipboardInfo",
-                    "group": "node_clipboard_copy@2"
+                    "group": "node_clipboard_copy@10"
                 }
             ]
         },
