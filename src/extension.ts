@@ -21,7 +21,7 @@ import WorkspaceGit from './Git/WorkspaceGit'
 export function activate(context: ExtensionContext): void {
     const channelName = 'GitStash'
 
-    const config = new Config()
+    const config = new Config('gitstash')
 
     const nodeContainer = new NodeContainer(new WorkspaceGit(config))
     const stashLabels = new StashLabels(config)
