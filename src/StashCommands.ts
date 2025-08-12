@@ -6,7 +6,7 @@
 import * as vscode from 'vscode'
 import Config from './Config'
 import FileNode from './StashNode/FileNode'
-import Node from './StashNode/Node'
+import NodeFactory from './StashNode/NodeFactory'
 import RepositoryNode from './StashNode/RepositoryNode'
 import StashGit from './Git/StashGit'
 import StashLabels from './StashLabels'
@@ -36,6 +36,7 @@ export class StashCommands {
     private workspaceGit: WorkspaceGit
     private channel: vscode.OutputChannel
     private stashGit: StashGit
+    private nodeFactory: NodeFactory
     private stashLabels: StashLabels
 
     constructor(config: Config, workspaceGit: WorkspaceGit, channel: vscode.OutputChannel, stashLabels: StashLabels) {
@@ -44,13 +45,14 @@ export class StashCommands {
         this.channel = channel
         this.stashLabels = stashLabels
         this.stashGit = new StashGit()
+        this.nodeFactory = new NodeFactory()
     }
 
     /**
      * Generates a stash.
      */
     public stash = (repositoryNode: RepositoryNode, type: StashType, message?: string): void => {
-        const params = ['stash', 'save']
+        const params = ['stash', 'push']
 
         switch (type) {
             case StashType.KeepIndex:
@@ -73,7 +75,7 @@ export class StashCommands {
         }
 
         if (message?.length) {
-            params.push(message)
+            params.push('--message', message)
         }
 
         this.exec(repositoryNode.path, params, 'Stash created', repositoryNode)
@@ -82,15 +84,17 @@ export class StashCommands {
     /**
      * Creates stashes for the given files across multiple repositories.
      *
-     * @param filePaths    an array with the list of the file paths to stash
-     * @param stashMessage an optional message to set on the stash
+     * @param filePaths an array with the list of the file paths to stash
+     * @param message   an optional message to set on the stash
      */
-    public push = (filePaths: string[], stashMessage?: string): void => {
-        const params = ['stash', 'push']
+    public push = (filePaths: string[], message?: string): void => {
+        const params = ['stash', 'push', '--include-untracked']
 
-        if (stashMessage) {
-            params.push('-m', stashMessage)
+        if (message?.length) {
+            params.push('--message', message)
         }
+
+        params.push('--')
 
         const paths: (string | null)[] = filePaths
         void this.workspaceGit.getRepositories().then((repositoryPaths: string[]) => {
@@ -99,17 +103,21 @@ export class StashCommands {
                 .sort()
                 .reverse()
                 .forEach((repoPath) => {
+                    repositories[repoPath] = []
                     for (let i = 0; i < paths.length; i += 1) {
                         const filePath = paths[i]
                         if (filePath?.startsWith(repoPath)) {
-                            repositories[repoPath] = [filePath].concat(repositories[repoPath])
+                            repositories[repoPath].push(filePath)
                             paths[i] = null
                         }
                     }
                 })
 
-            Object.keys(repositories).forEach((repoPath) => {
-                this.exec(repoPath, params.concat(repositories[repoPath]), 'Selected files stashed')
+            Object.entries(repositories).forEach(([repoPath, files]) => {
+                if (files.length) {
+                    const repoNode = this.nodeFactory.createRepositoryNode(repoPath)
+                    this.exec(repoPath, params.concat(files), 'Selected files stashed', repoNode)
+                }
             })
         })
     }
@@ -218,7 +226,7 @@ export class StashCommands {
         cwd: string,
         params: string[],
         successMessage: string,
-        node?: Node,
+        node: RepositoryNode | StashNode | FileNode,
     ): void {
         this.stashGit.exec(params, cwd)
             .then(
@@ -226,38 +234,21 @@ export class StashCommands {
                     const issueType = this.findResultIssues(result)
 
                     if (issueType === 'conflict') {
-                        this.logResult(params, NotificationType.Warning, result, `${successMessage} with conflicts`, node)
+                        this.logResult(node, params, result, NotificationType.Warning, `${successMessage} with conflicts`)
                     }
                     else if (issueType === 'empty') {
-                        this.logResult(params, NotificationType.Message, result, 'No local changes to save', node)
+                        this.logResult(node, params, result, NotificationType.Message, 'No local changes to save')
                     }
                     else {
-                        this.logResult(params, NotificationType.Message, result, successMessage, node)
+                        this.logResult(node, params, result, NotificationType.Message, successMessage)
                     }
                 },
                 (error: unknown) => {
-                    if (error instanceof Error) {
-                        const msg = error.message
-                        this.logResult(params, NotificationType.Error, msg, msg, node)
-                    }
-                    else {
-                        const msg = 'Error'
-                        const excerpt = 'An unexpected error happened. See the console for more details'
-                        this.logResult(params, NotificationType.Error, msg, excerpt, node)
-                        console.error(error)
-                    }
+                    this.logError(node, params, error)
                 },
             )
             .catch((error: unknown) => {
-                if (error instanceof Error) {
-                    this.logResult(params, NotificationType.Error, error.toString())
-                }
-                else {
-                    const msg = 'Error'
-                    const excerpt = 'An unexpected error happened. See the console for details'
-                    this.logResult(params, NotificationType.Error, msg, excerpt, node)
-                    console.error(error)
-                }
+                this.logError(node, params, error)
             })
     }
 
@@ -282,63 +273,73 @@ export class StashCommands {
     /**
      * Logs the command to the extension channel.
      *
-     * @param params           the git command params
-     * @param type             the message type
-     * @param result           the result content
-     * @param notificationText the optional notification message
      * @param node             the optional involved node
+     * @param params           the git command params
+     * @param result           the result content
+     * @param type             the message type
+     * @param notificationText the optional notification message
      */
     private logResult(
+        node: RepositoryNode | StashNode | FileNode,
         params: string[],
-        type: NotificationType,
         result: string,
-        notificationText?: string,
-        node?: Node,
+        type: NotificationType,
+        notificationText: string,
     ): void {
-        this.performLogging(params, result, type, node)
+        this.performLogging(node, params, result, type)
 
-        this.showNotification(notificationText ?? result, type)
+        if (type !== NotificationType.Message || this.config.get<boolean>('notifications.success.show')) {
+            this.showNotification(notificationText, type)
+        }
+    }
+
+    private logError(
+        node: RepositoryNode | StashNode | FileNode,
+        params: string[],
+        error: unknown,
+    ) {
+        console.error(error)
+        if (error instanceof Error) {
+            const result = error.message
+            this.logResult(node, params, result, NotificationType.Error, result)
+        }
+        else {
+            let result = 'Unknown error'
+            try {
+                result = JSON.stringify(error)
+            }
+            catch { /* empty */ }
+            const excerpt = 'An unexpected error happened. See the console for details.'
+            this.logResult(node, params, result, NotificationType.Error, excerpt)
+        }
     }
 
     /**
      * Logs the command to the extension channel.
      *
-     * @param params      the git command params
-     * @param type        the string message type
-     * @param result      the string result message
-     * @param description the optional string alert description
+     * @param node   the source node
+     * @param params the git command params
+     * @param result the string result message
+     * @param type   the string message type
      */
     private performLogging(
+        node: RepositoryNode | StashNode | FileNode,
         params: string[],
         result: string,
         type: NotificationType,
-        node?: Node,
     ): void {
         if (this.config.get<boolean>('log.autoclear')) {
             this.channel.clear()
         }
 
         const currentTime = toDateTimeIso(new Date())
+        const cwd = node instanceof FileNode ? node.parent.path : node.path
         const cmd = `git ${params.join(' ')}`
         const tp = type === NotificationType.Message ? 'info' : type as string
 
-        let msg = `${currentTime} [${tp}] > ${cmd}`
-
-        if (node) {
-            const cwd = node instanceof RepositoryNode || node instanceof StashNode
-                ? node.path
-                : node instanceof FileNode
-                    ? node.parent.path
-                    : undefined
-
-            if (cwd) {
-                msg += ` (${cwd})`
-            }
-
-            msg += ` [${this.stashLabels.getName(node)}]`
-        }
-
-        this.channel.appendLine(msg)
+        this.channel.appendLine(`${currentTime} [${tp}]`)
+        this.channel.appendLine(` └ ${cwd} (${this.stashLabels.getName(node)})`)
+        this.channel.appendLine(`   ${cmd}`)
         this.channel.appendLine(`${result.trim()}\n\n`)
     }
 
@@ -352,7 +353,7 @@ export class StashCommands {
         const summary = information.substring(0, 300)
 
         const actions = [{ title: 'Show log' }]
-        const callback = (value) => {
+        const callback = (value: unknown) => {
             if (typeof value !== 'undefined') {
                 this.channel.show(true)
             }
