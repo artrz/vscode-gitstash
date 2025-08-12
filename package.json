@@ -555,7 +555,7 @@
                 },
                 {
                     "command": "gitstash.openCurrent",
-                    "when": "view == gitstash.explorer && viewItem =~ /file:(modified|indexAdded|renamed)/",
+                    "when": "view == gitstash.explorer && viewItem =~ /file:(added|modified|renamed)/",
                     "group": "inline@1"
                 },
                 {
@@ -580,7 +580,7 @@
                 },
                 {
                     "command": "gitstash.applySingle",
-                    "when": "view == gitstash.explorer && viewItem =~ /file:(modified|indexAdded)/",
+                    "when": "view == gitstash.explorer && viewItem =~ /file:(added|modified)/",
                     "group": "inline@3"
                 },
                 {
@@ -602,12 +602,12 @@
             "file.compare": [
                 {
                     "command": "gitstash.diffChangesCurrent",
-                    "when": "viewItem =~ /modified|indexAdded|renamed/ && config.gitstash.explorer.items.stash.diffButton != changes-current",
+                    "when": "viewItem =~ /added|modified|renamed/ && config.gitstash.explorer.items.stash.diffButton != changes-current",
                     "group": "file_compare@1"
                 },
                 {
                     "command": "gitstash.diffCurrentChanges",
-                    "when": "viewItem =~ /modified|indexAdded|renamed/ && config.gitstash.explorer.items.stash.diffButton != current-changes",
+                    "when": "viewItem =~ /added|modified|renamed/ && config.gitstash.explorer.items.stash.diffButton != current-changes",
                     "group": "file_compare@2"
                 },
                 {
