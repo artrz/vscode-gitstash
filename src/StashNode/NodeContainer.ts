@@ -11,6 +11,9 @@ import RepositoryNode from './RepositoryNode'
 import StashNode from './StashNode'
 import WorkspaceGit from '../Git/WorkspaceGit'
 
+/**
+ * A repository implementation using another name to avoid confusion with git repos.
+ */
 export default class NodeContainer {
     private stashGit: StashGit
     private workspaceGit: WorkspaceGit

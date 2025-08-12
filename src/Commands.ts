@@ -460,8 +460,13 @@ export class Commands {
             return void callback(repositoryNode)
         }
 
+        const items = nodes.map((repositoryNode) => ({
+            label: this.stashLabels.getName(repositoryNode),
+            node: repositoryNode,
+        } as QuickPickRepositoryNodeItem))
+
         const selection = await vscode.window.showQuickPick<QuickPickRepositoryNodeItem>(
-            nodes.map((node) => ({ node, label: this.stashLabels.getName(node) })),
+            items,
             { placeHolder: `${pickerPlaceholder} › ...`, canPickMany: false },
         )
 
