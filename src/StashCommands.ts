@@ -102,7 +102,7 @@ export class StashCommands {
                     for (let i = 0; i < paths.length; i += 1) {
                         const filePath = paths[i]
                         if (filePath?.startsWith(repoPath)) {
-                            repositories[repoPath] = [filePath].concat(repositories[repoPath] || [])
+                            repositories[repoPath] = [filePath].concat(repositories[repoPath])
                             paths[i] = null
                         }
                     }
@@ -235,13 +235,29 @@ export class StashCommands {
                         this.logResult(params, NotificationType.Message, result, successMessage, node)
                     }
                 },
-                (error: Error) => {
-                    const msg = error.message
-                    this.logResult(params, NotificationType.Error, msg, msg, node)
+                (error: unknown) => {
+                    if (error instanceof Error) {
+                        const msg = error.message
+                        this.logResult(params, NotificationType.Error, msg, msg, node)
+                    }
+                    else {
+                        const msg = 'Error'
+                        const excerpt = 'An unexpected error happened. See the console for more details'
+                        this.logResult(params, NotificationType.Error, msg, excerpt, node)
+                        console.error(error)
+                    }
                 },
             )
-            .catch((error: Error) => {
-                this.logResult(params, NotificationType.Error, error.toString())
+            .catch((error: unknown) => {
+                if (error instanceof Error) {
+                    this.logResult(params, NotificationType.Error, error.toString())
+                }
+                else {
+                    const msg = 'Error'
+                    const excerpt = 'An unexpected error happened. See the console for details'
+                    this.logResult(params, NotificationType.Error, msg, excerpt, node)
+                    console.error(error)
+                }
             })
     }
 
@@ -322,7 +338,7 @@ export class StashCommands {
             msg += ` [${this.stashLabels.getName(node)}]`
         }
 
-        this.channel.appendLine(`${msg}`)
+        this.channel.appendLine(msg)
         this.channel.appendLine(`${result.trim()}\n\n`)
     }
 

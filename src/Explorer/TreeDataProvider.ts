@@ -167,7 +167,8 @@ export default class implements TreeDataProvider<Node> {
             this.loadTimeout = null
 
             if (['settings', 'force'].includes(type)) {
-                return void this.onDidChangeTreeDataEmitter.fire()
+                this.onDidChangeTreeDataEmitter.fire()
+                return
             }
 
             if (pathUri) {
