@@ -190,9 +190,9 @@ export default class {
      * Generates the diff document title name.
      *
      * @param fileNode the file node to be shown
-     * @param hint     the hint reference to know file origin
+     * @param diffHint the hint reference to know file origin
      */
-    public getDiffTitle(fileNode: FileNode, hint: boolean): string {
+    public getDiffTitle(fileNode: FileNode, diffHint: boolean | undefined): string {
         return this.config.get<string>('editor.diffTitleFormat')
             .replace('${filename}', path.basename(fileNode.name))
             .replace('${filepath}', `${path.dirname(fileNode.name)}/`)
@@ -206,7 +206,7 @@ export default class {
             .replace('${description}', fileNode.parent.description)
             .replace('${branch}', fileNode.parent.branch ?? 'n/a')
             .replace('${type}', this.getTypeLabel(fileNode))
-            .replace('${hint}', this.getHint(fileNode, hint))
+            .replace('${hint}', diffHint === undefined ? '' : this.getHint(fileNode, diffHint))
     }
 
     /**
@@ -239,7 +239,8 @@ export default class {
     /**
      * Generates a hint for the file node title.
      *
-     * @param fileNode the source node
+     * @param fileNode  the source node
+     * @param fromStash the side of the hint
      */
     private getHint(fileNode: FileNode, fromStash: boolean): string {
         const type = this.getTypeLabel(fileNode).toLowerCase()

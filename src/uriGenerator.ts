@@ -12,8 +12,7 @@ import NodeContainer from './StashNode/NodeContainer'
 import { Uri } from 'vscode'
 
 export default class UriGenerator {
-    public static readonly emptyFileScheme = 'gitdiff-no-contents'
-    public static readonly fileScheme = 'gitdiff-stashed-contents'
+    public static readonly fileScheme = 'git-stash-file-content'
     private readonly supportedBinaryFiles = [
         '.bmp',
         '.gif',
@@ -40,16 +39,23 @@ export default class UriGenerator {
     }
 
     /**
+     * Creates a node Uri to be used on Tree items using a node path.
+     */
+    public createForNodePath(fileNode: FileNode): Uri | undefined {
+        const currentPath = fileNode.isRenamed
+            ? `${fileNode.parent.path}/${fileNode.oldName}`
+            : fileNode.path
+
+        return fs.existsSync(currentPath) ? Uri.file(currentPath) : undefined
+    }
+
+    /**
      * Creates a node Uri to be used on the diff view.
      *
      * @param node  the node to be used as base for the URI
      * @param stage the file stash stage
      */
-    public async createForDiff(node?: FileNode, stage?: FileStage): Promise<Uri> {
-        if (!node) {
-            return Uri.parse(`${UriGenerator.emptyFileScheme}:`)
-        }
-
+    public async createForDiff(node: FileNode, stage?: FileStage): Promise<Uri> {
         if (this.supportedBinaryFiles.includes(path.extname(node.name))) {
             return Uri.file(
                 this.createTmpFile(
