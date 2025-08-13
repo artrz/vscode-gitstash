@@ -8,7 +8,6 @@ import { Commands } from './Commands'
 import Config from './Config'
 import DiffDisplayer from './DiffDisplayer'
 import DocumentContentProvider from './Document/DocumentContentProvider'
-import EmptyDocumentContentProvider from './Document/EmptyDocumentContentProvider'
 import FileSystemWatcherManager from './FileSystemWatcherManager'
 import NodeContainer from './StashNode/NodeContainer'
 import { StashCommands } from './StashCommands'
@@ -52,7 +51,6 @@ export function activate(context: ExtensionContext): void {
         treeProvider.createTreeView(),
 
         workspace.registerTextDocumentContentProvider(UriGenerator.fileScheme, new DocumentContentProvider()),
-        workspace.registerTextDocumentContentProvider(UriGenerator.emptyFileScheme, new EmptyDocumentContentProvider()),
 
         commands.registerCommand('gitstash.explorer.toggle', treeProvider.toggle),
         commands.registerCommand('gitstash.explorer.refresh', treeProvider.refresh),

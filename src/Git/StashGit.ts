@@ -29,8 +29,8 @@ export interface StashedFiles {
 }
 
 export const enum FileStage {
-    Parent = 'p',
     Change = 'c',
+    Parent = 'p',
 }
 
 export default class StashGit extends Git {
