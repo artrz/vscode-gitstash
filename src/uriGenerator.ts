@@ -40,6 +40,13 @@ export default class UriGenerator {
     }
 
     /**
+     * Creates a node Uri to be used on Tree items using a node path.
+     */
+    public createForNodePath(node: FileNode): Uri {
+        return Uri.file(node.path)
+    }
+
+    /**
      * Creates a node Uri to be used on the diff view.
      *
      * @param node  the node to be used as base for the URI

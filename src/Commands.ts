@@ -5,8 +5,9 @@
 
 import * as fs from 'fs'
 import * as vscode from 'vscode'
-import DiffDisplayer from './DiffDisplayer'
+import DiffDisplayer, { DiffSide } from './DiffDisplayer'
 import FileNode from './StashNode/FileNode'
+import { FileStage } from './Git/StashGit'
 import Node from './StashNode/Node'
 import NodeContainer from './StashNode/NodeContainer'
 import RepositoryNode from './StashNode/RepositoryNode'
@@ -64,20 +65,32 @@ export class Commands {
     public show = (fileNode: FileNode): void => void this.displayer.showDiff(fileNode)
 
     /**
-     * Shows a diff document comparing the modified stashed file and the current version.
-     *
-     * @param fileNode the involved node
+     * Shows a diff document comparing the modified stashed file (left side)
+     * with the current version (right side).
      */
-    public diffChangesCurrent = (fileNode: FileNode): void => void this.displayer.showDiffCurrent(fileNode, true, false)
-    public diffCurrentChanges = (fileNode: FileNode): void => void this.displayer.showDiffCurrent(fileNode, true, true)
+    public diffChangesCurrent = (fileNode: FileNode): void => void this.displayer
+        .showDiffCurrent(fileNode, FileStage.Change, DiffSide.Left)
 
     /**
-     * Shows a diff document comparing the stashed file parent and the current version.
-     *
-     * @param fileNode the involved node
+     * Shows a diff document comparing the current version (left side)
+     * with the modified stashed file (right side).
      */
-    public diffSourceCurrent = (fileNode: FileNode): void => void this.displayer.showDiffCurrent(fileNode, false, false)
-    public diffCurrentSource = (fileNode: FileNode): void => void this.displayer.showDiffCurrent(fileNode, false, true)
+    public diffCurrentChanges = (fileNode: FileNode): void => void this.displayer
+        .showDiffCurrent(fileNode, FileStage.Change, DiffSide.Right)
+
+    /**
+     * Shows a diff document comparing the modified stashed file's parent (left side)
+     * with the current version (right side).
+     */
+    public diffSourceCurrent = (fileNode: FileNode): void => void this.displayer
+        .showDiffCurrent(fileNode, FileStage.Parent, DiffSide.Left)
+
+    /**
+     * Shows a diff document comparing the current version (left side)
+     * with the modified stashed file's parent (right side).
+     */
+    public diffCurrentSource = (fileNode: FileNode): void => void this.displayer
+        .showDiffCurrent(fileNode, FileStage.Parent, DiffSide.Right)
 
     /**
      * Opens the file inside an editor.
