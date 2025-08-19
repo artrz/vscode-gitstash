@@ -14,7 +14,7 @@ import {
 } from 'vscode'
 import Config from '../Config'
 import FileNodeType from '../StashNode/FileNodeType'
-import UriGenerator from '../uriGenerator'
+import UriGenerator from '../UriGenerator'
 
 export default class implements FileDecorationProvider, Disposable {
     private readonly onDidChangeDecorationEmitter = new EventEmitter<undefined | Uri | Uri[]>()

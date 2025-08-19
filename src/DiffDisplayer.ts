@@ -7,7 +7,7 @@ import * as vscode from 'vscode'
 import FileNode from './StashNode/FileNode'
 import { FileStage } from './Git/StashGit'
 import StashLabels from './StashLabels'
-import UriGenerator from './uriGenerator'
+import UriGenerator from './UriGenerator'
 
 class DiffResource {
     originalUri: vscode.Uri | undefined

@@ -14,7 +14,7 @@ import { StashCommands } from './StashCommands'
 import StashLabels from './StashLabels'
 import TreeDataProvider from './Explorer/TreeDataProvider'
 import TreeDecorationProvider from './Explorer/TreeDecorationProvider'
-import UriGenerator from './uriGenerator'
+import UriGenerator from './UriGenerator'
 import WorkspaceGit from './Git/WorkspaceGit'
 
 export function activate(context: ExtensionContext): void {
