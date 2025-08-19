@@ -19,7 +19,7 @@ import RepositoryNode from '../StashNode/RepositoryNode'
 import StashLabels from '../StashLabels'
 import StashNode from '../StashNode/StashNode'
 import TreeItemFactory from './TreeItemFactory'
-import UriGenerator from '../uriGenerator'
+import UriGenerator from '../UriGenerator'
 
 export default class implements TreeDataProvider<Node> {
     private readonly onDidChangeTreeDataEmitter = new EventEmitter<void>()

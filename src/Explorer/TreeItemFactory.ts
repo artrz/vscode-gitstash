@@ -15,7 +15,7 @@ import Node from '../StashNode/Node'
 import RepositoryNode from '../StashNode/RepositoryNode'
 import StashLabels from '../StashLabels'
 import StashNode from '../StashNode/StashNode'
-import UriGenerator from '../uriGenerator'
+import UriGenerator from '../UriGenerator'
 import { join } from 'path'
 
 export default class {
