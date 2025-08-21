@@ -40,7 +40,6 @@ export default class Config extends BaseConfig {
         explorerItemDisplayMode: 'explorer.itemDisplayMode',
         editorDiffTitleFormat: 'editor.diffTitleFormat',
 
-        logAutoclear: 'log.autoclear',
         notifySuccess: 'notifications.success.show',
     } as const
 

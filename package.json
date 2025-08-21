@@ -235,11 +235,6 @@
                     "default": "#${stashIndex}: ${filename}  ${hint} (${filepath})",
                     "description": "Specifies the format for the diff editor title\nAvailable tokens:\n${filename} - the file name\n${filepath} - the file path\n${fileIndex} - the file index\n${dateTimeLong} - the stash date & time, long format\n${dateTimeSmall} - the stash date & time, medium format\n${dateSmall} - the stash date, small format\n${dateTimeIso} - the stash date & time, ISO format\n${dateIso} - the stash date, ISO format\n${ago} - the stash date, ago format\n${description} - the stash description\n${branch} - the stash branch\n${stashIndex} - the stash index\n${type} - the change type on the file like 'Modified' or 'Deleted'\n${hint} - like ${type} but indicates also the editor position of the change"
                 },
-                "gitstash.log.autoclear": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Clears the log window before showing the action result"
-                },
                 "gitstash.notifications.success.show": {
                     "type": "boolean",
                     "default": false,

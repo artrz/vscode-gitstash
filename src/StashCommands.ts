@@ -332,10 +332,6 @@ export class StashCommands {
         result: string,
         type: NotificationType,
     ): void {
-        if (this.config.get<boolean>('log.autoclear')) {
-            this.channel.clear()
-        }
-
         const currentTime = toDateTimeIso(new Date())
         const cwd = node instanceof FileNode ? node.parent.path : node.path
         const cmd = `git ${params.join(' ')}`
