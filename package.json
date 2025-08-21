@@ -555,7 +555,7 @@
                 },
                 {
                     "command": "gitstash.openCurrent",
-                    "when": "view == gitstash.explorer && viewItem =~ /file:(added|modified|renamed)/",
+                    "when": "view == gitstash.explorer && viewItem =~ /file/",
                     "group": "inline@1"
                 },
                 {
