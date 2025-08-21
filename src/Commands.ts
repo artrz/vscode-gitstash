@@ -254,9 +254,9 @@ export class Commands {
         const repositoryLabel = this.stashLabels.getName(repositoryNode)
 
         vscode.window.showWarningMessage<vscode.MessageItem>(
-            `Clear all stashes on ${repositoryLabel}?`,
+            `Are you sure you want to drop ALL stashes on ${repositoryLabel}? They will be subject to pruning, and MAY BE IMPOSSIBLE TO RECOVER.`,
             { modal: true },
-            { title: 'Proceed' },
+            { title: 'Yes' },
         )
             .then(
                 (option) => {
@@ -366,11 +366,12 @@ export class Commands {
     private dropPerform = (stashNode: StashNode): void => {
         const repositoryLabel = this.stashLabels.getName(stashNode.parent)
         const stashLabel = this.stashLabels.getName(stashNode)
+        const msg = `Are you sure you want to drop the stash: ${stashLabel}?`
 
         void vscode.window.showWarningMessage<vscode.MessageItem>(
-            `${repositoryLabel}\n\nDrop ${stashLabel}?`,
+            `${repositoryLabel}\n\n${msg}`,
             { modal: true },
-            { title: 'Proceed' },
+            { title: 'Yes' },
         ).then((option) => {
             if (typeof option !== 'undefined') {
                 this.stashCommands.drop(stashNode)
@@ -389,7 +390,7 @@ export class Commands {
         void vscode.window.showWarningMessage<vscode.MessageItem>(
             `${parentLabel}\n\nApply changes on ${fileNode.name}?`,
             { modal: true },
-            { title: 'Proceed' },
+            { title: 'Yes' },
         )
             .then((option) => {
                 if (typeof option !== 'undefined') {
@@ -410,7 +411,7 @@ export class Commands {
         void vscode.window.showWarningMessage<vscode.MessageItem>(
             `${parentLabel}\n\nCreate file ${fileNode.name}?${exists ? '\n\nThis will overwrite the current file' : ''}`,
             { modal: true },
-            { title: 'Proceed' },
+            { title: 'Yes' },
         )
             .then((option) => {
                 if (typeof option !== 'undefined') {
@@ -551,7 +552,7 @@ export class Commands {
         const list = await this.nodeContainer.getStashes(repositoryNode)
 
         if (!list.length) {
-            return void vscode.window.showInformationMessage(`There are no stashed changes on ${repositoryLabel}.`)
+            return void vscode.window.showInformationMessage(`There are no stashes in the repository ${repositoryLabel}.`)
         }
 
         const options = {
