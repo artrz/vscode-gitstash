@@ -270,7 +270,7 @@
             },
             {
                 "command": "gitstash.clear",
-                "title": "Clear",
+                "title": "Clear...",
                 "category": "GitStash",
                 "icon": {
                     "light": "resources/icons/light/clear.svg",

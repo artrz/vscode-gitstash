@@ -366,11 +366,12 @@ export class Commands {
     private dropPerform = (stashNode: StashNode): void => {
         const repositoryLabel = this.stashLabels.getName(stashNode.parent)
         const stashLabel = this.stashLabels.getName(stashNode)
+        const msg = `Are you sure you want to drop the stash: ${stashLabel}?`
 
         void vscode.window.showWarningMessage<vscode.MessageItem>(
-            `${repositoryLabel}\n\nDrop ${stashLabel}?`,
+            `${repositoryLabel}\n\n${msg}`,
             { modal: true },
-            { title: 'Proceed' },
+            { title: 'Yes' },
         ).then((option) => {
             if (typeof option !== 'undefined') {
                 this.stashCommands.drop(stashNode)
@@ -551,7 +552,7 @@ export class Commands {
         const list = await this.nodeContainer.getStashes(repositoryNode)
 
         if (!list.length) {
-            return void vscode.window.showInformationMessage(`There are no stashed changes on ${repositoryLabel}.`)
+            return void vscode.window.showInformationMessage(`There are no stashes in the repository ${repositoryLabel}.`)
         }
 
         const options = {
