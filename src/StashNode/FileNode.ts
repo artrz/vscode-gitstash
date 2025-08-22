@@ -41,7 +41,7 @@ export default class FileNode extends Node {
         return this._oldName
     }
 
-    public get date(): string {
+    public get date(): Date {
         return this.parent.date
     }
 
