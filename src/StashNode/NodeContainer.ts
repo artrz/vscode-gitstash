@@ -65,7 +65,11 @@ export default class NodeContainer {
      * @param stashNode the parent stash
      */
     public async getFiles(stashNode: StashNode): Promise<FileNode[]> {
-        return this.stashGit.getStashedFiles(stashNode.path, stashNode.index).then((stashedFiles: StashedFiles) => {
+        return this.stashGit.getStashedFiles(
+            stashNode.path,
+            stashNode.index,
+            stashNode.parentHashes.length > 2,
+        ).then((stashedFiles: StashedFiles) => {
             const fileNodes: FileNode[] = []
             const path = stashNode.path
 

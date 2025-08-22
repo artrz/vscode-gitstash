@@ -121,14 +121,14 @@ export default class {
     private parseStashLabel(stashNode: StashNode, template: string): string {
         return template
             .replace('${index}', stashNode.index.toString())
-            .replace('${branch}', this.getStashBranch(stashNode))
-            .replace('${description}', this.getStashDescription(stashNode))
-            .replace('${dateTimeLong}', DateFormat.toFullyReadable(new Date(Date.parse(stashNode.date))))
-            .replace('${dateTimeSmall}', DateFormat.toDateTimeSmall(new Date(Date.parse(stashNode.date))))
-            .replace('${dateSmall}', DateFormat.toDateSmall(new Date(Date.parse(stashNode.date))))
-            .replace('${dateTimeIso}', DateFormat.toDateTimeIso(new Date(Date.parse(stashNode.date))))
-            .replace('${dateIso}', DateFormat.toDateIso(new Date(Date.parse(stashNode.date))))
-            .replace('${ago}', DateFormat.ago(new Date(Date.parse(stashNode.date))))
+            .replace('${branch}', stashNode.branch ?? 'n/a')
+            .replace('${description}', stashNode.description)
+            .replace('${dateTimeLong}', DateFormat.toFullyReadable(stashNode.date))
+            .replace('${dateTimeSmall}', DateFormat.toDateTimeSmall(stashNode.date))
+            .replace('${dateSmall}', DateFormat.toDateSmall(stashNode.date))
+            .replace('${dateTimeIso}', DateFormat.toDateTimeIso(stashNode.date))
+            .replace('${dateIso}', DateFormat.toDateIso(stashNode.date))
+            .replace('${ago}', DateFormat.ago(stashNode.date))
     }
 
     /**
@@ -155,37 +155,17 @@ export default class {
             .get('editor.diffTitleFormat', '')
             .replace('${filename}', path.basename(fileNode.name))
             .replace('${filepath}', `${path.dirname(fileNode.name)}/`)
-            .replace('${dateTimeLong}', DateFormat.toFullyReadable(new Date(Date.parse(fileNode.date))))
-            .replace('${dateTimeSmall}', DateFormat.toDateTimeSmall(new Date(Date.parse(fileNode.date))))
-            .replace('${dateSmall}', DateFormat.toDateSmall(new Date(Date.parse(fileNode.date))))
-            .replace('${dateTimeIso}', DateFormat.toDateTimeIso(new Date(Date.parse(fileNode.date))))
-            .replace('${dateIso}', DateFormat.toDateIso(new Date(Date.parse(fileNode.date))))
-            .replace('${ago}', DateFormat.ago(new Date(Date.parse(fileNode.date))))
+            .replace('${dateTimeLong}', DateFormat.toFullyReadable(fileNode.date))
+            .replace('${dateTimeSmall}', DateFormat.toDateTimeSmall(fileNode.date))
+            .replace('${dateSmall}', DateFormat.toDateSmall(fileNode.date))
+            .replace('${dateTimeIso}', DateFormat.toDateTimeIso(fileNode.date))
+            .replace('${dateIso}', DateFormat.toDateIso(fileNode.date))
+            .replace('${ago}', DateFormat.ago(fileNode.date))
             .replace('${stashIndex}', `${fileNode.parent.index}`)
-            .replace('${description}', this.getStashDescription(fileNode.parent))
-            .replace('${branch}', this.getStashBranch(fileNode.parent))
+            .replace('${description}', fileNode.parent.description)
+            .replace('${branch}', fileNode.parent.branch ?? 'n/a')
             .replace('${type}', this.getTypeLabel(fileNode))
             .replace('${hint}', this.getHint(fileNode, hint))
-    }
-
-    /**
-     * Gets the stash description.
-     *
-     * @param stashNode the source node
-     */
-    private getStashDescription(stashNode: StashNode): string {
-        return stashNode.name.substring(stashNode.name.indexOf(':') + 2)
-    }
-
-    /**
-     * Gets the stash branch.
-     *
-     * @param stashNode the source node
-     */
-    private getStashBranch(stashNode: StashNode): string {
-        return stashNode.name.startsWith('WIP on ')
-            ? stashNode.name.substring(7, stashNode.name.indexOf(':'))
-            : stashNode.name.substring(3, stashNode.name.indexOf(':'))
     }
 
     /**

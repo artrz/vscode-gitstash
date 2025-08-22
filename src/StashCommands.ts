@@ -133,7 +133,7 @@ export class StashCommands {
             params.push('--index')
         }
 
-        params.push(`stash@{${stashNode.index}}`)
+        params.push(stashNode.atIndex)
 
         this.exec(stashNode.path, params, 'Stash popped', stashNode)
     }
@@ -148,7 +148,7 @@ export class StashCommands {
             params.push('--index')
         }
 
-        params.push(`stash@{${stashNode.index}}`)
+        params.push(stashNode.atIndex)
 
         this.exec(stashNode.path, params, 'Stash applied', stashNode)
     }
@@ -161,7 +161,7 @@ export class StashCommands {
             'stash',
             'branch',
             name,
-            `stash@{${stashNode.index}}`,
+            stashNode.atIndex,
         ]
 
         this.exec(stashNode.path, params, 'Stash branched', stashNode)
@@ -174,7 +174,7 @@ export class StashCommands {
         const params = [
             'stash',
             'drop',
-            `stash@{${stashNode.index}}`,
+            stashNode.atIndex,
         ]
 
         this.exec(stashNode.path, params, 'Stash dropped', stashNode)
@@ -186,7 +186,7 @@ export class StashCommands {
     public applySingle = (fileNode: FileNode): void => {
         const params = [
             'checkout',
-            `stash@{${fileNode.parent.index}}`,
+            fileNode.parent.atIndex,
             fileNode.name,
         ]
 
@@ -199,7 +199,7 @@ export class StashCommands {
     public createSingle = (fileNode: FileNode): void => {
         const params = [
             'checkout',
-            `stash@{${fileNode.parent.index}}^3`,
+            `${fileNode.parent.atIndex}^3`,
             fileNode.name,
         ]
 

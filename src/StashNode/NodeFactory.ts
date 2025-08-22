@@ -33,11 +33,14 @@ export default class NodeFactory {
      */
     public createStashNode(stash: Stash, parentNode: RepositoryNode): StashNode {
         return new StashNode(
-            stash.description,
+            stash.subject,
             stash.index,
             parentNode,
             stash.date,
             stash.hash,
+            stash.shortHash,
+            stash.parents,
+            stash.note,
         )
     }
 

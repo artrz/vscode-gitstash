@@ -7,9 +7,12 @@ import Git from './Git'
 
 export interface Stash {
     index: number;
-    date: string;
+    date: Date;
     hash: string;
-    description: string;
+    shortHash: string;
+    subject: string;
+    parents: string[];
+    note?: string;
 }
 
 export interface RenameStash {
@@ -51,27 +54,34 @@ export default class StashGit extends Git {
      * @param cwd the current working directory
      */
     public async getStashes(cwd: string): Promise<Stash[]> {
+        // https://git-scm.com/docs/git-log#_pretty_formats
         const params = [
             'stash',
             'list',
-            '--format="%ci %h %s"',
+            '-z',
+            '--format=%gd%n%ci%n%H%n%h%n%P%n%gs%n%N',
         ]
 
-        const stashList = (await this.exec(params, cwd)).trim()
+        const list = (await this.exec(params, cwd))
+            .split('\0')
+            .filter((rawStash: string) => rawStash.trim().length)
+            .map((rawStash: string) => {
+                const tokens = rawStash.split('\n')
+                const index = tokens[0].replace(/\D/g, '') // stash@{\d+}
+                const note = tokens.length >= 7
+                    ? tokens.slice(6).join('\n')
+                    : undefined
 
-        const sep1 = 26 // date length
-        const sep2 = 34 // date length + (1) space + (7) hash length
-
-        const list: Stash[] = !stashList.length
-            ? []
-            : stashList
-                .split(/\r?\n/g)
-                .map((stash, index) => ({
-                    index,
-                    date: stash.substring(1, sep1),
-                    hash: stash.substring(sep1 + 1, sep2),
-                    description: stash.substring(sep2 + 1).slice(0, -1).trim(),
-                }))
+                return {
+                    index: parseInt(index),
+                    date: new Date(Date.parse(tokens[1])),
+                    hash: tokens[2],
+                    shortHash: tokens[3],
+                    parents: tokens[4].split(' '),
+                    subject: tokens[5],
+                    note,
+                }
+            })
 
         return list
     }
@@ -82,13 +92,17 @@ export default class StashGit extends Git {
      * @param cwd   the current working directory
      * @param index the int with the stash index
      */
-    public async getStashedFiles(cwd: string, index: number): Promise<StashedFiles> {
+    public async getStashedFiles(
+        cwd: string,
+        index: number,
+        includeUntracked: boolean,
+    ): Promise<StashedFiles> {
         const files: StashedFiles = {
             added: [],
             deleted: [],
             modified: [],
             renamed: [] as RenameStash[],
-            untracked: await this.getStashUntracked(cwd, index),
+            untracked: [],
         }
 
         const params = [
@@ -131,6 +145,10 @@ export default class StashGit extends Git {
             console.log(e)
         }
 
+        if (includeUntracked) {
+            files.untracked = await this.getStashUntracked(cwd, index)
+        }
+
         return files
     }
 
@@ -161,10 +179,8 @@ export default class StashGit extends Git {
             }
         }
         catch (e) {
-            /* we may get an error if there aren't untracked files */
-            console.warn(e)
+            console.error(e)
             console.debug(params.join(' '))
-            console.warn(' * Ignore if error is: fatal: Not a valid object name stash@{0}^3')
         }
 
         return list

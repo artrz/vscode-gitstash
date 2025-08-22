@@ -8,15 +8,24 @@ import Node from './Node'
 import RepositoryNode from './RepositoryNode'
 
 export default class StashNode extends Node {
+    protected _description: string
+    protected _branch: string | undefined
+
     constructor(
-        protected _name: string,
+        subject: string,
         protected _index: number,
         protected _parent: RepositoryNode,
-        protected _date: string,
+        protected _date: Date,
         protected _hash: string,
-        protected _children: FileNode[] | undefined = undefined,
+        protected _shortHash: string,
+        protected _parentHashes: string[],
+        protected _note?: string,
+        protected _children?: FileNode[],
     ) {
-        super(_name)
+        super(subject)
+        const parts = /(^WIP\son|^on)\s([^:]+):\s(.*)/i.exec(subject) ?? []
+        this._description = parts.at(-1) ?? subject
+        this._branch = parts.at(-2)
     }
 
     /**
@@ -24,6 +33,34 @@ export default class StashNode extends Node {
      */
     public get index(): number {
         return this._index
+    }
+
+    /**
+     * Gets the node index with the stash@{N} format.
+     */
+    public get atIndex(): string {
+        return `stash@{${this._index}}`
+    }
+
+    /**
+     * Gets the node description.
+     */
+    public get description(): string {
+        return this._description
+    }
+
+    /**
+     * Gets the node branch name.
+     */
+    public get branch(): string | undefined {
+        return this._branch
+    }
+
+    /**
+     * Gets the hashes of the stash parents.
+     */
+    public get parentHashes(): string[] {
+        return this._parentHashes
     }
 
     /**
@@ -36,7 +73,7 @@ export default class StashNode extends Node {
     /**
      * Gets the node generation date.
      */
-    public get date(): string {
+    public get date(): Date {
         return this._date
     }
 
@@ -45,6 +82,13 @@ export default class StashNode extends Node {
      */
     public get hash(): string {
         return this._hash
+    }
+
+    /**
+     * Gets the node commit abbreviated hash.
+     */
+    public get shortHash(): string {
+        return this._shortHash
     }
 
     /**
@@ -59,6 +103,13 @@ export default class StashNode extends Node {
      */
     public get children(): FileNode[] | undefined {
         return this._children
+    }
+
+    /**
+     * Gets the stash note.
+     */
+    public get note(): string | undefined {
+        return this._note
     }
 
     /**
