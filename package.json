@@ -541,17 +541,17 @@
                 {
                     "command": "gitstash.apply",
                     "when": "view == gitstash.explorer && viewItem == stash && config.gitstash.explorer.items.stash.popAndApply != apply",
-                    "group": "menu@1"
+                    "group": "menu_section_1@1"
                 },
                 {
                     "command": "gitstash.pop",
                     "when": "view == gitstash.explorer && viewItem == stash && config.gitstash.explorer.items.stash.popAndApply != pop",
-                    "group": "menu@1"
+                    "group": "menu_section_1@1"
                 },
                 {
                     "command": "gitstash.branch",
                     "when": "view == gitstash.explorer && viewItem == stash",
-                    "group": "menu@2"
+                    "group": "menu_section_1@2"
                 },
                 {
                     "command": "gitstash.openCurrent",
@@ -591,65 +591,65 @@
                 {
                     "submenu": "file.compare",
                     "when": "view == gitstash.explorer && viewItem =~ /file/",
-                    "group": "file_compare"
+                    "group": "menu_section_1@1"
                 },
                 {
                     "submenu": "node.clipboard",
                     "when": "view == gitstash.explorer",
-                    "group": "node_clipboard"
+                    "group": "menu_section_3@1"
                 }
             ],
             "file.compare": [
                 {
                     "command": "gitstash.diffChangesCurrent",
                     "when": "viewItem =~ /added|modified|renamed/ && config.gitstash.explorer.items.stash.diffButton != changes-current",
-                    "group": "file_compare@1"
+                    "group": "section_1@1"
                 },
                 {
                     "command": "gitstash.diffCurrentChanges",
                     "when": "viewItem =~ /added|modified|renamed/ && config.gitstash.explorer.items.stash.diffButton != current-changes",
-                    "group": "file_compare@2"
+                    "group": "section_1@2"
                 },
                 {
                     "command": "gitstash.diffSourceCurrent",
                     "when": "viewItem =~ /modified|renamed|deleted/ && config.gitstash.explorer.items.stash.diffButton != source-current",
-                    "group": "file_compare@3"
+                    "group": "section_1@3"
                 },
                 {
                     "command": "gitstash.diffCurrentSource",
                     "when": "viewItem =~ /modified|renamed|deleted/ && config.gitstash.explorer.items.stash.diffButton != current-source",
-                    "group": "file_compare@4"
+                    "group": "section_1@4"
                 }
             ],
             "node.clipboard": [
                 {
                     "command": "gitstash.clipboardRepositoryPath",
                     "when": "view == gitstash.explorer && viewItem == repository",
-                    "group": "node_clipboard_copy@1"
+                    "group": "section_1@1"
                 },
                 {
                     "command": "gitstash.clipboardStashHash",
                     "when": "view == gitstash.explorer && viewItem == stash",
-                    "group": "node_clipboard_copy@1"
+                    "group": "section_1@1"
                 },
                 {
                     "command": "gitstash.clipboardStashHashShort",
                     "when": "view == gitstash.explorer && viewItem == stash",
-                    "group": "node_clipboard_copy@2"
+                    "group": "section_1@2"
                 },
                 {
                     "command": "gitstash.clipboardStashMessage",
                     "when": "view == gitstash.explorer && viewItem == stash",
-                    "group": "node_clipboard_copy@3"
+                    "group": "section_1@3"
                 },
                 {
                     "command": "gitstash.clipboardFilePath",
                     "when": "view == gitstash.explorer && viewItem =~ /file/",
-                    "group": "node_clipboard_copy@1"
+                    "group": "section_1@1"
                 },
                 {
                     "command": "gitstash.clipboardInfo",
-                    "group": "node_clipboard_copy@10"
+                    "group": "section_1@10"
                 }
             ]
         },
