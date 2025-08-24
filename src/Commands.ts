@@ -58,6 +58,31 @@ export class Commands {
     }
 
     /**
+     * Sets a note in the stash.
+     */
+    public setNote = (stashNode: StashNode): void => {
+        vscode.window
+            .showInputBox({
+                placeHolder: `Note to add to ${stashNode.name}`,
+                prompt: 'Use \\n to add a new line',
+            })
+            .then((message) => {
+                message = message?.replaceAll('\\n', '\n').trim()
+                if (message?.length) {
+                    this.stashCommands.setNote(stashNode, message)
+                    stashNode.setNote(message)
+                }
+            })
+    }
+
+    /**
+     * Removes any possible note from the stash.
+     */
+    public removeNote = (stashNode: StashNode): void => {
+        this.stashCommands.removeNote(stashNode)
+    }
+
+    /**
      * Shows a stashed file diff document.
      *
      * @param fileNode the involved node

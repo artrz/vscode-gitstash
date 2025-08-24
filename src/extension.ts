@@ -59,6 +59,9 @@ export function activate(context: ExtensionContext): void {
         commands.registerCommand('gitstash.clear', stashCommands.clear),
         commands.registerCommand('gitstash.openDir', stashCommands.openDir),
 
+        commands.registerCommand('gitstash.setNote', stashCommands.setNote),
+        commands.registerCommand('gitstash.removeNote', stashCommands.removeNote),
+
         commands.registerCommand('gitstash.show', stashCommands.show),
         commands.registerCommand('gitstash.diffChangesCurrent', stashCommands.diffChangesCurrent),
         commands.registerCommand('gitstash.diffCurrentChanges', stashCommands.diffCurrentChanges),

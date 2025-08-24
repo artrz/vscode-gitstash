@@ -165,12 +165,14 @@ export default class {
             .replace('${index}', stashNode.index.toString())
             .replace('${branch}', stashNode.branch ?? 'n/a')
             .replace('${description}', stashNode.description)
+            .replace('${note}', stashNode.note ?? '')
             .replace('${dateTimeLong}', DateFormat.toFullyReadable(stashNode.date))
             .replace('${dateTimeSmall}', DateFormat.toDateTimeSmall(stashNode.date))
             .replace('${dateSmall}', DateFormat.toDateSmall(stashNode.date))
             .replace('${dateTimeIso}', DateFormat.toDateTimeIso(stashNode.date))
             .replace('${dateIso}', DateFormat.toDateIso(stashNode.date))
             .replace('${ago}', DateFormat.ago(stashNode.date))
+            .trim()
     }
 
     /**
