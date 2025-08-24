@@ -129,6 +129,14 @@ export default class StashNode extends Node {
         return this
     }
 
+    /**
+     * Sets the stash note.
+     */
+    public setNote(note: string): this {
+        this._note = note
+        return this
+    }
+
     public toString() {
         return `StashNode[${this.name}]`
     }

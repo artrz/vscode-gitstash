@@ -133,6 +133,8 @@ export class StashCommands {
         const params = ['stash', 'clear']
 
         this.exec(repositoryNode.path, params, 'Stash list cleared', repositoryNode)
+
+        // TODO: Remove notes from deleted stashes
     }
 
     /**
@@ -148,6 +150,11 @@ export class StashCommands {
         params.push(stashNode.atIndex)
 
         this.exec(stashNode.path, params, 'Stash popped', stashNode)
+
+        // TODO: Only if pop is successful.
+        // if (stashNode.note) {
+        //     this.removeNote(stashNode)
+        // }
     }
 
     /**
@@ -190,6 +197,11 @@ export class StashCommands {
         ]
 
         this.exec(stashNode.path, params, 'Stash dropped', stashNode)
+
+        // TODO: Only if drop is successful.
+        // if (stashNode.note) {
+        //     this.removeNote(stashNode)
+        // }
     }
 
     /**
@@ -216,6 +228,36 @@ export class StashCommands {
         ]
 
         this.exec(fileNode.parent.path, params, 'File created', fileNode)
+    }
+
+    /**
+     * Sets a note in the stash.
+     */
+    public setNote = (stashNode: StashNode, message: string): void => {
+        const params = [
+            'notes',
+            'add',
+            '--force',
+            '--message',
+            message,
+            stashNode.hash,
+        ]
+
+        this.exec(stashNode.path, params, 'Note set', stashNode)
+    }
+
+    /**
+     * Removes any possible note from the stash.
+     */
+    public removeNote = (stashNode: StashNode): void => {
+        const params = [
+            'notes',
+            'remove',
+            '--ignore-missing',
+            stashNode.hash,
+        ]
+
+        this.exec(stashNode.path, params, 'Note removed', stashNode)
     }
 
     /**

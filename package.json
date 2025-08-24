@@ -278,6 +278,16 @@
                 "category": "GitStash"
             },
             {
+                "command": "gitstash.setNote",
+                "title": "Set note",
+                "category": "GitStash"
+            },
+            {
+                "command": "gitstash.removeNote",
+                "title": "Remove note",
+                "category": "GitStash"
+            },
+            {
                 "command": "gitstash.pop",
                 "title": "Pop...",
                 "category": "GitStash",
@@ -421,6 +431,14 @@
                     "when": "false"
                 },
                 {
+                    "command": "gitstash.setNote",
+                    "when": "false"
+                },
+                {
+                    "command": "gitstash.removeNote",
+                    "when": "false"
+                },
+                {
                     "command": "gitstash.pop",
                     "when": "hasGitRepository"
                 },
@@ -549,6 +567,11 @@
                     "group": "menu_section_1@2"
                 },
                 {
+                    "submenu": "stash.note",
+                    "when": "view == gitstash.explorer && viewItem == stash",
+                    "group": "menu_section_2@1"
+                },
+                {
                     "command": "gitstash.openCurrent",
                     "when": "view == gitstash.explorer && viewItem =~ /file/",
                     "group": "inline@1"
@@ -646,12 +669,28 @@
                     "command": "gitstash.clipboardInfo",
                     "group": "section_1@10"
                 }
+            ],
+            "stash.note": [
+                {
+                    "command": "gitstash.setNote",
+                    "when": "view == gitstash.explorer && viewItem == stash",
+                    "group": "section_1@1"
+                },
+                {
+                    "command": "gitstash.removeNote",
+                    "when": "view == gitstash.explorer && viewItem == stash",
+                    "group": "section_1@2"
+                }
             ]
         },
         "submenus": [
             {
                 "id": "file.compare",
                 "label": "Compare"
+            },
+            {
+                "id": "stash.note",
+                "label": "Note"
             },
             {
                 "id": "node.clipboard",
