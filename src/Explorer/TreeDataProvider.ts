@@ -28,7 +28,7 @@ export default class implements TreeDataProvider<Node> {
     private config: Config
     private nodeContainer: NodeContainer
     private treeItemFactory: TreeItemFactory
-    private rawStashes = {}
+    private rawStashes: Record<string, undefined | string> = {}
     private loadTimeout: NodeJS.Timeout | undefined
     private showExplorer: boolean | undefined
 
@@ -176,10 +176,10 @@ export default class implements TreeDataProvider<Node> {
                 const path = pathUri.fsPath
 
                 return void this.nodeContainer.getRawStashesList(path).then((rawStash: null | string) => {
-                    const cachedRawStash = this.rawStashes[path] as null | string
+                    const cachedRawStash = this.rawStashes[path]
 
                     if (!cachedRawStash || cachedRawStash !== rawStash) {
-                        this.rawStashes[path] = rawStash
+                        this.rawStashes[path] = rawStash ?? undefined
                         this.onDidChangeTreeDataEmitter.fire()
                     }
                 })

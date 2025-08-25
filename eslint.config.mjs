@@ -17,9 +17,14 @@ const style = stylistic.configs.customize({
 
 export default tseslint.config(
     {
-        ignores: ['**/out', '**/dist', '**/*.d.ts'],
+        ignores: [
+            'out',
+            'dist',
+            '**/*.d.ts',
+            '*vscode-test.mjs',
+        ],
     },
-    // _eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
     eslint.configs.recommended,
     ...tseslint.configs.strictTypeChecked,
     ...tseslint.configs.stylisticTypeChecked,
