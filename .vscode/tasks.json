@@ -4,37 +4,61 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build",
-            "type": "npm",
-            "script": "build",
-            "group": "build",
-            "problemMatcher": [
-                "$tsc",
-                "$tslint5"
+            "label": "watch",
+            "dependsOn": [
+                "npm: watch:tsc",
+                "npm: watch:esbuild"
             ],
-        },
-        {
-            "label": "Lint",
-            "type": "npm",
-            "script": "lint",
-            "group": "build",
-            "problemMatcher": [
-                "$tslint5"
-            ]
-        },
-        {
-            "label": "Watch",
-            "type": "npm",
-            "script": "dev:webpack",
-            "problemMatcher": "$ts-webpack-watch",
-            "isBackground": true,
             "presentation": {
-                "reveal": "always"
+                "reveal": "never"
             },
             "group": {
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "type": "npm",
+            "script": "watch:esbuild",
+            "group": "build",
+            "problemMatcher": "$esbuild-watch",
+            "isBackground": true,
+            "label": "npm: watch:esbuild",
+            "presentation": {
+                "group": "watch",
+                "reveal": "never"
+            }
+        },
+        {
+            "type": "npm",
+            "script": "watch:tsc",
+            "group": "build",
+            "problemMatcher": "$tsc-watch",
+            "isBackground": true,
+            "label": "npm: watch:tsc",
+            "presentation": {
+                "group": "watch",
+                "reveal": "never"
+            }
+        },
+        {
+            "type": "npm",
+            "script": "watch-tests",
+            "problemMatcher": "$tsc-watch",
+            "isBackground": true,
+            "presentation": {
+                "reveal": "never",
+                "group": "watchers"
+            },
+            "group": "build"
+        },
+        {
+            "label": "tasks: watch-tests",
+            "dependsOn": [
+                "npm: watch",
+                "npm: watch-tests"
+            ],
+            "problemMatcher": []
         }
     ]
 }
