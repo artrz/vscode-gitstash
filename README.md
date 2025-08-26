@@ -1,6 +1,6 @@
 # Git Stash
 
-**Seamlessly integration of git stash functionalities to your editor**
+> Seamlessly integration of git stash functionalities to your editor.
 
 [![Version](https://vsmarketplacebadges.dev/version-short/arturock.gitstash.svg?color=f2266e)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
 [![Downloads](https://vsmarketplacebadges.dev/downloads-short/arturock.gitstash.svg?color=f2266e)](https://marketplace.visualstudio.com/items?itemName=arturock.gitstash)
@@ -19,36 +19,47 @@ Every executed command is logged along its output for peace of mind.
 ### Stashes explorer
   - Apply, pop, branch, drop stashes (buttons / context menu)
   - Diff stashed file changes + [alternative diff modes](#diff-view-modes)
-  - Apply changes from single stashed file
-  - Copy to clipboard (context menu)
+  - Apply changes from selected files only
+  - Copy stash information like hash, description, etc to clipboard from the context menu
   - Configurable labels, descriptions, icons, tooltips, decorations, clipboard data
   - Configurable data loading strategy for files (performance related)
+  - Open project directory
 
 ### Source control explorer
-  - Stash selected files (context menu)
+  - Stash selected files... (context menu) To crate a stash only with specified files
 
 ### Command palette
 You don't need to use the explorer buttons, just type `gitstash` in the command palette. Multi-root supported.
+  - gitstash: Stash... For more stashing options
   - gitstash: Apply...
   - gitstash: Branch...
-  - gitstash: Clear
+  - gitstash: Clear...
   - gitstash: Drop...
+  - gitstash: Pop...
   - gitstash: Refresh explorer
   - gitstash: Toggle explorer
 
+In a multi-root project, the git repository its automatically inferred from the current open document if there's one.
+
 ### Screenshots
 
-![GitStash preview](https://raw.githubusercontent.com/artrz/vscode-gitstash/master/resources/docs/screencast.gif)
+![GitStash preview](resources/docs/screencast.gif)
 
-![Tree actions](https://raw.githubusercontent.com/artrz/vscode-gitstash/master/resources/docs/tree.png)
+![Tree actions](resources/docs/tree.png)
 
-![Success notification](https://raw.githubusercontent.com/artrz/vscode-gitstash/master/resources/docs/success.png)
+![Success notification](resources/docs/success.png)
 
-![Conflicts notification](https://raw.githubusercontent.com/artrz/vscode-gitstash/master/resources/docs/conflicts.png)
+![Conflicts notification](resources/docs/conflicts.png)
 
-![Failure notification](https://raw.githubusercontent.com/artrz/vscode-gitstash/master/resources/docs/failure.png)
+![Failure notification](resources/docs/failure.png)
 
-![Image diff](https://raw.githubusercontent.com/artrz/vscode-gitstash/master/resources/docs/image-diff.png)
+![Image diff](resources/docs/image-diff.png)
+
+![Context menu - repository](resources/docs/context-menu-repository.png)
+
+![Context menu - stash](resources/docs/context-menu-stash.png)
+
+![Context menu - file](resources/docs/context-menu-file.png)
 
 
 ## Diff view modes
@@ -74,12 +85,12 @@ Alternative way to diff the stashed file without its changes.
 
 | Title            | Command                   | Description
 |------------------|---------------------------|------------
-| Stash...         | gitstash.stash            | Generate a stash with custom options. Use `stash only` to generate a simple stash. Use `Keep index` to stash but keep all changes added to the index intact (besides stashing them). Use `Include untracked` if you want to stash also untracked files, leaving the working directory in a very clean state. If you want to stash besides the untracked files, the ignored ones, use the `All` option instead. **WARNING**: Using `Include untracked` (which applies the --include-untracked option) will clean/delete any ignored file, this is not a behavior implemented on the extension but the way some old git versions work.
+| Stash...         | gitstash.stash            | Generate a stash with custom options. Use `stash only` to generate a simple stash. `Staged` is similar to basic git commit except the state is committed to the stash instead of current branch. Use `Keep index` to stash but keep all changes added to the index intact (besides stashing them). Use `Include untracked` if you want to stash also untracked files, leaving the working directory in a very clean state. If you want to stash besides the untracked files, the ignored ones, use the `All` option instead. **WARNING**: Using `Include untracked` (which applies the --include-untracked option) will clean/delete any ignored file, this is not a behavior implemented on the extension but the way some old git versions work.
 | Pop...           | gitstash.pop              | Pops a stash w/ or w/o file reindexing, If reindexing selected, every change added to index will be back to that state. this can fail, when you have conflicts (which are stored in the index, where you therefore can no longer apply the changes as they were originally).
 | Apply...         | gitstash.apply            | Applies a stash w/ or w/o file reindexing. Reindexing will work the same as Stash Pop with reindex.
 | Branch...        | gitstash.branch           | Creates and checks out a new branch starting from the commit at which the stash was originally created, applies the changes recorded in the selected stash to the new working tree and index. If that succeeds the stash will be dropped.
 | Drop...          | gitstash.drop             | Drops a stash.
-| Clear            | gitstash.clear            | Removes all the repository stashes.
+| Clear...         | gitstash.clear            | Removes all the repository stashes.
 | Refresh explorer | gitstash.explorer.refresh | Reloads the stash explorer tree.
 | Toggle explorer  | gitstash.explorer.toggle  | Shows/hides the stash explorer tree.
 
