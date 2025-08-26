@@ -3,6 +3,7 @@
  * GPL-3.0-only. See LICENSE.md in the project root for license details.
  */
 
+import ExecError from './ExecError'
 import { spawn } from 'child_process'
 
 export default class {
@@ -14,33 +15,32 @@ export default class {
      * @param encoding the BufferEncoding string with the optional encoding to replace utf8
      */
     protected async call(command: string, args: string[], cwd?: string, encoding?: BufferEncoding): Promise<string> {
-        const response: Buffer[] = []
-        const errors: string[] = []
+        const outBuffer: Buffer[] = []
+        const errBuffer: Buffer[] = []
+        let error: Error | undefined
 
         const cmd = spawn(command, args, { cwd })
-        cmd.stderr.setEncoding(encoding ?? 'utf8')
 
         return new Promise<string>((resolve, reject) => {
-            cmd.on('error', (err: Error) => errors.push(err.message))
-            cmd.stdout.on('data', (chunk: Buffer) => response.push(chunk))
-            cmd.stdout.on('error', (err: Error) => errors.push(err.message))
-            cmd.stderr.on('data', (chunk: string) => errors.push(chunk))
-            cmd.stderr.on('error', (err: Error) => errors.push(err.message))
-
+            cmd.stdout.on('data', (chunk: Buffer) => outBuffer.push(chunk))
+            cmd.stderr.on('data', (chunk: Buffer) => errBuffer.push(chunk))
+            cmd.once('error', (err: Error) => error = err)
             cmd.on('close', (code: number) => {
-                const result = response.length
-                    ? Buffer.concat(response).toString(encoding ?? 'utf8').trim()
-                    : ''
+                cmd.removeAllListeners()
 
-                const error = errors.length ? errors.join().trim() : ''
+                if (error) {
+                    reject(new ExecError(code, error.message))
+                    return
+                }
 
-                if (code === 0) {
-                    resolve(errors.length === 0 ? result : `${result}\n\n${error}`)
+                const result = Buffer.concat(outBuffer).toString(encoding ?? 'utf8')
+                const errResult = Buffer.concat(errBuffer).toString(encoding ?? 'utf8')
+
+                if (errResult.length) {
+                    reject(new ExecError(code, errResult, result))
                 }
                 else {
-                    reject(new Error(
-                        response.length === 0 ? error : `${result}\n\n${error}`,
-                    ))
+                    resolve(result)
                 }
             })
         })
