@@ -16,6 +16,7 @@ import { toDateTimeIso } from './DateFormat'
 
 enum StashType {
     Simple,
+    Staged,
     KeepIndex,
     IncludeUntracked,
     IncludeUntrackedKeepIndex,
@@ -55,6 +56,9 @@ export class StashCommands {
         const params = ['stash', 'push']
 
         switch (type) {
+            case StashType.Staged:
+                params.push('--staged')
+                break
             case StashType.KeepIndex:
                 params.push('--keep-index')
                 break
