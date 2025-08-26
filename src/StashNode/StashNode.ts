@@ -23,7 +23,7 @@ export default class StashNode extends Node {
         protected _children?: FileNode[],
     ) {
         super(subject)
-        const parts = /(^WIP\son|^on)\s([^:]+):\s(.*)/i.exec(subject) ?? []
+        const parts = /(^WIP\son|^On)\s([^:\s]+):\s(.*)/i.exec(subject) ?? []
         this._description = parts.at(-1) ?? subject
         this._branch = parts.at(-2)
     }
