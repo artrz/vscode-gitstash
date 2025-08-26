@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.0.0] - 2025-08-26
+
+### Added
+
+- Allow to clipboard stash hash from context menu
+- Item button to open deleted|untracked file
+- Allow to stash staged changes only
+
+### Changed
+
+- Refactor a big part of the extension
+- Disable success notifications by default (can be enabled with setting)
+- Compare deleted file if exists or display it as full document otherwise
+- Rewording in some dialogs
+- Upgrade dependencies major versions
+- Replace webpack with esbuild for bundling
+
+### Fixed
+
+- Stash selected untracked-files
+- Allow to copy message node to clipboard
+- Incorrectly parsing stash's branch name in some cases
+- Broken tests configuration
+
+[https://github.com/artrz/vscode-gitstash/compare/v5.3.4..v6.0.0](https://github.com/artrz/vscode-gitstash/compare/v5.3.4..v6.0.0)
+
 ## [5.3.4] - 2025-08-12
 
 ### Changed
