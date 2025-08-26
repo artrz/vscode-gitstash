@@ -201,6 +201,11 @@ export class Commands {
                 type: StashCommands.StashType.Simple,
             },
             {
+                label: 'Staged',
+                description: 'Stash only the changes that are currently staged',
+                type: StashCommands.StashType.Staged,
+            },
+            {
                 label: 'Keep index',
                 description: 'Stash but keep all changes added to the index intact',
                 type: StashCommands.StashType.KeepIndex,
